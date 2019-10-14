@@ -1,0 +1,32 @@
+# nix-setup
+
+## Getting started
+
+#. Install link:https://nixos.org/nix/download.html[nix]
+#. if on a Mac install link:https://github.com/LnL7/nix-darwin#install[nix-darwin]
+#. install link:https://rycee.gitlab.io/home-manager/index.html#sec-install-standalone[home-manager]
+#. clone this repo to `~/.nixpkgs`
+
+To not enter password on every darwin-rebuild switch with nix-darwin, you can create /etc/sudoers.d/nix-darwin file with this content:
+```
+<home-user> ALL=(ALL:ALL) NOPASSWD: /run/current-system/sw/bin/darwin-rebuild (where home-user is name of home directory)
+```
+
+Before upgrading to Catalina:
+
+* https://gist.github.com/chrisandreae/e61e06f08ec0a650a0b3b41788d41724
+* https://github.com/NixOS/nix/issues/2925
+
+References:
+
+* https://github.com/nmattia/homies/blob/master/git/default.nix
+* https://github.com/rummik/nixos-config/blob/master/config/nodejs.nix
+* https://discourse.nixos.org/t/bootstrapping-new-system/3455/9
+* https://nixos.org/nix/manual/#ssec-builtins
+* https://rycee.gitlab.io/home-manager/options.html
+* https://medium.com/@ejpcmac/about-using-nix-in-my-development-workflow-12422a1f2f4c
+* https://github.com/direnv/direnv#setup
+* https://wiki.nikitavoloboev.xyz/package-managers/nix/nix-darwin
+* https://www.softinio.com/post/moving-from-homebrew-to-nix-package-manager/
+* http://chriswarbo.net/git/nix-helpers/git/branches/master/index.html
+* http://chriswarbo.net/projects/nixos/useful_hacks.html
