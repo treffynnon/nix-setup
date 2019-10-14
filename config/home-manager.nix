@@ -3,7 +3,8 @@
 {
   imports = [
     ./home-manager/fzf.nix
-    ./kitty
     ./fish
+    ./git.nix
+    ./kitty
   ];
 }
