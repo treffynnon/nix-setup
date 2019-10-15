@@ -23,5 +23,6 @@
     ./git.nix
     ./kitty
     ./neovim.nix
+    ./vscode.nix
   ];
 }

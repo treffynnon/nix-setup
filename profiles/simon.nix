@@ -13,6 +13,13 @@ mkMerge [
   {
     home-manager.users."${username}" = homeManager;
     users.users."${username}".home = mkIf isDarwin "/Users/${username}";
+    fonts = {
+      enableFontDir = true;
+      fonts = with pkgs; [
+        fira-code
+        fira-code-symbols
+      ];
+    };
   }
 
   (optionalAttrs isLinux {
