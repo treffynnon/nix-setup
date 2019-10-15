@@ -1,0 +1,15 @@
+{ ... }:
+
+{
+  imports = [
+    ./fish
+<<<<<<< HEAD:config/home-manager.nix
+    ./firefox.nix
+=======
+    ./fzf.nix
+    ./git.nix
+    ./kitty
+    ./neovim.nix
+>>>>>>> 9dd5f7dc9d65a1d833a4a3585797be01283280a8:home-configs/default.nix
+  ];
+}
