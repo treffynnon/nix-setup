@@ -5,13 +5,14 @@ let
   inherit (builtins) currentSystem;
   inherit (lib.systems.elaborate { system = currentSystem; }) isLinux isDarwin;
 
-  homeManager = import ../config/home-manager.nix;
+  homeManager = import ../home-configs;
+  username = "simon";
 in
 
 mkMerge [
   {
-    home-manager.users.simon = homeManager;
-    users.users.simon.home = mkIf isDarwin "/Users/simon";
+    home-manager.users."${username}" = homeManager;
+    users.users."${username}".home = mkIf isDarwin "/Users/${username}";
   }
 
   (optionalAttrs isLinux {
@@ -19,12 +20,12 @@ mkMerge [
 
     home-manager.users.root = homeManager;
 
-    users.users.simon = {
+    users.users."${username}" = {
       isNormalUser = true;
       uid = 1000;
       linger = true;
 
-      home = "/home/simon";
+      home = "/home/${username}";
 
       # should really choose something hashed, but XKCD-936 amuses me
       initialPassword = "correct horse battery staple";

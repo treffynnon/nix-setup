@@ -2,9 +2,10 @@
 
 {
   imports = [
-    ./home-manager/fzf.nix
     ./fish
+    ./fzf.nix
     ./git.nix
     ./kitty
+    ./neovim.nix
   ];
 }
