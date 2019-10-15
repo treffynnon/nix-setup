@@ -30,3 +30,4 @@ References:
 * https://www.softinio.com/post/moving-from-homebrew-to-nix-package-manager/
 * http://chriswarbo.net/git/nix-helpers/git/branches/master/index.html
 * http://chriswarbo.net/projects/nixos/useful_hacks.html
+* https://github.com/danieldk/nix-home/tree/master/cfg

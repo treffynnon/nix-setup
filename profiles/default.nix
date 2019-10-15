@@ -33,11 +33,13 @@ mkMerge [
 
         file gnupg pv htop which
 
+        git-lfs git-crypt
+
         nix-prefetch-scripts
       ])
       ++
       (with pkgs.gitAndTools; [
-        git git-fame
+        gitFull git-fame
       ]);
   }
 
