@@ -18,7 +18,7 @@
   imports = [
     ../channels/nur.nix
     ./fish
-    ./firefox.nix
+    # ./firefox.nix
     ./fzf.nix
     ./git.nix
     ./kitty
