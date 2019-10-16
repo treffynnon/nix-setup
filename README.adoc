@@ -32,3 +32,4 @@ References:
 * http://chriswarbo.net/projects/nixos/useful_hacks.html
 * https://github.com/danieldk/nix-home/tree/master/cfg
 * https://github.com/jwiegley/nix-config/blob/master/overlays/30-apps.nix
+* https://github.com/Jomik/dotfiles/tree/master/.config/nixpkgs
