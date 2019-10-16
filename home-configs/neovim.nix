@@ -11,6 +11,6 @@
 
       haskell-vim vim-fish vim-nix typescript-vim
     ];
-    extraConfig = builtins.readFile ./neovim/vimrc;
+    extraConfig = builtins.readFile ./neovim/vimrc.vim;
   };
 }

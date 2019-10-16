@@ -17,12 +17,15 @@
   };
   imports = [
     ../channels/nur.nix
-    ./fish
+
+    ./bash.nix
+    ./fish.nix
     # ./firefox.nix
     ./fzf.nix
     ./git.nix
-    ./kitty
+    ./kitty.nix
     ./neovim.nix
+    ./starship.nix
     ./vscode.nix
   ];
 }
