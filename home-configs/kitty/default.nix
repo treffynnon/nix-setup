@@ -14,12 +14,12 @@
   '';
 
   programs.git.extraConfig = {
-    diff.tool = "kitty";
-    diff.guitool = "kitty.gui";
+    diff.tool = "${pkgs.kitty}/bin/kitty";
+    diff.guitool = "${pkgs.kitty}/bin/kitty.gui";
     difftool.prompt = false;
     difftool.trustExitCode = true;
-    "difftool \"kitty\"".cmd = "kitty +kitten diff $LOCAL $REMOTE";
-    "difftool \"kitty.gui\"".cmd = "kitty kitty +kitten diff $LOCAL $REMOTE";
+    "difftool \"kitty\"".cmd = "${pkgs.kitty}/bin/kitty +kitten diff $LOCAL $REMOTE";
+    "difftool \"kitty.gui\"".cmd = "${pkgs.kitty}/bin/kitty kitty +kitten diff $LOCAL $REMOTE";
   };
 
   # https://discourse.nixos.org/t/bootstrapping-new-system/3455/9
