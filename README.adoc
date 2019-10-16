@@ -2,10 +2,10 @@
 
 ## Getting started
 
-#. Install link:https://nixos.org/nix/download.html[nix]
-#. if on a Mac install link:https://github.com/LnL7/nix-darwin#install[nix-darwin]
-#. install link:https://rycee.gitlab.io/home-manager/index.html#sec-install-standalone[home-manager]
-#. clone this repo to `~/.nixpkgs`
+1. Install link:https://nixos.org/nix/download.html[nix]
+1. if on a Mac install link:https://github.com/LnL7/nix-darwin#install[nix-darwin]
+1. install link:https://rycee.gitlab.io/home-manager/index.html#sec-install-standalone[home-manager]
+1. clone this repo to `~/.nixpkgs`
 
 To not enter password on every darwin-rebuild switch with nix-darwin, you can create /etc/sudoers.d/nix-darwin file with this content:
 ```
@@ -33,3 +33,4 @@ References:
 * https://github.com/danieldk/nix-home/tree/master/cfg
 * https://github.com/jwiegley/nix-config/blob/master/overlays/30-apps.nix
 * https://github.com/Jomik/dotfiles/tree/master/.config/nixpkgs
+* https://github.com/direnv/direnv/wiki/Nix#shell-function-to-quickly-setup-nix--direnv-in-a-new-project
