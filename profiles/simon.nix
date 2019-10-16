@@ -21,6 +21,10 @@ mkMerge [
         # nerdfonts
       ];
     };
+    environment.systemPackages =
+      (with pkgs; [
+        any-nix-shell
+      ]);
   }
 
   (optionalAttrs isLinux {

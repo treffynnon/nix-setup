@@ -25,5 +25,8 @@ set -U fish_pager_color_description   yellow
 set -U fish_pager_color_prefix        'white' '--bold' '--underline'
 set -U fish_pager_color_progress      'brwhite' '--background=cyan'
 
+# https://github.com/haslersn/any-nix-shell
+any-nix-shell fish --info-right | source
+
 # https://starship.rs/
 eval (starship init fish)
