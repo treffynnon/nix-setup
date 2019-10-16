@@ -7,6 +7,7 @@
       DEVELOPER="sholywell";
       VISUAL="${pkgs.neovim}/bin/nvim";
       EDITOR="${pkgs.neovim}/bin/nvim";
+      GIT_PS1_SHOWDIRTYSTATE = true;
       # PS1="\[\033[0;32m\]\[\033[0m\033[0;32m\]\u\[\033[1;34m\] @ \[\033[1;34m\]\h \w\[\033[0;32m\]\$(__git_ps1)\n\[\033[0;32m\]└─\[\033[0m\033[0;32m\]\[\033[0m\033[0;32m\] λ\[\033[0m\] ";
     };
     shellAliases = {
@@ -20,11 +21,9 @@
   };
   programs.starship.enableBashIntegration = true;
 
-# PATH="$PATH:/Users/simon/.local/bin"
-# GIT_PS1_SHOWDIRTYSTATE=true
-# export PS1='\u \w$(__git_ps1) 𝝺 '
-# export PS1="\[\033[0;32m\]\[\033[0m\033[0;32m\]\u\[\033[1;34m\] @ \[\033[1;34m\]\h \w\[\033[0;32m\]\$(__git_ps1)\n\[\033[0;32m\]└─\[\033[0m\033[0;32m\]\[\033[0m\033[0;32m\] λ\[\033[0m\] "
-# export DEVELOPER='sholywell'
-# export VISUAL="/usr/bin/env nvim"
-# export EDITOR="$VISUAL"
+  # hopefully this will be fixed soon so that home-manager doesn't lose the nix initialisation for bash
+  # https://github.com/rycee/home-manager/pull/797/files
+  programs.bash.initExtra = ''
+    if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then . "$HOME/.nix-profile/etc/profile.d/nix.sh"; fi # added by Nix installer
+  '';
 }
