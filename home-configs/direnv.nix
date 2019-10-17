@@ -9,6 +9,7 @@ in
   programs.direnv = {
     enable = true;
     enableBashIntegration = true;
+    enableZshIntegraton = true;
     enableFishIntegration = true;
 
     home.file.".nix-direnv/direnvrc".source = "${nixDirenvPath}/direnvrc";
