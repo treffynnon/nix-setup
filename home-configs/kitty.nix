@@ -10,7 +10,7 @@
   '';
 
   programs.fish.interactiveShellInit = ''
-    ${pkgs.kitty}/bin/kitty + complete setup fish | source /dev/stdin
+    ${pkgs.kitty}/bin/kitty + complete setup fish | source
   '';
 
   programs.zsh.initExtra = ''
