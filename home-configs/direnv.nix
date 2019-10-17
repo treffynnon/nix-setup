@@ -12,6 +12,7 @@ in
     enableZshIntegraton = true;
     enableFishIntegration = true;
 
+    # https://github.com/nix-community/nix-direnv
     home.file.".nix-direnv/direnvrc".source = "${nixDirenvPath}/direnvrc";
     stdlib = builtins.readFile ./direnv/.direnvrc;
   };
