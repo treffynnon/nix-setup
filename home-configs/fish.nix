@@ -1,3 +1,5 @@
+# waiting for https://github.com/rycee/home-manager/pull/635 to be merged
+
 {
   programs.fish = {
     enable = true;
