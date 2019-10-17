@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ config, lib, pkgs, ...}:
 
 let
   fishFzfKeybindings = (builtins.fetchGit {
@@ -6,26 +6,39 @@ let
     rev = "ac01d96fc6344ebeb48c03f2c9c0be5bf3b20f1c";
     ref = "master";
   });
-  basePath = /. + ("/" + ((builtins.unsafeDiscardStringContext fishFzfKeybindings) + "/functions"));
-  fzfFunctions = with builtins;
-    lib.concatMapStringsSep
-      "\n"
-      (x: readFile basePath + ("/" + x))
-      (filter
-        (x: match ".*\\.fish" != null)
-        (attrNames (readDir basePath)));
 in
+
+# waiting for https://github.com/rycee/home-manager/pull/635 to be merged
+
 {
   programs.fish = {
     enable = true;
+    # nix-darwin
+    # $PATH is broken for fish shell
+    # https://github.com/LnL7/nix-darwin/issues/122
+    shellInit = ''
+      for p in /run/current-system/sw/bin $HOME/.nix-profile/bin /etc/profiles/per-user/$USER/bin /nix/var/nix/profiles/default/bin
+        if not contains $p $fish_user_paths
+          set -g fish_user_paths $p $fish_user_paths
+        end
+      end
+    '';
   };
 
+  xdg.configFile."fish/conf.d/fzf.fish".text = ''
+    set fish_function_path ${fishFzfKeybindings}/functions $fish_function_path
+    for p in ${fishFzfKeybindings}/conf.d/*.fish
+      source $p
+    end
+  '';
+
   # https://discourse.nixos.org/t/bootstrapping-new-system/3455/9
-  xdg.configFile."fish/config.fish".source = ./fish/config.fish;
+  xdg.configFile."fish/conf.d" = {
+    source = ./fish/conf.d;
+    recursive = true;
+  };
   xdg.configFile."fish/functions" = {
     source = ./fish/functions;
     recursive = true;
   };
-
-  xdg.configFile."fish/functions/___fzf.fish".text = fzfFunctions;
 }

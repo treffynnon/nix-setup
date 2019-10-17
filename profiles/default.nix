@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, config, ... }:
 
 let
   inherit (lib) flatten optional optionalAttrs mkIf mkMerge;
@@ -15,19 +15,19 @@ in
 mkMerge [
   {
     nixpkgs = {
-    config = {
-      allowUnfree = true;
-      allowBroken = false;
-      allowUnsupportedSystem = false;
-    };
+      config = {
+        allowUnfree = true;
+        allowBroken = false;
+        allowUnsupportedSystem = false;
+      };
 
-    overlays =
-      let path = ../overlays; in with builtins;
-      map (n: import (path + ("/" + n)))
-          (filter (n: match ".*\\.nix" n != null ||
-                      pathExists (path + ("/" + n + "/default.nix")))
-                  (attrNames (readDir path)));
-  };
+      overlays =
+        let path = ../overlays; in with builtins;
+        map (n: import (path + ("/" + n)))
+            (filter (n: match ".*\\.nix" n != null ||
+                        pathExists (path + ("/" + n + "/default.nix")))
+                    (attrNames (readDir path)));
+    };
 
     # Auto upgrade nix package and the daemon service.
     services.nix-daemon.enable = true;
@@ -51,6 +51,13 @@ mkMerge [
       (with pkgs.gitAndTools; [
         gitFull git-fame
       ]);
+
+    programs.bash = {
+      enable = true;
+      enableCompletion = true;
+    };
+    programs.zsh.enable = true;
+    programs.fish.enable = true;
   }
 
   (optionalAttrs isLinux {
@@ -76,6 +83,8 @@ mkMerge [
     environment.systemPackages = with pkgs; [
       coreutils
     ];
+
+    environment.shells = with pkgs; [ bashInteractive fish zsh ];
 
     # Used for backwards compatibility, please read the changelog before changing.
     # $ darwin-rebuild changelog

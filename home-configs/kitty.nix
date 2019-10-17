@@ -5,6 +5,10 @@
     kitty
   ]);
 
+  programs.bash.initExtra = ''
+    source <(${pkgs.kitty}/bin/kitty + complete setup bash)
+  '';
+
   programs.fish.interactiveShellInit = ''
     ${pkgs.kitty}/bin/kitty + complete setup fish | source /dev/stdin
   '';
