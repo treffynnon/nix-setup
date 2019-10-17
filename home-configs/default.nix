@@ -19,6 +19,7 @@
     ../channels/nur.nix
 
     ./bash.nix
+    ./direnv.nix
     ./fish.nix
     # ./firefox.nix
     ./fzf.nix

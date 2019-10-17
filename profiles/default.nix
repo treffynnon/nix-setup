@@ -35,7 +35,7 @@ mkMerge [
 
     environment.systemPackages =
       (with pkgs; [
-        curl wget dnsutils nmap telnet
+        curl wget dnsutils nmap telnet gnugrep
 
         jq bat imagemagick
 

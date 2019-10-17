@@ -2,6 +2,7 @@
 
 let
   fishFzfKeybindings = (builtins.fetchGit {
+    name = "fzf-fish-keybindings";
     url = https://github.com/jethrokuan/fzf.git;
     rev = "ac01d96fc6344ebeb48c03f2c9c0be5bf3b20f1c";
     ref = "master";
