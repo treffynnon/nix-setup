@@ -6,9 +6,19 @@
 1. if on a Mac install link:https://github.com/LnL7/nix-darwin#install[nix-darwin]
 1. install link:https://rycee.gitlab.io/home-manager/index.html#sec-install-standalone[home-manager]
 1. clone this repo to `~/.nixpkgs`
+1. back-up `/etc/shells`
 1. Run `darwin-rebuild switch`
 
 ### Configure the shell
+
+#### Move ZSH
+
+```bash
+sudo mv /etc/zprofile /etc/zprofile.local
+sudo mv /etc/zshrc /etc/zshrc.local
+```
+
+#### Setup bash completions
 
 For bash completions to work properly the system must use the nix supplied version of bash as the MacOS version is ancient.
 
