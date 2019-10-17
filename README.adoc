@@ -17,7 +17,7 @@ Before upgrading to Catalina:
 * https://gist.github.com/chrisandreae/e61e06f08ec0a650a0b3b41788d41724
 * https://github.com/NixOS/nix/issues/2925
 
-References:
+## References:
 
 * https://github.com/nmattia/homies/blob/master/git/default.nix
 * https://github.com/rummik/nixos-config/blob/master/config/nodejs.nix
@@ -33,4 +33,10 @@ References:
 * https://github.com/danieldk/nix-home/tree/master/cfg
 * https://github.com/jwiegley/nix-config/blob/master/overlays/30-apps.nix
 * https://github.com/Jomik/dotfiles/tree/master/.config/nixpkgs
-* https://github.com/direnv/direnv/wiki/Nix#shell-function-to-quickly-setup-nix--direnv-in-a-new-project
+
+## Todo
+
+* direnv setup for a project https://github.com/direnv/direnv/wiki/Nix#shell-function-to-quickly-setup-nix--direnv-in-a-new-project
+* colour scheme for `bat` (move into home-configs?)
+* sort out fzf integration for fish
+
