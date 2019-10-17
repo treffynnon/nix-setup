@@ -60,5 +60,4 @@ Before upgrading to Catalina:
 
 * direnv setup for a project https://github.com/direnv/direnv/wiki/Nix#shell-function-to-quickly-setup-nix--direnv-in-a-new-project
 * colour scheme for `bat` (move into home-configs?)
-* sort out fzf integration for fish
 
