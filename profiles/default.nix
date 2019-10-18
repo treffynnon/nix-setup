@@ -35,15 +35,21 @@ mkMerge [
 
     environment.systemPackages =
       (with pkgs; [
-        curl wget dnsutils nmap telnet gnugrep
+        gnupg pass
+
+        curl wget dnsutils nmap telnet
 
         jq bat imagemagick
 
+        ripgrep ncdu
+
         unzip zip gzip
 
-        file gnupg pv htop which
+        fd file pv htop which
 
         git-lfs git-crypt
+
+        zstd
 
         nix-prefetch-scripts
       ])
@@ -58,14 +64,14 @@ mkMerge [
     };
     programs.zsh.enable = true;
     programs.fish.enable = true;
+
+    time.timeZone = "Australia/Brisbane";
   }
 
   (optionalAttrs isLinux {
     environment.systemPackages = with pkgs; [
       whois pciutils
     ];
-
-    time.timeZone = "Australia/Brisbane";
     i18n = {
       consoleFont = "Lat2-Terminus16";
       defaultLocale = "en_AU.UTF-8";
@@ -82,9 +88,27 @@ mkMerge [
   (mkIf isDarwin {
     environment.systemPackages = with pkgs; [
       coreutils
+      gawk gnused
+      findutils gnugrep
     ];
 
     environment.shells = with pkgs; [ bashInteractive fish zsh ];
+    system.defaults.finder = {
+      AppleShowAllExtensions = true;
+      QuitMenuItem = true;
+      FXEnableExtensionChangeWarning = false;
+    };
+    system.defaults.dock = {
+      autohide = true;
+      showhidden = true;
+      mru-spaces = false;
+      static-only = true;
+    };
+    system.defaults.trackpad.Clicking = true;
+    system.keyboard = {
+      enableKeyMapping = true;
+      remapCapsLockToControl = true;
+    };
 
     # Used for backwards compatibility, please read the changelog before changing.
     # $ darwin-rebuild changelog

@@ -18,6 +18,7 @@
   imports = [
     ../channels/nur.nix
 
+    ./nix.nix
     ./bash.nix
     ./direnv.nix
     ./fish.nix
