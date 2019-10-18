@@ -26,4 +26,4 @@ set -U fish_pager_color_prefix        'white' '--bold' '--underline'
 set -U fish_pager_color_progress      'brwhite' '--background=cyan'
 
 # https://github.com/haslersn/any-nix-shell
-any-nix-shell fish --info-right | source
+# any-nix-shell fish --info-right | source
