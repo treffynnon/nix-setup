@@ -7,6 +7,7 @@
       "editor.fontSize" = 14;
       "editor.fontFamily" = "'Fira Code', Menlo, Monaco, 'Courier New', monospace";
       "editor.fontLigatures" = true;
+      "terminal.integrated.shell.osx" = "${pkgs.fish}/bin/fish";
       "terminal.integrated.shellArgs.osx" = [
         "-i"
         "-l"
@@ -14,6 +15,30 @@
       "workbench.colorTheme" = "Paraiso_dark";
       "vim.enableNeovim" = true;
       "vim.neovimPath" = "${pkgs.neovim}/bin/nvim";
+
+      # Paraiso dark from https://glitchbone.github.io/vscode-base16-term/#/paraiso
+      "workbench.colorCustomizations" = {
+        "terminal.background" = "#2F1E2E";
+        "terminal.foreground" = "#A39E9B";
+        "terminal.ansiBlack" = "#2F1E2E";
+        "terminal.ansiBlue" = "#06B6EF";
+        "terminal.ansiBrightBlack" = "#776E71";
+        "terminal.ansiBrightBlue" = "#06B6EF";
+        "terminal.ansiBrightCyan" = "#5BC4BF";
+        "terminal.ansiBrightGreen" = "#48B685";
+        "terminal.ansiBrightMagenta" = "#815BA4";
+        "terminal.ansiBrightRed" = "#EF6155";
+        "terminal.ansiBrightWhite" = "#E7E9DB";
+        "terminal.ansiBrightYellow" = "#FEC418";
+        "terminal.ansiCyan" = "#5BC4BF";
+        "terminal.ansiGreen" = "#48B685";
+        "terminal.ansiMagenta" = "#815BA4";
+        "terminal.ansiRed" = "#EF6155";
+        "terminal.ansiWhite" = "#A39E9B";
+        "terminal.ansiYellow" = "#FEC418";
+        "terminalCursor.background" = "#A39E9B";
+        "terminalCursor.foreground" = "#A39E9B";
+      };
     };
     extensions = with pkgs.vscode-extensions; [
       bbenoist.Nix
