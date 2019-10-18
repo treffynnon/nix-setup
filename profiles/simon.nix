@@ -24,6 +24,7 @@ mkMerge [
     environment.systemPackages =
       (with pkgs; [
         # any-nix-shell
+        Brave
       ]);
   }
 

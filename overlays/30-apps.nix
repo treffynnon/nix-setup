@@ -2,8 +2,8 @@ self: super: {
 
 # Taken from https://github.com/jwiegley/nix-config/blob/master/overlays/30-apps.nix
 
-installApplication = 
-  { name, appname ? name, version, src, description, homepage, 
+installApplication =
+  { name, appname ? name, version, src, description, homepage,
     postInstall ? "", sourceRoot ? ".", ... }:
   with super; stdenv.mkDerivation {
     name = "${name}-${version}";
@@ -35,6 +35,20 @@ Anki = self.installApplication rec {
   };
   description = "Anki is a program which makes remembering things easy";
   homepage = https://apps.ankiweb.net;
+};
+
+Brave = self.installApplication rec {
+  name = "Brave";
+  version = "0.70.118";
+  appName = "Brave Browser";
+  sourceRoot = ".";
+  src = super.fetchurl {
+    url = "https://github.com/brave/brave-browser/releases/download/v${version}/Brave-Browser.dmg";
+    sha256 = "1i3hxwpa52k5rc5ld60qpnlnnkjdvrdypyqd9dwzxwdz28pr6a8z";
+    # date = 2019-10-17T15:23:36Z;
+  };
+  description = "Next generation Brave browser for macOS, Windows, Linux, and eventually Android";
+  homepage = https://brave.com/features/;
 };
 
 Dash = self.installApplication rec {
