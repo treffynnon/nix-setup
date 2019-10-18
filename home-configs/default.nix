@@ -20,6 +20,7 @@
 
     ./nix.nix
     ./bash.nix
+    ./bat.nix
     ./direnv.nix
     ./fish.nix
     # ./firefox.nix
