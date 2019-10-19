@@ -34,6 +34,10 @@ To not enter password on every darwin-rebuild switch with nix-darwin, you can cr
 <home-user> ALL=(ALL:ALL) NOPASSWD: /run/current-system/sw/bin/darwin-rebuild (where home-user is name of home directory)
 ```
 
+Direvn setup:
+
+* direnv setup for a project https://github.com/direnv/direnv/wiki/Nix#shell-function-to-quickly-setup-nix--direnv-in-a-new-project
+
 Before upgrading to Catalina:
 
 * https://gist.github.com/chrisandreae/e61e06f08ec0a650a0b3b41788d41724
@@ -59,5 +63,4 @@ Before upgrading to Catalina:
 
 ## Todo
 
-* direnv setup for a project https://github.com/direnv/direnv/wiki/Nix#shell-function-to-quickly-setup-nix--direnv-in-a-new-project
 
