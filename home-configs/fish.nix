@@ -7,7 +7,7 @@ let
     rev = "ac01d96fc6344ebeb48c03f2c9c0be5bf3b20f1c";
     ref = "master";
   });
-  shell = (import ./common/shell.nix) { inherit pkgs; };
+  aliases = (import ./common/aliases.nix) { inherit pkgs; };
 in
 
 # waiting for https://github.com/rycee/home-manager/pull/635 to be merged
@@ -25,7 +25,7 @@ in
         end
       end
     '';
-    shellAbbrs = shell.envAliases;
+    shellAbbrs = aliases.envAliases;
   };
 
   xdg.configFile."fish/conf.d/fzf.fish".text = ''

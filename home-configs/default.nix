@@ -18,6 +18,8 @@
   imports = [
     ../channels/nur.nix
 
+    ./environment.nix
+
     ./nix.nix
     ./bash.nix
     ./bat.nix

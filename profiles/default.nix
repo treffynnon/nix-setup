@@ -45,7 +45,7 @@ mkMerge [
 
         unzip zip gzip
 
-        fd file pv htop which
+        fd file pv htop which exa
 
         git-lfs git-crypt
 
@@ -58,6 +58,15 @@ mkMerge [
         gitFull git-fame
       ]);
 
+    environment.shellAliases = {
+      ls = "exa";
+      ll = "exa -lh";
+      la = "exa -lhaa";
+      lt = "exa -lTh";
+      lg = "exa -lh --git";
+      lgt = "exa -lTh --git";
+    };
+
     programs.bash = {
       enable = true;
       enableCompletion = true;
@@ -65,7 +74,13 @@ mkMerge [
     programs.zsh.enable = true;
     programs.fish.enable = true;
 
+    programs.gnupg.agent = {
+      enable = true;
+      enableSSHSupport = true;
+    };
+
     time.timeZone = "Australia/Brisbane";
+    home-manager.useUserPackages = true;
   }
 
   (optionalAttrs isLinux {
@@ -90,6 +105,7 @@ mkMerge [
       coreutils
       gawk gnused
       findutils gnugrep
+      fontconfig
     ];
 
     environment.shells = with pkgs; [ bashInteractive fish zsh ];
