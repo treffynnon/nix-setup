@@ -18,6 +18,24 @@ let
     color0E = "#815ba4";
     color0F = "#e96ba8";
   };
+  theme = (builtins.concatStringsSep "," (with paraiso-base16-theme; [
+    # base line style
+    "fg:${color04}"
+    "bg:${color00}"
+    "hl:${color0D}"
+
+    # current line
+    "fg+:${color0B}"
+    "bg+:${color01}"
+    "hl+:${color0D}"
+
+    "spinner:${color0C}" # streaming input indicator
+    "header:${color0D}"
+    "info:${color0A}"
+    "pointer:${color0C}" # pointer to the current line
+    "marker:${color0C}" # multi-select marker
+    "prompt:${color0A}"
+  ]));
 in
 
 {
@@ -27,7 +45,6 @@ in
   };
 
   home.sessionVariables = {
-    FZF_DEFAULT_OPTS = with paraiso-base16-theme;
-      "--color bg+:${color01},bg:${color00},spinner:${color0C},hl:${color0D},fg:${color04},header:${color0D},info:${color0A},pointer:${color0C},marker:${color0C},fg+:${color06},prompt:${color0A},hl+:${color0D}";
+    FZF_DEFAULT_OPTS = "--color ${theme}";
   };
 }
