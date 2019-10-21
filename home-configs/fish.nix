@@ -24,6 +24,7 @@ in
           set -g fish_user_paths $p $fish_user_paths
         end
       end
+      set -U FZF_LEGACY_KEYBINDINGS 0
     '';
     shellAbbrs = aliases.envAliases;
   };

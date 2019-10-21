@@ -18,6 +18,7 @@ mkMerge [
       fonts = with pkgs; [
         fira-code
         fira-code-symbols
+        mplus-outline-fonts
         # nerdfonts
       ];
     };
