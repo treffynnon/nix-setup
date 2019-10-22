@@ -4,7 +4,11 @@
   programs.git = {
     enable = true;
     userName = "Simon Holywell";
-    userEmail = "treffynnon@php.net";
+    userEmail = "simon@holywell.com.au";
+    signing = {
+      key = "FD510786178EE858";
+      signByDefault = true;
+    };
 
     ignores = [
       "*.sw?"
