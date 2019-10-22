@@ -25,6 +25,9 @@
       github = {
         user = "treffynnon";
       };
+      core = {
+        pager = "${pkgs.git}/share/git/contrib/diff-highlight/diff-highlight | ${pkgs.less}/bin/less --tabs=2 -RFX";
+      };
       color = {
         status      = "auto";
         diff        = "auto";
@@ -37,6 +40,13 @@
         local = "green";
         remote = "yellow";
         current = "magenta bold";
+      };
+      # highlights word changes within a line
+      "color \"diff-highlight\"" = {
+        oldNormal = "red";
+        oldHighlight = "red bold reverse";
+        newNormal = "green";
+        newHighlight = "green bold reverse";
       };
       "color \"sh\"" = {
         branch      = "yellow reverse";

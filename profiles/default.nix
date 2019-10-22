@@ -39,7 +39,7 @@ mkMerge [
 
         curl wget dnsutils nmap telnet
 
-        jq bat imagemagick
+        less jq bat imagemagick
 
         ripgrep ncdu
 

@@ -34,7 +34,7 @@ To not enter password on every darwin-rebuild switch with nix-darwin, you can cr
 <home-user> ALL=(ALL:ALL) NOPASSWD: /run/current-system/sw/bin/darwin-rebuild (where home-user is name of home directory)
 ```
 
-Direvn setup:
+Direnv setup:
 
 * direnv setup for a project https://github.com/direnv/direnv/wiki/Nix#shell-function-to-quickly-setup-nix--direnv-in-a-new-project
 
@@ -63,4 +63,7 @@ Before upgrading to Catalina:
 
 ## Todo
 
-
+* double check fzf configuration is OK now
+* review possibility of fasd
+* move vscode out of nix control or at least put it's plugins somewhere else so the directory is writable
+* upgrade to catalina

@@ -28,6 +28,7 @@
     # ./firefox.nix
     ./fzf.nix
     ./git.nix
+    ./httpie.nix
     ./kitty.nix
     ./neovim.nix
     ./starship.nix
