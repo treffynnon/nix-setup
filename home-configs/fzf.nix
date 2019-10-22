@@ -1,3 +1,5 @@
+{ pkgs, ...}:
+
 let
   # copied from https://github.com/nicodebo/base16-fzf/blob/6d40da6cc12265911c688b48d986dda0f9bded93/bash/base16-paraiso.config
   paraiso-base16-theme = {
@@ -46,5 +48,7 @@ in
 
   home.sessionVariables = {
     FZF_DEFAULT_OPTS = "--color ${theme}";
+    FZF_DEFAULT_COMMAND = "${pkgs.fd}/bin/fd --type f";
+    FZF_CTRL_T_COMMAND = "${pkgs.fd}/bin/fd --type f \$dir";
   };
 }
