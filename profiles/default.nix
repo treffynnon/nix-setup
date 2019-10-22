@@ -103,6 +103,7 @@ mkMerge [
   (mkIf isDarwin {
     environment.systemPackages = with pkgs; [
       coreutils
+      gnutar
       gawk gnused
       findutils gnugrep
       fontconfig

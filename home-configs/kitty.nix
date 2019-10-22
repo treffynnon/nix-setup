@@ -18,8 +18,8 @@
   '';
 
   programs.git.extraConfig = {
-    diff.tool = "${pkgs.kitty}/bin/kitty";
-    diff.guitool = "${pkgs.kitty}/bin/kitty.gui";
+    diff.tool = "kitty";
+    diff.guitool = "kitty.gui";
     difftool.prompt = false;
     difftool.trustExitCode = true;
     "difftool \"kitty\"".cmd = "${pkgs.kitty}/bin/kitty +kitten diff $LOCAL $REMOTE";

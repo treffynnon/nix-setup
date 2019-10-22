@@ -5,6 +5,7 @@
     enable = true;
     userName = "Simon Holywell";
     userEmail = "treffynnon@php.net";
+
     ignores = [
       "*.sw?"
       ".DS_Store"
@@ -17,6 +18,32 @@
     };
 
     extraConfig = {
+      github = {
+        user = "treffynnon";
+      };
+      color = {
+        status      = "auto";
+        diff        = "auto";
+        branch      = "auto";
+        interactive = "auto";
+        ui          = "auto";
+        sh          = "auto";
+      };
+      "color \"branch\"" = {
+        local = "green";
+        remote = "yellow";
+        current = "magenta bold";
+      };
+      "color \"sh\"" = {
+        branch      = "yellow reverse";
+        workdir     = "blue bold";
+        dirty       = "red";
+        dirty-stash = "red";
+        repo-state  = "red";
+      };
+      "color \"status\"" = {
+        untracked = "cyan";
+      };
       merge.tool = "vimdiff";
       "include".path = "~/.gitconfig";
       "filter \"lfs\"" = {
@@ -24,10 +51,6 @@
         smudge = "${pkgs.git-lfs}/bin/git-lfs smudge --skip -- %f";
         process = "${pkgs.git-lfs}/bin/git-lfs filter-process";
         required = true;
-      };
-
-      github = {
-        user = "treffynnon";
       };
     };
   };
