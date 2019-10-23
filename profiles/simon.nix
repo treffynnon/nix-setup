@@ -19,6 +19,7 @@ mkMerge [
         fira-code
         fira-code-symbols
         mplus-outline-fonts
+        iosevka-bin
         # nerdfonts
       ];
     };
