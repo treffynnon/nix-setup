@@ -6,7 +6,7 @@
     userName = "Simon Holywell";
     userEmail = "simon@holywell.com.au";
     signing = {
-      key = "FD510786178EE858";
+      key = "3346447094AB9095";
       signByDefault = true;
     };
 
