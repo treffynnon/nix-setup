@@ -24,7 +24,8 @@ spoon.WindowScreenLeftAndRight:bindHotkeys({
   screen_right= { hyper, "." },
 })
 
--- hs.hotkey.bind
--- if hs.window.focusedWindow() then
---   hs.window.frontmostWindow().toggleZoom()
+-- hs.hotkey.bind(hyper, "z", function()
+--   if hs.window.focusedWindow() then
+--     hs.window.frontmostWindow().toggleZoom()
+--   end
 -- end
