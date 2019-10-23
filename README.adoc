@@ -68,3 +68,5 @@ Before upgrading to Catalina:
 * move vscode out of nix control or at least put it's plugins somewhere else so the directory is writable
 * upgrade to catalina
 * fix httpie config problem where it tries to write to the file for some reason
+* add hammerspoon application information and possibly install (Could be an overlay perhaps https://gist.github.com/dustinlacewell-wk/913db996993fd3aa6a488fc42b94c65e)
+* https://github.com/jasonrudolph/keyboard#features
