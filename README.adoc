@@ -43,7 +43,7 @@ See https://discourse.nixos.org/t/using-nix-to-install-login-shell-on-non-nixos-
 Hammerspoon provides:
 
 * Window management via the keyboard
-* kbd:[Caps lock] as kbd:[Esc] when tapped and kbd:[Ctrl] when
+* kbd:[Caps lock] as kbd:[Esc] when tapped and kbd:[Ctrl] when held
 
 Run Hammerspoon (use Spotlight with kbd:[Command] + kbd:[Space]) and configure it to:
 
