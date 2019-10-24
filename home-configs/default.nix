@@ -1,5 +1,10 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
+let
+  inherit (lib) optionals;
+  inherit (builtins) currentSystem;
+  inherit (lib.systems.elaborate { system = currentSystem; }) isLinux isDarwin;
+in
 {
   nixpkgs = {
     config = {
@@ -33,5 +38,8 @@
     ./neovim.nix
     ./starship.nix
     ./vscode.nix
+  ]
+  ++ optionals isDarwin [
+    ./hammerspoon.nix
   ];
 }
