@@ -25,8 +25,8 @@ spoon.WindowScreenLeftAndRight:bindHotkeys({
 })
 
 -- https://www.hammerspoon.org/docs/hs.hotkey.html#bind
--- hs.hotkey.bind(hyper, "z", function()
---   if hs.window.focusedWindow() then
---     hs.window.frontmostWindow().toggleZoom()
---   end
--- end
+hs.hotkey.bind(hyper, "z", function()
+  if hs.window.focusedWindow() then
+    hs.window.frontmostWindow():toggleZoom()
+  end
+end)
