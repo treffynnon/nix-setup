@@ -1,6 +1,8 @@
-# nix-setup
+= nix-setup
+Simon Holywell <simon@holywell.com.au>
+:experimental:
 
-## Getting started
+== Getting started
 
 Clone this repo to `~/.nixpkgs` and run the setup script:
 
@@ -18,7 +20,7 @@ which will perform the following actions for you:
 1. moves default ZSH zprofile and zshrc to *.local (they still get loaded!)
 1. runs `darwin-rebuild switch` to install all the dependencies with nix
 
-### Setup bash completions
+=== Setup bash completions
 
 For bash completions to work properly the system must use the nix supplied version of bash as the MacOS version is ancient.
 
@@ -36,7 +38,7 @@ chsh -s /run/current-system/sw/bin/fish
 
 See https://discourse.nixos.org/t/using-nix-to-install-login-shell-on-non-nixos-platform/2807/3
 
-### Setting up hammerspoon
+=== Setting up hammerspoon
 
 Hammerspoon provides:
 
@@ -51,7 +53,7 @@ Run Hammerspoon (use Spotlight with kbd:[Command] + kbd:[Space]) and configure i
 
 The nix derivation that installs Hammerspoon it is in `./overlays/hammerspoon.nix` and the configuration is in `./home-configs/hammerspoon.nix` and `./home-configs/hammerspoon`.
 
-### Making changes
+== Making changes
 
 If you modify any of the configurations in the nix configuration then you need to rebuild the environment.
 
@@ -68,9 +70,9 @@ Create a `/etc/sudoers.d/nix-darwin` file with this content:
 <home-user> ALL=(ALL:ALL) NOPASSWD: /run/current-system/sw/bin/darwin-rebuild (where home-user is name of home directory)
 ----
 
-### Managing development environments
+== Managing development environments
 
-#### Direnv and Lorri
+=== Direnv and Lorri
 
 Install link:https://github.com/target/lorri[Lorri] (not currently a Nix package due to their rapid development cycles while in beta).
 
@@ -93,14 +95,14 @@ Start lorri with `lorri daemon` and leave it running in a shell.
 
 Now when you cd into the projects directory Lorri/direnv will install the dependencies and drop you into a Nix shell.
 
-## MacOS Catalina
+== MacOS Catalina
 
 Before upgrading to Catalina:
 
 * https://gist.github.com/chrisandreae/e61e06f08ec0a650a0b3b41788d41724
 * https://github.com/NixOS/nix/issues/2925
 
-## References:
+== References:
 
 * https://github.com/nmattia/homies/blob/master/git/default.nix
 * https://github.com/rummik/nixos-config/blob/master/config/nodejs.nix
@@ -118,7 +120,7 @@ Before upgrading to Catalina:
 * https://github.com/Jomik/dotfiles/tree/master/.config/nixpkgs
 * https://rycee.net/posts/2017-07-02-manage-your-home-with-nix.html
 
-## Todo
+== Todo
 
 * double check fzf configuration is OK now
 * review possibility of fasd
