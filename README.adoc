@@ -41,16 +41,15 @@ See https://discourse.nixos.org/t/using-nix-to-install-login-shell-on-non-nixos-
 Hammerspoon provides:
 
 * Window management via the keyboard
-* <kbd>Caps lock</kbd> as <kbd>Esc</kbd> when tapped and <kbd>Ctrl</kbd> when
+* kbd:[Caps lock] as kbd:[Esc] when tapped and kbd:[Ctrl] when
 
-Run Hammerspoon (use Spotlight with <kbd>Command</kbd> + <kbd>Space</kbd>) and configure it to:
+Run Hammerspoon (use Spotlight with kbd:[Command] + kbd:[Space]) and configure it to:
 
 * Run at login
 * Enable Accessibility
 * (optionally) untick "Show dock icon"
 
-The nix derivation that installs Hammerspoon it is in `./overlays/hammerspoon.nix` and the configuration is in `./home-configs/hamm
-` and `./home-configs/hammerspoon`.
+The nix derivation that installs Hammerspoon it is in `./overlays/hammerspoon.nix` and the configuration is in `./home-configs/hammerspoon.nix` and `./home-configs/hammerspoon`.
 
 ### Making changes
 
@@ -87,7 +86,7 @@ and a file for the nix-shell (`shell.nix`):
 
 [source,nix]
 ----
-include::./example-shell.nix[]
+include::example-shell.nix[]
 ----
 
 Start lorri with `lorri daemon` and leave it running in a shell.
