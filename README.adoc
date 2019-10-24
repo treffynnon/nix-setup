@@ -125,6 +125,5 @@ Before upgrading to Catalina:
 * double check fzf configuration is OK now
 * review possibility of fasd
 * move vscode out of nix control or at least put it's plugins somewhere else so the directory is writable
-* upgrade to catalina
 * fix httpie config problem where it tries to write to the file for some reason
 * https://github.com/jasonrudolph/keyboard#features

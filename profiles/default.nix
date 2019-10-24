@@ -80,7 +80,6 @@ mkMerge [
     };
 
     time.timeZone = "Australia/Brisbane";
-    home-manager.useUserPackages = true;
   }
 
   (optionalAttrs isLinux {
