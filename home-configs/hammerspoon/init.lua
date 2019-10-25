@@ -4,6 +4,7 @@ hs.window.animationDuration = 0.2
 -- Load some spoons from ~/.hammerspoon/Spoons
 hs.loadSpoon("MiroWindowsManager")
 hs.loadSpoon("WindowScreenLeftAndRight")
+hs.loadSpoon("OpenApplication")
 
 -- Tap control for `escape` and hold for `control`
 hs.loadSpoon('ControlEscape'):start()
@@ -23,6 +24,8 @@ spoon.WindowScreenLeftAndRight:bindHotkeys({
   screen_left = { hyper, "," },
   screen_right= { hyper, "." },
 })
+
+spoon.OpenApplication:bindHotkeys(spoon.OpenApplication.defaultHotkeys)
 
 -- https://www.hammerspoon.org/docs/hs.hotkey.html#bind
 hs.hotkey.bind(hyper, "z", function()
