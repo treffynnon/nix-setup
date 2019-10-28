@@ -16,5 +16,5 @@ jobs:
           # Only needed for private caches
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - name: Run nixpkgs-fmt check
-        run: nixpkgs-fmt --check **/*.nix
+        run: ./result/bin/nixpkgs-fmt --check **/*.nix
         shell: bash
