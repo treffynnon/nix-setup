@@ -31,5 +31,5 @@ jobs:
           # Only needed for private caches
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - name: Run nix-linter check
-        run: ./result/bin/nix-linter --verbose **/*.nix
+        run: ./result/bin/nix-linter **/*.nix
         shell: bash
