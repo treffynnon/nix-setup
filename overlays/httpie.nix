@@ -1,8 +1,9 @@
-self: super:
+_: super:
 
 rec {
   httpie = super.httpie.overrideAttrs (
-    oldAttrs: rec {
+    # oldAttrs: rec {
+    _: rec {
       src = builtins.fetchTarball {
         name = "httpie-master";
         url = https://github.com/jakubroztocil/httpie/archive/fc497daf7d9a7c9eec1896fad6037c6e861d38d5.tar.gz;

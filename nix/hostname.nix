@@ -1,11 +1,9 @@
 lib:
 
 let
-
   inherit (builtins) currentSystem;
   inherit (lib) maybeEnv fileContents;
   inherit (lib.systems.elaborate { system = currentSystem; }) isLinux isDarwin;
-
 in
 
 maybeEnv "HOST" (

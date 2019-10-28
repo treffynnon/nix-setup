@@ -1,4 +1,4 @@
-{ lib, pkgs, config, ... }:
+{ lib, pkgs, ... }:
 
 let
   inherit (lib) flatten optional optionalAttrs mkIf mkMerge;

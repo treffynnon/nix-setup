@@ -1,4 +1,4 @@
-{ cfg, lib, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   home.packages = (
