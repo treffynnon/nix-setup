@@ -45,7 +45,7 @@ function obj.open(name)
 end
 
 function obj:bindHotkeys(mapping)
-	for i,k in ipairs(mapping) do
+	for _,k in ipairs(mapping) do
 		hs.hotkey.bind(k[1], k[2], obj.open(k[3]))
   end
 	return self
