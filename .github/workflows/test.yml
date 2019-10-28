@@ -32,6 +32,6 @@ jobs:
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - name: Run nix-linter check
         env:
-          LC_ALL: C
+          LC_ALL: en_US.UTF-8
         run: ./result/bin/nix-linter **/*.nix
         shell: bash
