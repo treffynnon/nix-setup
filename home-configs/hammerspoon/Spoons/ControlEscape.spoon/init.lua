@@ -62,7 +62,7 @@ function obj:init()
   -- pressed and released in isolation. If `control` is pressed in combination
   -- with any other key, we don't want to send `escape`.
   self.keyDownEventTap = hs.eventtap.new({hs.eventtap.event.types.keyDown},
-    function(event)
+    function(_)
       self.sendEscape = false
       return false
     end

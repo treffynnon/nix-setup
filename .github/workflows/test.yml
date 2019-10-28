@@ -43,4 +43,4 @@ jobs:
         run: Invoke-WebRequest https://github.com/mpeterv/luacheck/releases/download/0.23.0/luacheck.exe -OutFile luacheck.exe
         shell: powershell
       - name: run luacheck
-        run: Invoke-Expression '.\luacheck.exe --globals hs --no-max-line-length home-configs\hammerspoon'
+        run: Invoke-Expression '.\luacheck.exe --globals hs spoon --no-max-line-length home-configs\hammerspoon'
