@@ -223,6 +223,7 @@ function obj:bindHotkeys(mapping)
 
 end
 
+--luacheck: no unused args
 function obj:init()
   print("Initializing Miro's Windows Manager")
   hs.grid.setGrid(obj.GRID.w .. 'x' .. obj.GRID.h)
