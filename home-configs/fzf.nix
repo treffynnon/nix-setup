@@ -1,4 +1,4 @@
-{ pkgs, ...}:
+{ pkgs, ... }:
 
 let
   # copied from https://github.com/nicodebo/base16-fzf/blob/6d40da6cc12265911c688b48d986dda0f9bded93/bash/base16-paraiso.config
@@ -20,24 +20,28 @@ let
     color0E = "#815ba4";
     color0F = "#e96ba8";
   };
-  theme = (builtins.concatStringsSep "," (with paraiso-base16-theme; [
-    # base line style
-    "fg:${color04}"
-    "bg:${color00}"
-    "hl:${color0D}"
+  theme = (
+    builtins.concatStringsSep "," (
+      with paraiso-base16-theme; [
+        # base line style
+        "fg:${color04}"
+        "bg:${color00}"
+        "hl:${color0D}"
 
-    # current line
-    "fg+:${color0B}"
-    "bg+:${color01}"
-    "hl+:${color0D}"
+        # current line
+        "fg+:${color0B}"
+        "bg+:${color01}"
+        "hl+:${color0D}"
 
-    "spinner:${color0C}" # streaming input indicator
-    "header:${color0D}"
-    "info:${color0A}"
-    "pointer:${color0C}" # pointer to the current line
-    "marker:${color0C}" # multi-select marker
-    "prompt:${color0A}"
-  ]));
+        "spinner:${color0C}" # streaming input indicator
+        "header:${color0D}"
+        "info:${color0A}"
+        "pointer:${color0C}" # pointer to the current line
+        "marker:${color0C}" # multi-select marker
+        "prompt:${color0A}"
+      ]
+    )
+  );
 in
 
 {

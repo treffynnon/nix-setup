@@ -25,11 +25,13 @@ rec {
       homepage = https://www.hammerspoon.org/;
       license = licenses.mit;
       platforms = platforms.darwin;
-      maintainers = [{
-        name = "Simon Holywell";
-        email = "simon@holywell.com.au";
-        github = "treffynnon";
-      }];
+      maintainers = [
+        {
+          name = "Simon Holywell";
+          email = "simon@holywell.com.au";
+          github = "treffynnon";
+        }
+      ];
       repositories.git = https://github.com/Hammerspoon/hammerspoon;
     };
   };

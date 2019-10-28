@@ -24,38 +24,43 @@ mkMerge [
       ];
     };
     environment.systemPackages =
-      (with pkgs; [
-        # any-nix-shell
-      ]);
+      (
+        with pkgs; [
+          # any-nix-shell
+        ]
+      );
   }
 
-  (optionalAttrs isLinux {
-    users.defaultUserShell = pkgs.fish;
+  (
+    optionalAttrs isLinux {
+      users.defaultUserShell = pkgs.fish;
 
-    home-manager.users.root = homeManager;
+      home-manager.users.root = homeManager;
 
-    users.users."${username}" = {
-      isNormalUser = true;
-      uid = 1000;
-      linger = true;
+      users.users."${username}" = {
+        isNormalUser = true;
+        uid = 1000;
+        linger = true;
 
-      home = "/home/${username}";
+        home = "/home/${username}";
 
-      # should really choose something hashed, but XKCD-936 amuses me
-      initialPassword = "correct horse battery staple";
+        # should really choose something hashed, but XKCD-936 amuses me
+        initialPassword = "correct horse battery staple";
 
-      extraGroups = [
-        "adbusers"
-        "audio"
-        "docker"
-        "networkmanager"
-        "render"
-        "scanner" "lp" # SANE
-        "vboxusers"
-        "video"
-        "wheel"
-        "wireshark"
-      ];
-    };
-  })
+        extraGroups = [
+          "adbusers"
+          "audio"
+          "docker"
+          "networkmanager"
+          "render"
+          "scanner"
+          "lp" # SANE
+          "vboxusers"
+          "video"
+          "wheel"
+          "wireshark"
+        ];
+      };
+    }
+  )
 ]

@@ -21,5 +21,5 @@ in
     HTTPIE_CONFIG_DIR = configDir;
   };
 
-  xdg.configFile."httpie/config.json".text = builtins.toJSON(configData);
+  xdg.configFile."httpie/config.json".text = builtins.toJSON (configData);
 }

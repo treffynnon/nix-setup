@@ -1,9 +1,11 @@
 { cfg, lib, pkgs, ... }:
 
 {
-  home.packages = (with pkgs; [
-    kitty
-  ]);
+  home.packages = (
+    with pkgs; [
+      kitty
+    ]
+  );
 
   programs.bash.initExtra = ''
     source <(${pkgs.kitty}/bin/kitty + complete setup bash)

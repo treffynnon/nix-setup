@@ -29,12 +29,12 @@
         pager = "${pkgs.git}/share/git/contrib/diff-highlight/diff-highlight | ${pkgs.less}/bin/less --tabs=2 -RFX";
       };
       color = {
-        status      = "auto";
-        diff        = "auto";
-        branch      = "auto";
+        status = "auto";
+        diff = "auto";
+        branch = "auto";
         interactive = "auto";
-        ui          = "auto";
-        sh          = "auto";
+        ui = "auto";
+        sh = "auto";
       };
       "color \"branch\"" = {
         local = "green";
@@ -49,11 +49,11 @@
         newHighlight = "green bold reverse";
       };
       "color \"sh\"" = {
-        branch      = "yellow reverse";
-        workdir     = "blue bold";
-        dirty       = "red";
+        branch = "yellow reverse";
+        workdir = "blue bold";
+        dirty = "red";
         dirty-stash = "red";
-        repo-state  = "red";
+        repo-state = "red";
       };
       "color \"status\"" = {
         untracked = "cyan";

@@ -10,9 +10,7 @@ in
   imports = flatten [
     ./simon.nix
   ];
-} //
-
-mkMerge [
+} // mkMerge [
   {
     nixpkgs = {
       config = {
@@ -22,11 +20,17 @@ mkMerge [
       };
 
       overlays =
-        let path = ../overlays; in with builtins;
-        map (n: import (path + ("/" + n)))
-            (filter (n: match ".*\\.nix" n != null ||
-                        pathExists (path + ("/" + n + "/default.nix")))
-                    (attrNames (readDir path)));
+        let
+          path = ../overlays;
+        in
+          with builtins;
+          map (n: import (path + ("/" + n)))
+            (
+              filter (
+                n: match ".*\\.nix" n != null || pathExists (path + ("/" + n + "/default.nix"))
+              )
+                (attrNames (readDir path))
+            );
     };
 
     # Auto upgrade nix package and the daemon service.
@@ -34,29 +38,50 @@ mkMerge [
     nix.package = pkgs.nix;
 
     environment.systemPackages =
-      (with pkgs; [
-        gnupg pass
+      (
+        with pkgs; [
+          gnupg
+          pass
 
-        curl wget dnsutils nmap telnet
+          curl
+          wget
+          dnsutils
+          nmap
+          telnet
 
-        less jq bat imagemagick
+          less
+          jq
+          bat
+          imagemagick
 
-        ripgrep ncdu
+          ripgrep
+          ncdu
 
-        unzip zip gzip
+          unzip
+          zip
+          gzip
 
-        fd file pv htop which exa
+          fd
+          file
+          pv
+          htop
+          which
+          exa
 
-        git-lfs git-crypt
+          git-lfs
+          git-crypt
 
-        zstd
+          zstd
 
-        nix-prefetch-scripts
-      ])
-      ++
-      (with pkgs.gitAndTools; [
-        gitFull git-fame
-      ]);
+          nix-prefetch-scripts
+        ]
+      )
+      ++ (
+        with pkgs.gitAndTools; [
+          gitFull
+          git-fame
+        ]
+      );
 
     environment.shellAliases = {
       ls = "exa";
@@ -82,52 +107,59 @@ mkMerge [
     time.timeZone = "Australia/Brisbane";
   }
 
-  (optionalAttrs isLinux {
-    environment.systemPackages = with pkgs; [
-      whois pciutils
-    ];
-    i18n = {
-      consoleFont = "Lat2-Terminus16";
-      defaultLocale = "en_AU.UTF-8";
-      consoleUseXkbConfig = true;
-    };
-    services.xserver = {
-      layout = "us";
-      xkbOptions = "caps:escape";
-    };
+  (
+    optionalAttrs isLinux {
+      environment.systemPackages = with pkgs; [
+        whois
+        pciutils
+      ];
+      i18n = {
+        consoleFont = "Lat2-Terminus16";
+        defaultLocale = "en_AU.UTF-8";
+        consoleUseXkbConfig = true;
+      };
+      services.xserver = {
+        layout = "us";
+        xkbOptions = "caps:escape";
+      };
 
-    system.stateVersion = "19.09";
-  })
+      system.stateVersion = "19.09";
+    }
+  )
 
-  (mkIf isDarwin {
-    environment.systemPackages = with pkgs; [
-      coreutils
-      gnutar
-      gawk gnused
-      findutils gnugrep
-      fontconfig
-    ];
+  (
+    mkIf isDarwin {
+      environment.systemPackages = with pkgs; [
+        coreutils
+        gnutar
+        gawk
+        gnused
+        findutils
+        gnugrep
+        fontconfig
+      ];
 
-    environment.shells = with pkgs; [ bashInteractive fish zsh ];
-    system.defaults.finder = {
-      AppleShowAllExtensions = true;
-      QuitMenuItem = true;
-      FXEnableExtensionChangeWarning = false;
-    };
-    system.defaults.dock = {
-      autohide = true;
-      showhidden = true;
-      mru-spaces = false;
-      static-only = true;
-    };
-    system.defaults.trackpad.Clicking = true;
-    system.keyboard = {
-      enableKeyMapping = true;
-      remapCapsLockToControl = true;
-    };
+      environment.shells = with pkgs; [ bashInteractive fish zsh ];
+      system.defaults.finder = {
+        AppleShowAllExtensions = true;
+        QuitMenuItem = true;
+        FXEnableExtensionChangeWarning = false;
+      };
+      system.defaults.dock = {
+        autohide = true;
+        showhidden = true;
+        mru-spaces = false;
+        static-only = true;
+      };
+      system.defaults.trackpad.Clicking = true;
+      system.keyboard = {
+        enableKeyMapping = true;
+        remapCapsLockToControl = true;
+      };
 
-    # Used for backwards compatibility, please read the changelog before changing.
-    # $ darwin-rebuild changelog
-    system.stateVersion = 4;
-  })
+      # Used for backwards compatibility, please read the changelog before changing.
+      # $ darwin-rebuild changelog
+      system.stateVersion = 4;
+    }
+  )
 ]

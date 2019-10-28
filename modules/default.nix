@@ -9,6 +9,6 @@ in
 {
   imports = flatten [
     ./home-manager.nix
-  #  (optional isLinux ./os-specific/linux)
+    #  (optional isLinux ./os-specific/linux)
   ];
 }

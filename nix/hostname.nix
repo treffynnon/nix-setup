@@ -8,14 +8,16 @@ let
 
 in
 
-maybeEnv "HOST" (fileContents (
-  if !isDarwin then
-    /etc/hostname
-  else
-    derivation {
-      name = "hostname";
-      system = currentSystem;
-      builder = "/bin/sh";
-      args = [ "-c" "/usr/sbin/scutil --get LocalHostName > $out" ];
-    }
-))
+maybeEnv "HOST" (
+  fileContents (
+    if !isDarwin then
+      /etc/hostname
+    else
+      derivation {
+        name = "hostname";
+        system = currentSystem;
+        builder = "/bin/sh";
+        args = [ "-c" "/usr/sbin/scutil --get LocalHostName > $out" ];
+      }
+  )
+)

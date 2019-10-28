@@ -1,5 +1,5 @@
 { pkgs, ... }:
-let 
+let
   inherit (pkgs.stdenv.hostPlatform) isDarwin;
 in
 {
