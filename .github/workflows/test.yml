@@ -35,3 +35,12 @@ jobs:
           LC_ALL: en_US.UTF-8
         run: ./result/bin/nix-linter **/*.nix
         shell: bash
+  lint-hammerspoon-lua:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: fetch luacheck
+        run: Invoke-WebRequest https://github.com/mpeterv/luacheck/releases/download/0.23.0/luacheck.exe -OutFile luacheck.exe
+        shell: powershell
+      - name: run luacheck
+        run: luacheck.exe home-configs\\hammerspoon
