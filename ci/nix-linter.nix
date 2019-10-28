@@ -1,22 +1,8 @@
-let
-  nixMaster = import (
+{ pkgs ? import (
     builtins.fetchTarball {
-      name = "nix-master-25fb1e59d6";
-      url = https://github.com/NixOS/nixpkgs/archive/25fb1e59d61b735f2e7c759c37feb449ce7eb8ae.tar.gz;
-    }
-  ) {};
-in
-
-  with import <nixpkgs> {
-
-
-
-
-
-  };
-  stdenv.mkDerivation {
-    name = "nix-setup-ci";
-    buildInputs = [
-      nixMaster.nixpkgs-fmt
-    ];
+    name = "nix-linter-master-f86bcb5a12";
+    url = https://github.com/Synthetica9/nix-linter/archive/f86bcb5a12fa0e99473c3f58d1b2ef70acb10bbb.tar.gz;
   }
+  ) {}
+}:
+pkgs.nix-linter

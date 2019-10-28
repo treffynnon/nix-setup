@@ -3,7 +3,7 @@ on:
   pull_request:
   push:
 jobs:
-  tests:
+  format-nix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -17,4 +17,19 @@ jobs:
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - name: Run nixpkgs-fmt check
         run: ./result/bin/nixpkgs-fmt --check **/*.nix
+        shell: bash
+  lint-nix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: cachix/install-nix-action@v3
+      - uses: cachix/cachix-action@v2
+        with:
+          file: ci/nix-linter.nix
+          name: treffynnon
+          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+          # Only needed for private caches
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+      - name: Run nix-linter check
+        run: ./result/bin/nix-linter --verbose **/*.nix
         shell: bash
