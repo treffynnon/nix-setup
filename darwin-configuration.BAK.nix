@@ -12,65 +12,83 @@ in
 
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
-  environment.systemPackages = (with pkgs; [
-    # utilities
-    ## shell/terminal
-    fish kitty any-nix-shell
+  environment.systemPackages = (
+    with pkgs; [
+      # utilities
+      ## shell/terminal
+      fish
+      kitty
+      any-nix-shell
 
-    ## editors and paging
-    bat vim jq imagemagick
-    (vscode-with-extensions.override {
-      vscodeExtensions = with vscode-extensions; [
-        bbenoist.Nix
-        alanz.vscode-hie-server
-        justusadam.language-haskell
-        vscodevim.vim
-        "skyapps.fish-vscode"
-      ];
-    })
+      ## editors and paging
+      bat
+      vim
+      jq
+      imagemagick
+      (
+        vscode-with-extensions.override {
+          vscodeExtensions = with vscode-extensions; [
+            bbenoist.Nix
+            alanz.vscode-hie-server
+            justusadam.language-haskell
+            vscodevim.vim
+            "skyapps.fish-vscode"
+          ];
+        }
+      )
 
-    ## Network
-    wget curl
+      ## Network
+      wget
+      curl
 
-    ## System
-    coreutils which htop fzf
+      ## System
+      coreutils
+      which
+      htop
+      fzf
 
-    ## compression
-    unzip gzip
+      ## compression
+      unzip
+      gzip
 
-    # fonts
-    nerdfonts
+      # fonts
+      nerdfonts
 
-    # programming
+      # programming
 
-    ## aws
-    awscli
+      ## aws
+      awscli
 
-    ## postgresql
-    pgcli
+      ## postgresql
+      pgcli
 
-    ## vcs
-    git
+      ## vcs
+      git
 
-    ## haskell
-    ghc cabal2nix cabal-install
+      ## haskell
+      ghc
+      cabal2nix
+      cabal-install
 
-    ## node
-    nodejs
-  ]) ++
-  (with pkgs.vimPlugins; [
-    base16-vim
-    haskell-vim
-    typescript-vim
-    vim-fish
-    vim-json
-    vim-nix
-  ]) ++
-  (with pkgs.haskellPackages; [
-    hlint
-    hasktags
-    hoogle
-  ]);
+      ## node
+      nodejs
+    ]
+  ) ++ (
+    with pkgs.vimPlugins; [
+      base16-vim
+      haskell-vim
+      typescript-vim
+      vim-fish
+      vim-json
+      vim-nix
+    ]
+  ) ++ (
+    with pkgs.haskellPackages; [
+      hlint
+      hasktags
+      hoogle
+    ]
+  );
 
   home-manager.users.simon = { pkgs, ... }: {
     home.packages = [ pkgs.haskellPackages.hoogle ];
@@ -103,48 +121,64 @@ in
   nix.buildCores = 4;
 }
 
-mkMerge [
+  mkMerge [
   {
     environment.systemPackages =
-      (with pkgs; [
-        curl wget dnutils nmap telnet
+      (
+        with pkgs; [
+          curl
+          wget
+          dnutils
+          nmap
+          telnet
 
-        unzip zip
+          unzip
+          zip
 
-        file gnupg pciutils pv
+          file
+          gnupg
+          pciutils
+          pv
 
-        nix-prefetch-scripts
-      ])
-      ++
-      (with pkgs.gitAndTools; [
-        git git-fame
-      ]);
+          nix-prefetch-scripts
+        ]
+      )
+      ++ (
+        with pkgs.gitAndTools; [
+          git
+          git-fame
+        ]
+      );
   }
 
-  (optionalAttrs isLinux {
-    environment.systemPackages = with pkgs; [
-      whois
-    ];
+  (
+    optionalAttrs isLinux {
+      environment.systemPackages = with pkgs; [
+        whois
+      ];
 
-    time.timeZone = "Australia/Brisbane";
-    i18n = {
-      consoleFont = "Lat2-Terminus16";
-      defaultLocale = "en_AU.UTF-8";
-      consoleUseXkbConfig = true;
-    };
-    services.xserver = {
-      layout = "us";
-      xkbOptions = "caps:escape";
-    };
+      time.timeZone = "Australia/Brisbane";
+      i18n = {
+        consoleFont = "Lat2-Terminus16";
+        defaultLocale = "en_AU.UTF-8";
+        consoleUseXkbConfig = true;
+      };
+      services.xserver = {
+        layout = "us";
+        xkbOptions = "caps:escape";
+      };
 
-    system.stateVersion = "19.09";
-  })
+      system.stateVersion = "19.09";
+    }
+  )
 
-  (mkIf isDarwin {
-    environment.systemPackages = with pkgs; [
-      coreutils
-    ];
+  (
+    mkIf isDarwin {
+      environment.systemPackages = with pkgs; [
+        coreutils
+      ];
 
-    system.stateVersion = 4;
-  })
+      system.stateVersion = 4;
+    }
+  )
 ]
