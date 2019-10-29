@@ -20,6 +20,13 @@ which will perform the following actions for you:
 1. moves default ZSH zprofile and zshrc to *.local (they still get loaded!)
 1. runs `darwin-rebuild switch` to install all the dependencies with nix
 
+=== Setup cachix
+
+[source, bash]
+----
+nix-env -iA cachix -f https://cachix.org/api/v1/install
+----
+
 === Setup bash completions
 
 For bash completions to work properly the system must use the nix supplied version of bash as the MacOS version is ancient.
