@@ -1,9 +1,9 @@
-{ lib, config, pkgs, ... }:
+{ lib, pkgs, ... }:
 
 let
   inherit (lib) optional mkIf mkMerge;
   inherit (builtins) currentSystem;
-  inherit (lib.systems.elaborate { system = currentSystem; }) isLinux isDarwin
+  inherit (lib.systems.elaborate { system = currentSystem; }) isLinux isDarwin;
 in
 
 {
