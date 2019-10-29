@@ -12,24 +12,21 @@ hs.loadSpoon('ControlEscape'):start()
 -- A little window manager for pushing around windows with
 -- the keyboard
 spoon.MiroWindowsManager:bindHotkeys({
-  up = {hyper, "up"},
-  right = {hyper, "right"},
-  down = {hyper, "down"},
-  left = {hyper, "left"},
-  fullscreen = {hyper, "space"}
+	up = {hyper, "up"},
+	right = {hyper, "right"},
+	down = {hyper, "down"},
+	left = {hyper, "left"},
+	fullscreen = {hyper, "space"},
 })
 
 -- Move windows from screen to screen
-spoon.WindowScreenLeftAndRight:bindHotkeys({
-  screen_left = { hyper, "," },
-  screen_right= { hyper, "." },
-})
+spoon.WindowScreenLeftAndRight:bindHotkeys({screen_left = {hyper, ","}, screen_right = {hyper, "."}})
 
 spoon.OpenApplication:bindHotkeys(spoon.OpenApplication.defaultHotkeys)
 
 -- https://www.hammerspoon.org/docs/hs.hotkey.html#bind
 hs.hotkey.bind(hyper, "z", function()
-  if hs.window.focusedWindow() then
-    hs.window.frontmostWindow():toggleZoom()
-  end
+	if hs.window.focusedWindow() then
+		hs.window.frontmostWindow():toggleZoom()
+	end
 end)

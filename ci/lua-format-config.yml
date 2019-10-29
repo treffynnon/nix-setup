@@ -1,0 +1,33 @@
+# Treffynnon's lua format config
+
+## General file settings
+column_limit: 100
+
+## Operators/blocks
+keep_simple_block_one_line: false
+break_after_operator: false
+
+## Indentation
+use_tab: true
+indent_width: 1
+continuation_indent_width: 1
+
+## Functions
+### Calling
+break_after_functioncall_lp: false
+break_before_functioncall_rp: false
+align_args: true
+
+### Definitions
+break_after_functiondef_lp: false
+break_before_functiondef_rp: false
+align_parameter: true
+chop_down_parameter: true
+
+## Tables
+align_table_field: true
+break_after_table_lb: true
+break_before_table_rb: true
+chop_down_kv_table: true
+table_sep: ","
+extra_sep_at_table_end: true
