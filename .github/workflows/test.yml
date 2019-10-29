@@ -35,7 +35,7 @@ jobs:
           LC_ALL: en_US.UTF-8
         run: ./result/bin/nix-linter ./**/*.nix
         shell: bash
-  format-lua:
+  format-hammerspoon-lua:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
