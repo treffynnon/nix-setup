@@ -1,6 +1,7 @@
 = nix-setup
 Simon Holywell <simon@holywell.com.au>
 :experimental:
+:toc:
 
 == Getting started
 
@@ -62,6 +63,8 @@ The nix derivation that installs Hammerspoon it is in `./overlays/hammerspoon.ni
 
 == Making changes
 
+=== Building the code
+
 If you modify any of the configurations in the nix configuration then you need to rebuild the environment.
 
 [source,bash]
@@ -76,6 +79,27 @@ Create a `/etc/sudoers.d/nix-darwin` file with this content:
 ----
 <home-user> ALL=(ALL:ALL) NOPASSWD: /run/current-system/sw/bin/darwin-rebuild (where home-user is name of home directory)
 ----
+
+=== Formatting code
+
+This project uses:
+
+* link:https://github.com/nix-community/nixpkgs-fmt[nixpkgs-fmt]
+* link:https://github.com/Synthetica9/nix-linter[nix-linter]
+* link:https://github.com/Koihik/LuaFormatter[lua-format]
+* link:https://github.com/mpeterv/luacheck[lua-check]
+
+to keep the code and configurations in a consistent state.
+They are also applied as a github action to test the setup in CI too.
+
+To easily run the formatters locally you can use the supplied `nix-shell`:
+
+[source,bash]
+----
+nix-shell
+./format.sh
+----
+
 
 == Managing development environments
 
@@ -101,26 +125,6 @@ include::example-shell.nix[]
 Start lorri with `lorri daemon` and leave it running in a shell.
 
 Now when you cd into the projects directory Lorri/direnv will install the dependencies and drop you into a Nix shell.
-
-== Formatting code
-
-This project uses:
-
-* link:https://github.com/nix-community/nixpkgs-fmt[nixpkgs-fmt]
-* link:https://github.com/Synthetica9/nix-linter[nix-linter]
-* link:https://github.com/Koihik/LuaFormatter[lua-format]
-* link:https://github.com/mpeterv/luacheck[lua-check]
-
-to keep the code and configurations in a consistent state.
-They are also applied as a github action to test the setup in CI too.
-
-To easily run the formatters locally you can use the supplied `nix-shell`:
-
-[source,bash]
-----
-nix-shell
-./format.sh
-----
 
 == MacOS Catalina
 
