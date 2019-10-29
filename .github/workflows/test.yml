@@ -48,7 +48,7 @@ jobs:
           # Only needed for private caches
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - name: Run lua-format
-        run: find home-configs/hammerspoon -type f -name "*.lua" -exec ./result/bin/lua-format {} +
+        run: find home-configs/hammerspoon -type f -name "*.lua" -exec ./result/bin/lua-format -c ./ci/lua-format-config.yml {} +
         shell: bash
       - name: Check for changed files - fails if there is a git diff
         run: git diff --quiet
