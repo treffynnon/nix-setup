@@ -139,22 +139,91 @@ in
         fontconfig
       ];
 
+      # https://github.com/LnL7/nix-darwin/blob/master/modules/system/shells.nix
+      # A list of permissible login shells for user accounts.
+      # No need to mention <literal>/bin/sh</literal>
+      # and other shells that are available by default on
+      # macOS.
       environment.shells = with pkgs; [ bashInteractive fish zsh ];
-      system.defaults.finder = {
-        AppleShowAllExtensions = true;
-        QuitMenuItem = true;
-        FXEnableExtensionChangeWarning = false;
-      };
-      system.defaults.dock = {
-        autohide = true;
-        showhidden = true;
-        mru-spaces = false;
-        static-only = true;
-      };
-      system.defaults.trackpad.Clicking = true;
+
+      # https://github.com/LnL7/nix-darwin/blob/master/modules/system/keyboard.nix
       system.keyboard = {
+        # Whether to enable keyboard mappings.
         enableKeyMapping = true;
+        # Whether to remap the Caps Lock key to Control.
         remapCapsLockToControl = true;
+      };
+
+      # https://github.com/LnL7/nix-darwin/tree/master/modules/system/defaults
+      system.defaults = {
+        # https://github.com/LnL7/nix-darwin/blob/master/modules/system/defaults/GlobalPreferences.nix
+        ".GlobalPreferences"."com.apple.sound.beep.sound" = null;
+
+        # https://github.com/LnL7/nix-darwin/blob/master/modules/system/defaults/finder.nix
+        finder = {
+          # Whether to always show file extensions.  The default is false.
+          AppleShowAllExtensions = true;
+          # Whether to allow quitting of the Finder.  The default is false.
+          QuitMenuItem = true;
+          # Whether to show warnings when change the file extension of files.  The default is true.
+          FXEnableExtensionChangeWarning = false;
+          # Whether to show the full POSIX filepath in the window title.  The default is false.
+          _FXShowPosixPathInTitle = true;
+        };
+
+        # https://github.com/LnL7/nix-darwin/blob/master/modules/system/defaults/dock.nix
+        dock = {
+          # Whether to automatically hide and show the dock.  The default is false.
+          autohide = true;
+          # Whether to make icons of hidden applications tranclucent.  The default is false.
+          showhidden = true;
+          # Whether to automatically rearrange spaces based on most recent use.  The default is true.
+          mru-spaces = false;
+          # Show only open applications in the Dock. The default is false.
+          static-only = true;
+          # Size of the icons in the dock.  The default is 64.
+          tilesize = 32;
+        };
+
+        # https://github.com/LnL7/nix-darwin/blob/master/modules/system/defaults/trackpad.nix
+        # Whether to enable trackpad tap to click.  The default is false.
+        trackpad.Clicking = true;
+
+        # https://github.com/LnL7/nix-darwin/blob/master/modules/system/defaults/LaunchServices.nix
+        # Whether to enable quarantine for downloaded applications.  The default is true.
+        LaunchServices.LSQuarantine = false;
+
+        # https://github.com/LnL7/nix-darwin/blob/master/modules/system/defaults/NSGlobalDomain.nix
+        NSGlobalDomain = {
+          # Sets the level of font smoothing (sub-pixel font rendering).
+          AppleFontSmoothing = 1;
+          # Configures the keyboard control behavior.  Mode 3 enables full keyboard control.
+          AppleKeyboardUIMode = 3;
+          # When to show the scrollbars. Options are 'WhenScrolling', 'Automatic' and 'Always'.
+          AppleShowScrollBars = "Automatic";
+          # Whether to enable automatic capitalization.  The default is true.
+          NSAutomaticCapitalizationEnabled = false;
+          # Whether to enable smart dash substitution.  The default is true.
+          NSAutomaticDashSubstitutionEnabled = false;
+          # Whether to save new documents to iCloud by default.  The default is true.
+          NSDocumentSaveNewDocumentsToCloud = false;
+          # Whether to use expanded save panel by default.  The default is false.
+          NSNavPanelExpandedStateForSaveMode = true;
+          # Whether to use expanded save panel by default.  The default is false.
+          NSNavPanelExpandedStateForSaveMode2 = true;
+          # Sets the size of the finder sidebar icons: 1 (small), 2 (medium) or 3 (large). The default is 3.
+          NSTableViewDefaultSizeMode = 1;
+          # Configures the trackpad tracking speed (0 to 3).  The default is "1".
+          "com.apple.trackpad.scaling" = "2.9999999";
+
+          AppleMeasurementUnits = "Centimeters";
+          AppleMetricUnits = 1;
+          AppleTemperatureUnit = "Celsius";
+        };
+
+        # https://github.com/LnL7/nix-darwin/blob/master/modules/system/defaults/screencapture.nix
+        # The filesystem path to which screencaptures should be written.
+        screencapture.location = "~/Screenshots";
       };
 
       # Used for backwards compatibility, please read the changelog before changing.
