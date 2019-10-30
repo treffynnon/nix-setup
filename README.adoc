@@ -46,6 +46,18 @@ chsh -s /run/current-system/sw/bin/fish
 
 See https://discourse.nixos.org/t/using-nix-to-install-login-shell-on-non-nixos-platform/2807/3
 
+=== GPG setup
+
+For the SSH agent and git commits to work the GPG signing key must be present.
+If you have already got one then import it:
+
+[source,bash]
+----
+gpg --import /path/to/your.key
+----
+
+Otherwise you can create one using this comprehensive guide - https://blog.tinned-software.net/create-gnupg-key-with-sub-keys-to-sign-encrypt-authenticate/
+
 === Setting up hammerspoon
 
 Hammerspoon provides:

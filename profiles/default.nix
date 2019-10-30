@@ -197,14 +197,18 @@ in
         NSGlobalDomain = {
           # Sets the level of font smoothing (sub-pixel font rendering).
           AppleFontSmoothing = 1;
-          # Configures the keyboard control behavior.  Mode 3 enables full keyboard control.
-          AppleKeyboardUIMode = 3;
           # When to show the scrollbars. Options are 'WhenScrolling', 'Automatic' and 'Always'.
           AppleShowScrollBars = "Automatic";
           # Whether to enable automatic capitalization.  The default is true.
           NSAutomaticCapitalizationEnabled = false;
           # Whether to enable smart dash substitution.  The default is true.
           NSAutomaticDashSubstitutionEnabled = false;
+          # Whether to enable smart period substitution.  The default is true.
+          NSAutomaticPeriodSubstitutionEnabled = false;
+          # Whether to enable smart quote substitution.  The default is true.
+          NSAutomaticQuoteSubstitutionEnabled = false;
+          # Whether to enable automatic spelling correction.  The default is true.
+          NSAutomaticSpellingCorrectionEnabled = false;
           # Whether to save new documents to iCloud by default.  The default is true.
           NSDocumentSaveNewDocumentsToCloud = false;
           # Whether to use expanded save panel by default.  The default is false.
@@ -213,8 +217,15 @@ in
           NSNavPanelExpandedStateForSaveMode2 = true;
           # Sets the size of the finder sidebar icons: 1 (small), 2 (medium) or 3 (large). The default is 3.
           NSTableViewDefaultSizeMode = 1;
+
           # Configures the trackpad tracking speed (0 to 3).  The default is "1".
           "com.apple.trackpad.scaling" = "2.9999999";
+
+          # Configures the keyboard control behavior.  Mode 3 enables full keyboard control.
+          AppleKeyboardUIMode = 3;
+          ApplePressAndHoldEnabled = false;
+          InitialKeyRepeat = 10;
+          KeyRepeat = 1;
 
           AppleMeasurementUnits = "Centimeters";
           AppleMetricUnits = 1;
