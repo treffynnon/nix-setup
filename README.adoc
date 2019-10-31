@@ -65,7 +65,7 @@ Hammerspoon provides:
 * Window management via the keyboard
 * kbd:[Caps lock] as kbd:[Esc] when tapped and kbd:[Ctrl] when held
 
-Run Hammerspoon (use Spotlight with kbd:[Command] + kbd:[Space]) and configure it to:
+Run Hammerspoon (use Spotlight with kbd:[Command] + kbd:[Space]) - note that it can take sometime to start initially - be patient - and configure it to:
 
 * Run at login
 * Enable Accessibility
