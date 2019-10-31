@@ -1,5 +1,11 @@
 #! /usr/bin/env bash
 
+# kitty uses something like xterm-kitty, which nix does not recognise so this will allow
+# kitty masquerade as xterm-256color for the purposes of this setup script
+if [[ "$TERM" = *"kitty"* ]]; then
+  TERM=xterm-256color
+fi
+
 # ANSI properties/colours
 ESC='\033[0m'
 BLUE='\033[38;34m'
@@ -10,6 +16,9 @@ RED='\033[38;31m'
 RED_UL='\033[38;4;31m'
 YELLOW='\033[38;33m'
 YELLOW_UL='\033[38;4;33m'
+
+NIX_EXISTS=$(type nix-env 2>/dev/null) 
+NIX_DARWIN_EXISTS=$(type darwin-rebuild 2>/dev/null) 
 
 # Ensure script is not being run with root privileges
 if [ $EUID -eq 0 ]; then
@@ -59,7 +68,7 @@ dscacheutil -flushcache
 sudo nvram SystemAudioVolume=" "
 
 # Nix
-if [[ ! $(type nix-env 2>/dev/null) ]]; then
+if [[ ! $NIX_EXISTS ]]; then
   curl https://nixos.org/nix/install | sh
 
   if [ ! -e private/var/run ]; then
@@ -78,8 +87,10 @@ if [[ ! $(type nix-env 2>/dev/null) ]]; then
     exit 1
   fi
 
+  NIX_EXISTS=$(type nix-env 2>/dev/null)
+
   # Ensure Nix has already been installed
-  if [[ ! $(type nix-env 2>/dev/null) ]]; then
+  if [[ ! $NIX_EXISTS ]]; then
     echo -e "Cannot find "$YELLOW"nix-env"$ESC" in the PATH"
     echo "This means that the nix init script has not been sourced properly"
     exit 1
@@ -106,12 +117,14 @@ nix-channel --add https://github.com/rycee/home-manager/archive/release-19.09.ta
 nix-channel --update
 
 # nix darwin
-if [[ ! $(type darwin-rebuild 2>/dev/null) ]]; then
+if [[ ! $NIX_DARWIN_EXISTS ]]; then
   nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
-  TERM=xterm ./result/bin/darwin-installer
+  ./result/bin/darwin-installer
+
+  NIX_DARWIN_EXISTS=$(type darwin-rebuild 2>/dev/null)
 
   # Ensure nix-darwin has already been installed
-  if [[ ! $(type darwin-rebuild 2>/dev/null) ]]; then
+  if [[ ! $NIX_DARWIN_EXISTS ]]; then
     echo -e "Cannot find "$YELLOW"darwin-rebuild"$ESC" in the PATH"
     echo "This means that the nix-darwin init script has not been sourced properly"
     exit 1
