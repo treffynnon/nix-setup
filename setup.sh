@@ -119,7 +119,7 @@ if [[ ! $(type darwin-rebuild 2>/dev/null) ]]; then
 fi
 
 NIX_SUPPLIED_BASH="/run/current-system/sw/bin/bash"
-if [[ "$SHELL" != "/run"* && -L "$NIX_SUPPLIED_BASH" ]]; then
+if [[ "$SHELL" != "/run"* && "$SHELL" != "/nix"* && -L "$NIX_SUPPLIED_BASH" ]]; then
   echo "Switching default shell to newer nix supplied bash"
   chsh -s "$NIX_SUPPLIED_BASH"
   export SHELL="$NIX_SUPPLIED_BASH"
