@@ -108,8 +108,10 @@ echo "Resetting /etc/shells after store deletion"
 fix_dirty_etc_shells
 
 # delete any left over config and cache links links
-# find -L ~/.config -type l -ipath "*nix*" -exec unlink {} ;
-# find -L ~/.cache -type l -ipath "*nix*" -exec unlink {} ;
+echo "Removing any left-over (broken) symlinks"
+./broken_symlinks echo ~/.config '^\/(nix|run\/current-system)'
+./broken_symlinks echo ~/.cache '^\/(nix|run\/current-system)'
+./broken_symlinks echo /etc '^\/(nix|run\/current-system)'
 
 echo " "
 echo "Finished!"
