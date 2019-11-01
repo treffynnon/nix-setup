@@ -105,16 +105,24 @@ echo " "
 
 NIX_BUILD_USERS=$(dscl . list /Users | grep -E '^nixbld[0-9]+$')
 if [ -n "$NIX_BUILD_USERS" ]; then
+  echo "Removing nix daemon build users"
   for __user in $NIX_BUILD_USERS; do
+    echo "  * $__user"
     sudo dscl . delete "/users/$__user"
   done
+  echo "Finished removing nix daemon build users"
+  echo " "
 fi
 
 NIX_BUILD_GROUPS=$(dscl . -list /groups | grep -E '^nixbld[0-9]*')
 if [ -n "$NIX_BUILD_GROUPS" ]; then
+  echo "Removing nix daemon build groups"
   for __group in $NIX_BUILD_GROUPS; do
+    echo "  * $__group"
     sudo dscl . delete "/groups/$__group"
   done
+  echo "Finished removing nix daemon build groups"
+  echo " "
 fi
 
 # ensure /etc/shells is still OK
