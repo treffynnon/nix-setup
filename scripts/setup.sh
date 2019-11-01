@@ -66,6 +66,10 @@ dscacheutil -flushcache
 
 # Disable the sound effects on boot
 sudo nvram SystemAudioVolume=" "
+# Enable the Apple firewall
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+# Set Apple spaces to span multiple displays
+defaults write com.apple.spaces spans-displays -bool true
 
 # Nix
 if [[ ! $NIX_EXISTS ]]; then

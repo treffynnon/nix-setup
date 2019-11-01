@@ -172,6 +172,8 @@ in
         dock = {
           # Whether to automatically hide and show the dock.  The default is false.
           autohide = true;
+          # Whether to hide Dashboard as a Space. The default is false;
+          dashboard-in-overlay = true;
           # Whether to make icons of hidden applications tranclucent.  The default is false.
           showhidden = true;
           # Whether to automatically rearrange spaces based on most recent use.  The default is true.

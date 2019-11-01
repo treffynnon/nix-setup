@@ -103,6 +103,20 @@ fi
 echo "  * Finished removing nix files"
 echo " "
 
+NIX_BUILD_USERS=$(dscl . list /Users | grep -E '^nixbld[0-9]+$')
+if [ -n "$NIX_BUILD_USERS" ]; then
+  for __user in $NIX_BUILD_USERS; do
+    sudo dscl . delete "/users/$__user"
+  done
+fi
+
+NIX_BUILD_GROUPS=$(dscl . -list /groups | grep -E '^nixbld[0-9]*')
+if [ -n "$NIX_BUILD_GROUPS" ]; then
+  for __group in $NIX_BUILD_GROUPS; do
+    sudo dscl . delete "/groups/$__group"
+  done
+fi
+
 # ensure /etc/shells is still OK
 echo "Resetting /etc/shells after store deletion"
 fix_dirty_etc_shells
