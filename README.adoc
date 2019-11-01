@@ -9,7 +9,7 @@ Clone this repo to `~/.nixpkgs` and run the setup script:
 
 [source,bash]
 ----
-git clone git@github.com:treffynnon/nix-setup.git ~/.nixpkgs && ~/.nixpkgs/setup.sh
+git clone git@github.com:treffynnon/nix-setup.git ~/.nixpkgs && ~/.nixpkgs/scripts/setup.sh
 ----
 
 which will perform the following actions for you:
@@ -46,6 +46,18 @@ chsh -s /run/current-system/sw/bin/fish
 
 See https://discourse.nixos.org/t/using-nix-to-install-login-shell-on-non-nixos-platform/2807/3
 
+=== GPG setup
+
+For the SSH agent and git commits to work the GPG signing key must be present.
+If you have already got one then import it:
+
+[source,bash]
+----
+gpg --import /path/to/your.key
+----
+
+Otherwise you can create one using this comprehensive guide - https://blog.tinned-software.net/create-gnupg-key-with-sub-keys-to-sign-encrypt-authenticate/
+
 === Setting up hammerspoon
 
 Hammerspoon provides:
@@ -53,13 +65,22 @@ Hammerspoon provides:
 * Window management via the keyboard
 * kbd:[Caps lock] as kbd:[Esc] when tapped and kbd:[Ctrl] when held
 
-Run Hammerspoon (use Spotlight with kbd:[Command] + kbd:[Space]) and configure it to:
+Run Hammerspoon (use Spotlight with kbd:[Command] + kbd:[Space]) - note that it can take sometime to start initially - be patient - and configure it to:
 
 * Run at login
 * Enable Accessibility
 * (optionally) untick "Show dock icon"
 
 The nix derivation that installs Hammerspoon it is in `./overlays/hammerspoon.nix` and the configuration is in `./home-configs/hammerspoon.nix` and `./home-configs/hammerspoon`.
+
+== Uninstalling
+
+You can reverse the setup process by running the remove script:
+
+[source,bash]
+----
+./scripts/remove.sh
+----
 
 == Making changes
 
@@ -97,7 +118,7 @@ To easily run the formatters locally you can use the supplied `nix-shell`:
 [source,bash]
 ----
 nix-shell
-./format.sh
+./codestyle/format.sh
 ----
 
 
