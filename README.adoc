@@ -109,7 +109,7 @@ To easily run the formatters locally you can use the supplied `nix-shell`:
 [source,bash]
 ----
 nix-shell
-./format.sh
+./codestyle/format.sh
 ----
 
 
