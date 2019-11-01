@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+NIXPKGS_BASEPATH=$(realpath `dirname "$0"`)
+
 # kitty uses something like xterm-kitty, which nix does not recognise so this will allow
 # kitty masquerade as xterm-256color for the purposes of this setup script
 if [[ "$TERM" = *"kitty"* ]]; then
@@ -17,8 +19,8 @@ RED_UL='\033[38;4;31m'
 YELLOW='\033[38;33m'
 YELLOW_UL='\033[38;4;33m'
 
-NIX_EXISTS=$(type nix-env 2>/dev/null) 
-NIX_DARWIN_EXISTS=$(type darwin-rebuild 2>/dev/null) 
+NIX_EXISTS=$(type nix-env 2>/dev/null)
+NIX_DARWIN_EXISTS=$(type darwin-rebuild 2>/dev/null)
 
 # Ensure script is not being run with root privileges
 if [ $EUID -eq 0 ]; then
@@ -46,8 +48,8 @@ if [ -z "$COMPUTER_NAME" ]; then
 fi
 echo -e "Using "$GREEN"$COMPUTER_NAME"$ESC" for this machine"
 
-nixConfig="./hosts/$COMPUTER_NAME/configuration.nix"
-if [ ! -f "./hosts/$COMPUTER_NAME/configuration.nix" ]; then
+nixConfig="$NIXPKGS_BASEPATH/hosts/$COMPUTER_NAME/configuration.nix"
+if [ ! -f "$nixConfig" ]; then
   mkdir -p $(dirname "$nixConfig")
   echo "{}" > "$nixConfig"
 fi
@@ -66,8 +68,20 @@ dscacheutil -flushcache
 
 # Disable the sound effects on boot
 sudo nvram SystemAudioVolume=" "
+# Play user interface sound effects
+defaults write com.apple.systemsound com.apple.sound.uiaudio.enabled -bool false
+# Alert volume
+# Slider level:
+#  "75%": 0.7788008
+#  "50%": 0.6065307
+#  "25%": 0.4723665
+defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.000
+
 # Enable the Apple firewall
 sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -bool true
+sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -bool true
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true
 # Set Apple spaces to span multiple displays
 defaults write com.apple.spaces spans-displays -bool true
 
