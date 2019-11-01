@@ -9,7 +9,7 @@ Clone this repo to `~/.nixpkgs` and run the setup script:
 
 [source,bash]
 ----
-git clone git@github.com:treffynnon/nix-setup.git ~/.nixpkgs && ~/.nixpkgs/setup.sh
+git clone git@github.com:treffynnon/nix-setup.git ~/.nixpkgs && ~/.nixpkgs/scripts/setup.sh
 ----
 
 which will perform the following actions for you:
@@ -72,6 +72,15 @@ Run Hammerspoon (use Spotlight with kbd:[Command] + kbd:[Space]) - note that it 
 * (optionally) untick "Show dock icon"
 
 The nix derivation that installs Hammerspoon it is in `./overlays/hammerspoon.nix` and the configuration is in `./home-configs/hammerspoon.nix` and `./home-configs/hammerspoon`.
+
+== Uninstalling
+
+You can reverse the setup process by running the remove script:
+
+[source,bash]
+----
+./scripts/remove.sh
+----
 
 == Making changes
 
