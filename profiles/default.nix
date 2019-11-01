@@ -156,9 +156,6 @@ in
 
       # https://github.com/LnL7/nix-darwin/tree/master/modules/system/defaults
       system.defaults = {
-        # https://github.com/LnL7/nix-darwin/blob/master/modules/system/defaults/GlobalPreferences.nix
-        ".GlobalPreferences"."com.apple.sound.beep.sound" = null;
-
         # https://github.com/LnL7/nix-darwin/blob/master/modules/system/defaults/finder.nix
         finder = {
           # Whether to always show file extensions.  The default is false.
