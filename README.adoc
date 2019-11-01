@@ -154,7 +154,9 @@ Before upgrading to Catalina:
 * https://gist.github.com/chrisandreae/e61e06f08ec0a650a0b3b41788d41724
 * https://github.com/NixOS/nix/issues/2925
 
-== References:
+== References
+
+=== Nix
 
 * https://github.com/nmattia/homies/blob/master/git/default.nix
 * https://github.com/rummik/nixos-config/blob/master/config/nodejs.nix
@@ -167,15 +169,34 @@ Before upgrading to Catalina:
 * https://www.softinio.com/post/moving-from-homebrew-to-nix-package-manager/
 * http://chriswarbo.net/git/nix-helpers/git/branches/master/index.html
 * http://chriswarbo.net/projects/nixos/useful_hacks.html
+
+==== Dot files managed by nix
+
 * https://github.com/danieldk/nix-home/tree/master/cfg
 * https://github.com/jwiegley/nix-config/blob/master/overlays/30-apps.nix
 * https://github.com/Jomik/dotfiles/tree/master/.config/nixpkgs
 * https://rycee.net/posts/2017-07-02-manage-your-home-with-nix.html
+
+==== Building C/C++ projects with nix
+
 * https://gist.github.com/CMCDragonkai/41593d6d20a5f7c01b2e67a221aa0330
+
+=== OSX settings
+
 * https://gist.github.com/smgt/3227665 - list of OSX settings
+* https://github.com/joeyhoer/starter/tree/master/system and https://github.com/joeyhoer/starter/tree/master/apps
+*
+
+=== OSX security settings
+
+* http://macos.duh.to/#application-layer-firewall
 
 == Todo
 
 * double check fzf configuration is OK now
 * review possibility of fasd
 * https://github.com/jasonrudolph/keyboard#features
+* install confs for
+  * Karabiner-Elements
+  * Lulu
+  * Netiquette
