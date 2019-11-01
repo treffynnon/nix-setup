@@ -151,6 +151,7 @@ Before upgrading to Catalina:
 * https://github.com/Jomik/dotfiles/tree/master/.config/nixpkgs
 * https://rycee.net/posts/2017-07-02-manage-your-home-with-nix.html
 * https://gist.github.com/CMCDragonkai/41593d6d20a5f7c01b2e67a221aa0330
+* https://gist.github.com/smgt/3227665 - list of OSX settings
 
 == Todo
 
