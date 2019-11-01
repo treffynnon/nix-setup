@@ -109,9 +109,10 @@ fix_dirty_etc_shells
 
 # delete any left over config and cache links links
 echo "Removing any left-over (broken) symlinks"
-./broken_symlinks echo ~/.config '^\/(nix|run\/current-system)'
-./broken_symlinks echo ~/.cache '^\/(nix|run\/current-system)'
-./broken_symlinks echo /etc '^\/(nix|run\/current-system)'
+SCRIPTS_PATH=$(realpath `dirname "$0"`)
+$SCRIPTS_PATH/broken_symlinks.sh unlink ~/.config '^\/(nix|run\/current-system)'
+$SCRIPTS_PATH/broken_symlinks.sh unlink ~/.cache '^\/(nix|run\/current-system)'
+$SCRIPTS_PATH/broken_symlinks.sh unlink /etc '^\/(nix|run\/current-system)'
 
 echo " "
 echo "Finished!"

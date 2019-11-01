@@ -17,7 +17,10 @@ function find_broken_links() {
 }
 function find_link_target() {
   local __basepath="$1"
-  find "$__basepath" -maxdepth 0 -printf %l
+  # Unfortunately not POSIX compatible
+  # find "$__basepath" -maxdepth 0 -printf %l
+  # so use this less appealing solution instead
+  ls -l "$__basepath" | sed -e 's/.* -> //'
 }
 function is_matching_target() {
   local __target="$1"
