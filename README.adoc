@@ -73,6 +73,15 @@ Run Hammerspoon (use Spotlight with kbd:[Command] + kbd:[Space]) - note that it 
 
 The nix derivation that installs Hammerspoon it is in `./overlays/hammerspoon.nix` and the configuration is in `./home-configs/hammerspoon.nix` and `./home-configs/hammerspoon`.
 
+=== Environment variables
+
+Private or secret environment vars you don't want to commit into a repository can be stored in ~/.env with the following format.
+
+[source,env]
+----
+MY_VAR=MY_VALUE
+----
+
 == Uninstalling
 
 You can reverse the setup process by running the remove script:
