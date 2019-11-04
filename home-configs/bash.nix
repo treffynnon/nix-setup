@@ -16,6 +16,11 @@ in
     # https://github.com/rycee/home-manager/pull/797/files
     initExtra = ''
       if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then . "$HOME/.nix-profile/etc/profile.d/nix.sh"; fi # added by Nix installer
+      if [ -e "$HOME/.env" ]; then
+        set -a
+          source "$HOME/.env"
+        set +a
+      fi
     '';
   };
   programs.starship.enableBashIntegration = true;
