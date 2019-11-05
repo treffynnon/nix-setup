@@ -35,7 +35,7 @@ end)
 local currentScreenCount = 1
 local displayplacerPath = "/run/current-system/sw/bin/displayplacer"
 local screenSetups = {
-	{ -- work deskt
+	pademelon_work = {
 		{
 			id = "402D58C8-046B-82A8-CD93-2D5C7DCB94BB", -- Dell
 			name = "DELL P2412H",
