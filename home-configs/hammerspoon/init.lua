@@ -63,14 +63,11 @@ local screenwatcher = hs.screen.watcher.new(function()
 			return screen:name()
 		end)
 		if hs.fnutils.every(names, function(name) return (name == "Color LCD" or name == "DELL P2412H") end) then
-			hs.fnutils.map(xs, function(x)
+			local params = table.concat(hs.fnutils.map(xs, function(x)
 				return "'id:" .. x.id .. " " .. x.position .. "'"
-			end)
+			end), " ")
 
-			hs.execute("/run/current-system/sw/bin/displayplacer
-			'id:402D58C8-046B-82A8-CD93-2D5C7DCB94BB res:1920x1080 hz:60 color_depth:8 scaling:off origin:(0,0) degree:0'
-			'id:6AECDDE9-288C-0715-DBA7-0CE2A25D2BF3 res:1680x1050 color_depth:4 scaling:on origin:(1920,387) degree:0'
-			'id:EEA3B508-6CD9-9ABF-3900-1777A3A46A91 res:1080x1920 hz:60 color_depth:8 scaling:off origin:(-1080,-423) degree:90'")
+			hs.execute(displayplacerPath .. " " .. params)
 		end
 	end
 	currentScreenCount = #screens
