@@ -229,6 +229,21 @@ in
           AppleMeasurementUnits = "Centimeters";
           AppleMetricUnits = 1;
           AppleTemperatureUnit = "Celsius";
+
+          "com.apple.sound.beep.volume" = "0.000";
+          "com.apple.sound.beep.feedback" = 0;
+        };
+        alf = {
+          globalstate = 1;
+          allowsignedenabled = 1;
+          allowdownloadsignedenabled = 1;
+          loggingenabled = 1;
+          stealthenabled = 1;
+        };
+        loginwindow = {
+          autoLoginUser = "";
+          SHOWFULLNAME = true;
+          GuestEnabled = false;
         };
 
         # https://github.com/LnL7/nix-darwin/blob/master/modules/system/defaults/screencapture.nix

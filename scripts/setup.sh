@@ -82,8 +82,35 @@ sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
 sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -bool true
 sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -bool true
 sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true
+
 # Set Apple spaces to span multiple displays
 defaults write com.apple.spaces spans-displays -bool true
+
+# Display login window as: Name and password
+sudo defaults write /Library/Preferences/com.apple.loginwindow "SHOWFULLNAME" -bool true
+# Disable automatic login
+sudo defaults delete /Library/Preferences/com.apple.loginwindow autoLoginUser 2>/dev/null
+# Allow guests to login to this computer
+sudo defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool false
+# Show password hints after count (0 to disable)
+defaults write NSGlobalDomain RetriesUntilHint -int 0
+
+# Require password 5 seconds after sleep or screen saver begins
+defaults write com.apple.screensaver askForPassword -bool true
+defaults write com.apple.screensaver askForPasswordDelay -int 5
+
+# Disable automatic login
+sudo defaults delete /Library/Preferences/com.apple.loginwindow autoLoginUser &> /dev/null
+
+# Disable the “Are you sure you want to open this application?” dialog
+defaults write com.apple.LaunchServices LSQuarantine -bool false
+
+# Allow applications downloaded from anywhere
+sudo spctl --master-disable
+
+# Disable Infared Remote
+sudo defaults write /Library/Preferences/com.apple.driver.AppleIRController DeviceEnabled -bool false
+
 
 # Nix
 if [[ ! $NIX_EXISTS ]]; then
