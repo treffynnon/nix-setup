@@ -89,7 +89,7 @@ function obj:handlePosition(screen, x)
 		local expected = table.concat({x.position.x, x.position.y}, "x")
 		if (current ~= expected) then
 			-- we need to fix the position
-			hs.alert("Re-positioned screen from " .. current .. " to " .. expected, screen, 3)
+			-- hs.alert("Re-positioned screen from " .. current .. " to " .. expected, screen, 3)
 			self.log.i(
 				"Screen position is " ..
 					current .. " expected it to be " .. expected .. ". You need displayplacer to move it to the correct position."
