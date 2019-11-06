@@ -11,7 +11,7 @@ obj.license = "Apache-2.0"
 --- OpenApplication.logger
 --- Variable
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
-obj.logger = hs.logger.new('MouseBackButton')
+obj.logger = hs.logger.new("MouseBackButton", "debug")
 
 -- handle back button press
 local backButtonWindows = {} -- memoise the windows that can be backed
