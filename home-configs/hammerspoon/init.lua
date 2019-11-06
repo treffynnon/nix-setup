@@ -1,23 +1,38 @@
 local hyper = {"ctrl", "alt", "cmd"}
 hs.window.animationDuration = 0.2
 
--- Load some spoons from ~/.hammerspoon/Spoons
+hs.alert.defaultStyle.fillColor = {
+	hex = "#2f1e2e",
+	alpha = 0.9
+}
+hs.alert.defaultStyle.strokeColor = {
+	hex = "#828282",
+	alpha = 0.9
+}
+hs.alert.defaultStyle.textColor = {
+	hex = "#a39e9b",
+	alpha = 0.9
+}
+hs.alert.defaultStyle.textSize = 18
+
 hs.loadSpoon("MiroWindowsManager")
 hs.loadSpoon("WindowScreenLeftAndRight")
 hs.loadSpoon("OpenApplication")
 
 -- Tap control for `escape` and hold for `control`
-hs.loadSpoon('ControlEscape'):start()
+hs.loadSpoon("ControlEscape"):start()
 
 -- A little window manager for pushing around windows with
 -- the keyboard
-spoon.MiroWindowsManager:bindHotkeys({
-	up = {hyper, "up"},
-	right = {hyper, "right"},
-	down = {hyper, "down"},
-	left = {hyper, "left"},
-	fullscreen = {hyper, "space"},
-})
+spoon.MiroWindowsManager:bindHotkeys(
+	{
+		up = {hyper, "up"},
+		right = {hyper, "right"},
+		down = {hyper, "down"},
+		left = {hyper, "left"},
+		fullscreen = {hyper, "space"}
+	}
+)
 
 -- Move windows from screen to screen
 spoon.WindowScreenLeftAndRight:bindHotkeys({screen_left = {hyper, ","}, screen_right = {hyper, "."}})
