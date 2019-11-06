@@ -50,6 +50,14 @@ hs.hotkey.bind(
 	end
 )
 
+function round(num)
+	if num >= 0 then
+		return math.floor(num + .5)
+	else
+		return math.ceil(num - .5)
+	end
+end
+
 -- watch for changes in the screens attached to the machine
 local currentScreenCount = 1
 local displayplacerPath = "/run/current-system/sw/bin/displayplacer"
@@ -178,7 +186,7 @@ end
 local function handlePosition(screen, x)
 	return function()
 		local fullFrame = screen:fullFrame()
-		local current = table.concat({fullFrame._x, fullFrame._y}, "x")
+		local current = table.concat({round(fullFrame._x), round(fullFrame._y)}, "x")
 		local expected = table.concat({x.position.x, x.position.y}, "x")
 		if (current ~= expected) then
 			-- we need to fix the position
