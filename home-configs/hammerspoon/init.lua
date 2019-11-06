@@ -68,7 +68,7 @@ local screenPresets = {
 				x = 0,
 				y = 0
 			},
-			rotation = 0,
+			rotation = 0
 		},
 		{
 			id = "6AECDDE9-288C-0715-DBA7-0CE2A25D2BF3", -- Laptop screen
@@ -83,7 +83,7 @@ local screenPresets = {
 				x = 1920,
 				y = 387
 			},
-			rotation = 0,
+			rotation = 0
 		},
 		{
 			id = "EEA3B508-6CD9-9ABF-3900-1777A3A46A91", -- Dell
@@ -99,7 +99,7 @@ local screenPresets = {
 				x = -1080,
 				y = -423
 			},
-			rotation = 90,
+			rotation = 90
 		}
 	}
 }
@@ -146,9 +146,14 @@ local function getUniqueIdentifierForAllScreenPresets(presets, screenCount)
 	)
 end
 
+-- memoise the presets as they never change
+local presetIdentifiers = nil
 local function getScreenPreset(screens, presets)
+	if nil == presetIdentifiers then
+		-- memoise the presets as they never change
+		presetIdentifiers = getUniqueIdentifierForAllScreenPresets(presets, #screens)
+	end
 	local uniqueIdentifier = getUniqueIdentifierForAllScreens(screens)
-	local presetIdentifiers = getUniqueIdentifierForAllScreenPresets(presets, #screens)
 	local presetId = hs.fnutils.indexOf(presetIdentifiers, uniqueIdentifier)
 	if presetId ~= nil then
 		log.i("Using " .. presetId .. " screen layout preset")
@@ -170,13 +175,31 @@ local function handleRotation(screen, x)
 	end
 end
 
+local function handlePosition(screen, x)
+	return function()
+		local fullFrame = screen:fullFrame()
+		local current = table.concat({fullFrame._x, fullFrame._y}, "x")
+		local expected = table.concat({x.position.x, x.position.y}, "x")
+		if (current ~= expected) then
+			-- we need to fix the position
+			hs.alert("Re-positioned screen from " .. current .. " to " .. expected, screen, 3)
+			log.i(
+				"Screen position is " ..
+					current .. " expected it to be " .. expected .. ". You need displayplacer to move it to the correct position."
+			)
+			return nil
+		end
+		return nil
+	end
+end
+
 local function setScreenPreset(preset)
 	hs.fnutils.map(
 		preset,
 		function(x)
 			log.i("Setting preset for " .. x.name .. " (" .. x.id .. ")")
 			local screen = hs.screen(x.id)
-			return hs.fnutils.sequence(handleRotation(screen, x))()
+			return hs.fnutils.sequence(handleRotation(screen, x), handlePosition(screen, x))()
 		end
 	)
 end
