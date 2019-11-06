@@ -18,6 +18,7 @@ hs.alert.defaultStyle.textSize = 18
 hs.loadSpoon("MiroWindowsManager")
 hs.loadSpoon("WindowScreenLeftAndRight")
 hs.loadSpoon("OpenApplication")
+hs.loadSpoon("MouseBackButton"):start()
 
 -- Tap control for `escape` and hold for `control`
 hs.loadSpoon("ControlEscape"):start()
@@ -111,15 +112,6 @@ local screenPresets = {
 		}
 	}
 }
-
--- handle back button press
--- eventtapOtherMouseDragged = eventtap.new( {
--- 	eventTypes.otherMouseUp
--- }, function(event)
--- 	if event:getProperty(eventProps.mouseEventButtonNumber) == 4 then
--- 		return true, { hs.eventtap.event.newKeyEvent({ cmd }, hs.keycodes.map.alt, false) }
--- 	end
--- end)
 
 local log = hs.logger.new("ScreenPresets", "debug")
 
