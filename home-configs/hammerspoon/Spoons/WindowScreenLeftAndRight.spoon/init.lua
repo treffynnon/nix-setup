@@ -32,33 +32,33 @@ obj.logger = hs.logger.new('WindowScreenLeftAndRight')
 ---  }
 --- ```
 obj.defaultHotkeys = {
-	screen_left = {{"ctrl", "alt", "cmd"}, "Left"},
-	screen_right = {{"ctrl", "alt", "cmd"}, "Right"},
+  screen_left = {{"ctrl", "alt", "cmd"}, "Left"},
+  screen_right = {{"ctrl", "alt", "cmd"}, "Right"},
 }
 
 -- Internal functions to store/restore the current value of setFrameCorrectness.
 local function _setFC()
-	obj._savedFC = hs.window.setFrameCorrectness
-	hs.window.setFrameCorrectness = obj.use_frame_correctness
+  obj._savedFC = hs.window.setFrameCorrectness
+  hs.window.setFrameCorrectness = obj.use_frame_correctness
 end
 
 local function _restoreFC()
-	hs.window.setFrameCorrectness = obj._savedFC
+  hs.window.setFrameCorrectness = obj._savedFC
 end
 
 -- Move current window to a different screen
 function obj.moveCurrentWindowToScreen(how)
-	local win = hs.window.focusedWindow()
-	if win == nil then
-		return
-	end
-	_setFC()
-	if how == "left" then
-		win:moveOneScreenWest()
-	elseif how == "right" then
-		win:moveOneScreenEast()
-	end
-	_restoreFC()
+  local win = hs.window.focusedWindow()
+  if win == nil then
+    return
+  end
+  _setFC()
+  if how == "left" then
+    win:moveOneScreenWest()
+  elseif how == "right" then
+    win:moveOneScreenEast()
+  end
+  _restoreFC()
 end
 
 -- --------------------------------------------------------------------
@@ -76,9 +76,9 @@ obj.oneScreenRight = hs.fnutils.partial(obj.moveCurrentWindowToScreen, "right")
 ---  * mapping - A table containing hotkey objifier/key details for the following items:
 ---   * screen_left, screen_right - move the window to the left/right screen (if you have more than one monitor connected, does nothing otherwise)
 function obj:bindHotkeys(mapping)
-	local hotkeyDefinitions = {screen_left = self.oneScreenLeft, screen_right = self.oneScreenRight}
-	hs.spoons.bindHotkeysToSpec(hotkeyDefinitions, mapping)
-	return self
+  local hotkeyDefinitions = {screen_left = self.oneScreenLeft, screen_right = self.oneScreenRight}
+  hs.spoons.bindHotkeysToSpec(hotkeyDefinitions, mapping)
+  return self
 end
 
 return obj

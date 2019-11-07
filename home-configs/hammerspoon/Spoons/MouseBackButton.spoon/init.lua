@@ -16,37 +16,37 @@ obj.logger = hs.logger.new("MouseBackButton", "debug")
 -- handle back button press
 local backButtonWindows = {} -- memoise the windows that can be backed
 setmetatable(backButtonWindows, {_mode = "v"}) -- makes values weak
-local function handleBackButtonPress(e)
-	local window = hs.window.focusedWindow()
-	if backButtonWindows[window] then
-		hs.eventtap.keyStroke({"cmd"}, "[")
-		return true, {}
-	else
-		local application = window:application()
-		local title = application:title()
-		if hs.fnutils.contains({"Brave Browser", "Firefox", "Google Chrome", "Safari"}, title) then
-			backButtonWindows[window] = true
-			hs.eventtap.keyStroke({"cmd"}, "[")
-			return true, {}
-		end
-	end
+local function handleBackButtonPress()
+  local window = hs.window.focusedWindow()
+  if backButtonWindows[window] then
+    hs.eventtap.keyStroke({"cmd"}, "[")
+    return true, {}
+  else
+    local application = window:application()
+    local title = application:title()
+    if hs.fnutils.contains({"Brave Browser", "Firefox", "Google Chrome", "Safari"}, title) then
+      backButtonWindows[window] = true
+      hs.eventtap.keyStroke({"cmd"}, "[")
+      return true, {}
+    end
+  end
 end
 
 function obj:init()
-	obj.logger.i("Binding mouse back button handling")
-	self.backButton = hs.eventtap.new({hs.eventtap.event.types.otherMouseUp}, function(e)
-		if e:getProperty(hs.eventtap.event.properties["mouseEventButtonNumber"]) == 3 then
-			return handleBackButtonPress(e)
-		end
-	end)
+  obj.logger.i("Binding mouse back button handling")
+  self.backButton = hs.eventtap.new({hs.eventtap.event.types.otherMouseUp}, function(e)
+    if e:getProperty(hs.eventtap.event.properties["mouseEventButtonNumber"]) == 3 then
+      return handleBackButtonPress()
+    end
+  end)
 end
 
 function obj:start()
-	self.backButton:start()
+  self.backButton:start()
 end
 
 function obj:stop()
-	self.backButton:stop()
+  self.backButton:stop()
 end
 
 return obj

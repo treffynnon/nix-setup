@@ -8,9 +8,9 @@ keep_simple_block_one_line: false
 break_after_operator: false
 
 ## Indentation
-use_tab: true
-indent_width: 1
-continuation_indent_width: 1
+use_tab: false
+indent_width: 2
+continuation_indent_width: 2
 
 ## Functions
 ### Calling

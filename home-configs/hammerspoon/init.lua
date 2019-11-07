@@ -19,11 +19,11 @@ hs.loadSpoon("ControlEscape"):start()
 -- A little window manager for pushing around windows with
 -- the keyboard
 spoon.MiroWindowsManager:bindHotkeys({
-	up = {hyper, "up"},
-	right = {hyper, "right"},
-	down = {hyper, "down"},
-	left = {hyper, "left"},
-	fullscreen = {hyper, "space"},
+  up = {hyper, "up"},
+  right = {hyper, "right"},
+  down = {hyper, "down"},
+  left = {hyper, "left"},
+  fullscreen = {hyper, "space"},
 })
 
 -- Move windows from screen to screen
@@ -33,40 +33,40 @@ spoon.OpenApplication:bindHotkeys(spoon.OpenApplication.defaultHotkeys)
 
 -- https://www.hammerspoon.org/docs/hs.hotkey.html#bind
 hs.hotkey.bind(hyper, "z", function()
-	if hs.window.focusedWindow() then
-		hs.window.frontmostWindow():toggleZoom()
-	end
+  if hs.window.focusedWindow() then
+    hs.window.frontmostWindow():toggleZoom()
+  end
 end)
 
 -- watch for changes in the screens attached to the machine
 spoon.ScreenPresets:setPresets({
-	pademelon_work = {
-		{
-			id = "402D58C8-046B-82A8-CD93-2D5C7DCB94BB", -- Dell
-			name = "DELL P2412H",
-			resolution = {w = 1920, h = 1080},
-			colourDepth = 8,
-			scaling = 1,
-			position = {x = 0.0, y = 0.0},
-			rotation = 0,
-		}, {
-			id = "6AECDDE9-288C-0715-DBA7-0CE2A25D2BF3", -- Laptop screen
-			name = "Color LCD",
-			resolution = {w = 1680, h = 1050},
-			colourDepth = 4,
-			scaling = 2,
-			position = {x = 1920.0, y = 387.0},
-			rotation = 0,
-		}, {
-			id = "EEA3B508-6CD9-9ABF-3900-1777A3A46A91", -- Dell
-			name = "DELL P2412H",
-			resolution = {w = 1080, h = 1920},
-			hz = 60,
-			colourDepth = 8,
-			scaling = 1,
-			position = {x = -1080.0, y = -423.0},
-			rotation = 90,
-		},
-	},
+  pademelon_work = {
+    {
+      id = "402D58C8-046B-82A8-CD93-2D5C7DCB94BB", -- Dell
+      name = "DELL P2412H",
+      resolution = {w = 1920, h = 1080},
+      colourDepth = 8,
+      scaling = 1,
+      position = {x = 0.0, y = 0.0},
+      rotation = 0,
+    }, {
+      id = "6AECDDE9-288C-0715-DBA7-0CE2A25D2BF3", -- Laptop screen
+      name = "Color LCD",
+      resolution = {w = 1680, h = 1050},
+      colourDepth = 4,
+      scaling = 2,
+      position = {x = 1920.0, y = 387.0},
+      rotation = 0,
+    }, {
+      id = "EEA3B508-6CD9-9ABF-3900-1777A3A46A91", -- Dell
+      name = "DELL P2412H",
+      resolution = {w = 1080, h = 1920},
+      hz = 60,
+      colourDepth = 8,
+      scaling = 1,
+      position = {x = -1080.0, y = -423.0},
+      rotation = 90,
+    },
+  },
 })
 spoon.ScreenPresets:start()
