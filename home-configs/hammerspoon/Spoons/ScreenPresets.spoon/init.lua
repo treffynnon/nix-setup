@@ -19,28 +19,19 @@ local function buildUniqueScreenLayoutIdentifier(fn, screens)
 	return table.concat(identifiers, "*")
 end
 local function getUniqueIdentifierForAllScreens(allScreens)
-	return buildUniqueScreenLayoutIdentifier(
-		function(screen)
-			return screen:getUUID()
-		end,
-		allScreens
-	)
+	return buildUniqueScreenLayoutIdentifier(function(screen)
+		return screen:getUUID()
+	end, allScreens)
 end
 local function getUniqueIdentifierForAllScreenPresets(presets, screenCount)
-	return hs.fnutils.map(
-		presets,
-		function(setup)
-			if #setup == screenCount then
-				return buildUniqueScreenLayoutIdentifier(
-					function(x)
-						return x.id
-					end,
-					setup
-				)
-			end
-			return ""
+	return hs.fnutils.map(presets, function(setup)
+		if #setup == screenCount then
+			return buildUniqueScreenLayoutIdentifier(function(x)
+				return x.id
+			end, setup)
 		end
-	)
+		return ""
+	end)
 end
 
 -- memoise the presets as they never change
@@ -65,9 +56,8 @@ function obj:handleRotation(screen, x)
 		local currentRotation = screen:rotate()
 		if currentRotation ~= x.rotation then
 			hs.alert("Rotated screen by " .. x.rotation .. " degrees", screen, 3)
-			self.log.i(
-				"Screen rotation is " .. currentRotation .. " expected it to be " .. x.rotation .. " degrees. Rotating now."
-			)
+			self.log.i("Screen rotation is " .. currentRotation .. " expected it to be " .. x.rotation
+           				.. " degrees. Rotating now.")
 			return screen:rotate(x.rotation)
 		end
 		return nil
@@ -82,10 +72,8 @@ function obj:handlePosition(screen, x)
 		if (current ~= expected) then
 			-- we need to fix the position
 			-- hs.alert("Re-positioned screen from " .. current .. " to " .. expected, screen, 3)
-			self.log.i(
-				"Screen position is " ..
-					current .. " expected it to be " .. expected .. ". You need displayplacer to move it to the correct position."
-			)
+			self.log.i("Screen position is " .. current .. " expected it to be " .. expected
+           				.. ". You need displayplacer to move it to the correct position.")
 			return nil
 		end
 		return nil
@@ -93,14 +81,11 @@ function obj:handlePosition(screen, x)
 end
 
 function obj:setScreenPreset(preset)
-	hs.fnutils.map(
-		preset,
-		function(x)
-			self.log.i("Setting preset for " .. x.name .. " (" .. x.id .. ")")
-			local screen = hs.screen(x.id)
-			return hs.fnutils.sequence(self:handleRotation(screen, x), self:handlePosition(screen, x))()
-		end
-	)
+	hs.fnutils.map(preset, function(x)
+		self.log.i("Setting preset for " .. x.name .. " (" .. x.id .. ")")
+		local screen = hs.screen(x.id)
+		return hs.fnutils.sequence(self:handleRotation(screen, x), self:handlePosition(screen, x))()
+	end)
 end
 
 function obj:setScreenLayout(allScreens)
@@ -128,13 +113,9 @@ function obj:updateScreenLayout()
 end
 
 function obj:menuIdentifyScreens()
-	local alerts =
-		hs.fnutils.map(
-		self.allScreens,
-		function(screen)
-			return hs.alert("ID: " .. screen:getUUID() .. "\nName: " .. screen:name(), screen, 5)
-		end
-	)
+	local alerts = hs.fnutils.map(self.allScreens, function(screen)
+		return hs.alert("ID: " .. screen:getUUID() .. "\nName: " .. screen:name(), screen, 5)
+	end)
 end
 
 local function screenToPreset(screen)
@@ -144,28 +125,19 @@ local function screenToPreset(screen)
 	return {
 		id = screen:getUUID(),
 		name = screen:name(),
-		resolution = {
-			w = mode.w,
-			h = mode.h
-		},
+		resolution = {w = mode.w, h = mode.h},
 		scaling = mode.scale,
-		position = {
-			x = frame._x,
-			y = frame._y
-		},
-		rotation = screen:rotate()
+		position = {x = frame._x, y = frame._y},
+		rotation = screen:rotate(),
 	}
 end
 
 function obj:menuCurrentConfigToClipboard()
-	local btn, presetName =
-		hs.dialog.textPrompt(
-		"Screen preset name",
-		"Enter a name for this screen preset. Suggest sticking with alphanumerics and underscores.",
-		hs.host.localizedName()
-	)
+	local btn, presetName = hs.dialog.textPrompt("Screen preset name",
+                                             	"Enter a name for this screen preset. Suggest sticking with alphanumerics and underscores.",
+                                             	hs.host.localizedName())
 	if btn == "OK" then
-		local screens = hs.fnutils.map(self.allScreens, screenToPreset)
+		local screens = hs.fnutils.mapCat(self.allScreens, screenToPreset)
 		if hs.pasteboard.setContents(presetName .. " = " .. hs.inspect(screens)) then
 			hs.alert("Paste the preset into your Hammerspoon init.lua file")
 			return nil
@@ -177,22 +149,19 @@ end
 function obj:initMenu()
 	self.menubar = hs.menubar.new()
 	self.menubar:setTitle("S")
-	self.menubar:setMenu(
+	self.menubar:setMenu({
 		{
-			{
-				title = "Identify screens",
-				fn = function()
-					obj:menuIdentifyScreens()
-				end
-			},
-			{
-				title = "Copy current screen layout...",
-				fn = function()
-					obj:menuCurrentConfigToClipboard()
-				end
-			}
-		}
-	)
+			title = "Identify screens",
+			fn = function()
+				obj:menuIdentifyScreens()
+			end,
+		}, {
+			title = "Copy current screen layout...",
+			fn = function()
+				obj:menuCurrentConfigToClipboard()
+			end,
+		},
+	})
 end
 
 function obj:init()

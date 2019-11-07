@@ -34,17 +34,11 @@ end
 
 function obj:init()
 	obj.logger.i("Binding mouse back button handling")
-	self.backButton =
-		hs.eventtap.new(
-		{
-			hs.eventtap.event.types.otherMouseUp
-		},
-		function(e)
-			if e:getProperty(hs.eventtap.event.properties["mouseEventButtonNumber"]) == 3 then
-				return handleBackButtonPress(e)
-			end
+	self.backButton = hs.eventtap.new({hs.eventtap.event.types.otherMouseUp}, function(e)
+		if e:getProperty(hs.eventtap.event.properties["mouseEventButtonNumber"]) == 3 then
+			return handleBackButtonPress(e)
 		end
-	)
+	end)
 end
 
 function obj:start()
