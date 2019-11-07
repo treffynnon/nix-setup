@@ -19,5 +19,6 @@ in
       luaFormat.LuaFormatter
       nixLinter
       nixpkgsFmt
+      lua
     ];
   }
