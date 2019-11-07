@@ -48,6 +48,7 @@ in
           dnsutils
           nmap
           telnet
+          privoxy
 
           less
           jq
@@ -102,6 +103,11 @@ in
     programs.gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
+    };
+
+    services.privoxy = {
+      enable = true;
+      listenAddress = "127.0.0.1:8118";
     };
 
     time.timeZone = "Australia/Brisbane";
