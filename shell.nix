@@ -6,9 +6,9 @@ let
       sha256 = "0bxb2qlp9cf1g78pa2mqllp7d0s0n8ypr7m39q3rl76adlmkr8qa";
     }
   ) {};
-  luaFormat = import ./ci/lua-format.nix { inherit pkgs; };
-  nixLinter = import ./ci/nix-linter.nix {};
-  nixpkgsFmt = import ./ci/nixpkgs-fmt.nix { inherit pkgs; };
+  luaFormat = import ./codestyle/lua-format.nix { inherit pkgs; };
+  nixLinter = import ./codestyle/nix-linter.nix {};
+  nixpkgsFmt = import ./codestyle/nixpkgs-fmt.nix { inherit pkgs; };
 in
 
   with pkgs;

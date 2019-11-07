@@ -1,0 +1,5 @@
+{
+	"lua.format.lineWidth": 100,
+	"lua.format.linebreakMultipleAssignments": true,
+  "lua.targetVersion": "5.2"
+}
