@@ -13,14 +13,6 @@ obj.license = "Apache-2.0"
 --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
 obj.log = hs.logger.new("ScreenPresets", "debug")
 
-local function round(num)
-	if num >= 0 then
-		return math.floor(num + .5)
-	else
-		return math.ceil(num - .5)
-	end
-end
-
 local function buildUniqueScreenLayoutIdentifier(fn, screens)
 	local identifiers = hs.fnutils.imap(screens, fn)
 	table.sort(identifiers)
@@ -85,7 +77,7 @@ end
 function obj:handlePosition(screen, x)
 	return function()
 		local fullFrame = screen:fullFrame()
-		local current = table.concat({round(fullFrame._x), round(fullFrame._y)}, "x")
+		local current = table.concat({fullFrame._x, fullFrame._y}, "x")
 		local expected = table.concat({x.position.x, x.position.y}, "x")
 		if (current ~= expected) then
 			-- we need to fix the position
@@ -135,6 +127,74 @@ function obj:updateScreenLayout()
 	end
 end
 
+function obj:menuIdentifyScreens()
+	local alerts =
+		hs.fnutils.map(
+		self.allScreens,
+		function(screen)
+			return hs.alert("ID: " .. screen:getUUID() .. "\nName: " .. screen:name(), screen, 5)
+		end
+	)
+end
+
+local function screenToPreset(screen)
+	local mode = screen:currentMode()
+	local frame = screen:fullFrame()
+	local x, y = screen:position()
+	return {
+		id = screen:getUUID(),
+		name = screen:name(),
+		resolution = {
+			w = mode.w,
+			h = mode.h
+		},
+		scaling = mode.scale,
+		position = {
+			x = frame._x,
+			y = frame._y
+		},
+		rotation = screen:rotate()
+	}
+end
+
+function obj:menuCurrentConfigToClipboard()
+	local btn, presetName =
+		hs.dialog.textPrompt(
+		"Screen preset name",
+		"Enter a name for this screen preset. Suggest sticking with alphanumerics and underscores.",
+		hs.host.localizedName()
+	)
+	if btn == "OK" then
+		local screens = hs.fnutils.map(self.allScreens, screenToPreset)
+		if hs.pasteboard.setContents(presetName .. " = " .. hs.inspect(screens)) then
+			hs.alert("Paste the preset into your Hammerspoon init.lua file")
+			return nil
+		end
+		hs.alert("Failed to export the screen configuration")
+	end
+end
+
+function obj:initMenu()
+	self.menubar = hs.menubar.new()
+	self.menubar:setTitle("S")
+	self.menubar:setMenu(
+		{
+			{
+				title = "Identify screens",
+				fn = function()
+					obj:menuIdentifyScreens()
+				end
+			},
+			{
+				title = "Copy current screen layout...",
+				fn = function()
+					obj:menuCurrentConfigToClipboard()
+				end
+			}
+		}
+	)
+end
+
 function obj:init()
 	self.log.i("Binding screen watcher")
 	self.screenwatcher = hs.screen.watcher.new(self:updateScreenLayout())
@@ -146,6 +206,8 @@ function obj:init()
 	self.currentScreenCount = self.screenCount
 	self.changeInProgress = false
 	self.screenPresets = {}
+
+	self:initMenu()
 end
 
 function obj:setPresets(presets)

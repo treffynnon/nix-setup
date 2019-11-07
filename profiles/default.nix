@@ -108,6 +108,13 @@ in
     services.privoxy = {
       enable = true;
       listenAddress = "127.0.0.1:8118";
+      # enableEditActions = true;
+      # actionsFile = [ "match-all.action" "default.action" ];
+      # extraConfig = ''
+      #   actionsfile default.action
+      #   actionsfile match-all.action
+      #   actionsfile $HOME/.config/privoxy/user.action
+      # '';
     };
 
     time.timeZone = "Australia/Brisbane";
