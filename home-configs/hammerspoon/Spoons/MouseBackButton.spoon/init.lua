@@ -18,15 +18,14 @@ local backButtonWindows = {} -- memoise the windows that can be backed
 setmetatable(backButtonWindows, {_mode = "v"}) -- makes values weak
 local function handleBackButtonPress(e)
 	local window = hs.window.focusedWindow()
-	local id = window:id()
-	if backButtonWindows[id] then
+	if backButtonWindows[window] then
 		hs.eventtap.keyStroke({"cmd"}, "[")
 		return true, {}
 	else
 		local application = window:application()
 		local title = application:title()
-		if hs.fnutils.contains({"Firefox", "Brave Browser", "Google Chrome"}, title) then
-			backButtonWindows[id] = id
+		if hs.fnutils.contains({"Brave Browser", "Firefox", "Google Chrome", "Safari"}, title) then
+			backButtonWindows[window] = true
 			hs.eventtap.keyStroke({"cmd"}, "[")
 			return true, {}
 		end
