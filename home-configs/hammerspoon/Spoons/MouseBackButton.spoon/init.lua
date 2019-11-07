@@ -3,7 +3,7 @@ obj.__index = obj
 
 -- Metadata
 obj.name = "MouseBackButton"
-obj.version = "0.1"
+obj.version = "1.0.0"
 obj.author = "Simon Holywell <simon@holywell.com.au>"
 obj.homepage = "https://github.com/Hammerspoon/Spoons"
 obj.license = "Apache-2.0"
