@@ -116,8 +116,8 @@ This project uses:
 
 * link:https://github.com/nix-community/nixpkgs-fmt[nixpkgs-fmt]
 * link:https://github.com/Synthetica9/nix-linter[nix-linter]
-* link:https://github.com/Koihik/LuaFormatter[lua-format]
-* link:https://github.com/mpeterv/luacheck[lua-check]
+* link:https://github.com/Koihik/LuaFormatter[LuaFormatter]
+* link:https://github.com/mpeterv/luacheck[luacheck]
 
 to keep the code and configurations in a consistent state.
 They are also applied as a github action to test the setup in CI too.
