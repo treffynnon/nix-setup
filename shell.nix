@@ -35,6 +35,7 @@ in
       luarocks-nix
       luaBusted
       luaCheck
+      (pkgs.lua.withPackages (ps: with ps; [ inspect ]))
     ];
     shellHook = ''
       if [ -x "$(command -v ${luaBusted}/bin/busted-install)" ]; then
