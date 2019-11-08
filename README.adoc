@@ -190,22 +190,29 @@ Before upgrading to Catalina:
 
 * https://gist.github.com/CMCDragonkai/41593d6d20a5f7c01b2e67a221aa0330
 
-=== OSX settings
+=== OSX
+
+==== OSX settings values
 
 * https://gist.github.com/smgt/3227665 - list of OSX settings
 * https://github.com/joeyhoer/starter/tree/master/system and https://github.com/joeyhoer/starter/tree/master/apps
 *
 
-=== OSX security settings
+==== OSX security settings
 
 * http://macos.duh.to/#application-layer-firewall
 
+==== OSX multiple monitors losing position and rotation settings
+
+* https://apple.stackexchange.com/questions/42835/primary-display-randomly-changes/296905#296905
+* https://github.com/lucasvickers/osx-display-positioner
+* https://superuser.com/questions/1105308/mac-3-monitor-setup-my-desktop-set-keep-switching-places-between-monitors/1220526
+* https://apple.stackexchange.com/questions/249865/set-position-of-secondary-screen
+
 == Todo
 
-* double check fzf configuration is OK now
-* review possibility of fasd
 * https://github.com/jasonrudolph/keyboard#features
 * install confs for
   * Karabiner-Elements
-  * Lulu
-  * Netiquette
+  * Lulu - this has an interactive installer so probably too hard to do with nix
+  * Netiquette - this has an interactive installer so probably too hard to do with nix

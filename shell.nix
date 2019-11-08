@@ -31,8 +31,8 @@ in
       luaFormat.LuaFormatter
       nixLinter
       nixpkgsFmt
-       luarocks-nix
-       luaBusted
+      luarocks-nix
+      luaBusted
     ];
     shellHook = ''
       if [ -x "$(command -v ${luaBusted}/bin/busted-install)" ]; then
