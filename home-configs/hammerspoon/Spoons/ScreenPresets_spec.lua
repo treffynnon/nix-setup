@@ -1,13 +1,10 @@
-lu = require('luaunit')
-hs = require('mock-hammerspoon')
-
-package.path = '../home-configs/hammerspoon/Spoons/ScreenPresets.spoon/?.lua;' .. package.path
+package.path = './?.lua;' .. package.path
+i = require "inspect"
+hs = require "mock-hammerspoon"
+_G.hs = hs
+i(hs)
+package.path = './ScreenPresets.spoon/?.lua;' .. package.path
 sp = require('init')
-
-local screens = {}
-function screens:getUUID()
-	return {}
-end
 
 local presets = {
   pademelon_work = {
@@ -40,17 +37,26 @@ local presets = {
   },
 }
 
-TestGetScreenPreset = {}
-	function TestGetScreenPreset:setUp()
-		sp.log = hs.logger
-	end
-	function TestGetScreenPreset:testSuccess()
-		local preset = sp:getScreenPreset(screens, presets)
-		lu.assertEquals(true, true)
-	end
-	function TestGetScreenPreset:tearDown()
-		sp.log = nil
-	end
--- end of table TestGetScreenPreset
-
-os.exit( lu.LuaUnit.run() )
+describe("ScreenPresets", function()
+  hs = require('mock-hammerspoon')
+	insulate("getScreenPreset", function()
+		local screens = {}
+		function screens:getUUID()
+			return {}
+		end
+		setup(function()
+			sp.log = hs.logger
+		end)
+		teardown(function()
+			sp.log = nil
+		end)
+		it("should return nil given an empty table", function()
+			local preset = sp:getScreenPreset({}, {})
+			assert.same(nil, preset)
+		end)
+		it("succeeds with valid data", function()
+			local preset = sp:getScreenPreset(screens, presets)
+			assert.same({}, preset)
+		end)
+	end)
+end)

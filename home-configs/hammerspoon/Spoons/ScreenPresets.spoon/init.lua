@@ -8,11 +8,6 @@ obj.author = "Simon Holywell <simon@holywell.com.au>"
 obj.homepage = "https://github.com/Hammerspoon/Spoons"
 obj.license = "Apache-2.0"
 
---- OpenApplication.logger
---- Variable
---- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
-obj.log = hs.logger.new("ScreenPresets", "debug")
-
 local function buildUniqueScreenLayoutIdentifier(fn, screens)
   local identifiers = hs.fnutils.imap(screens, fn)
   table.sort(identifiers)
@@ -164,6 +159,11 @@ function obj:initMenu()
 end
 
 function obj:init()
+	--- OpenApplication.logger
+	--- Variable
+	--- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
+	self.log = hs.logger.new("ScreenPresets", "debug")
+
   self.log.i("Binding screen watcher")
   self.screenwatcher = hs.screen.watcher.new(self:updateScreenLayout())
 
