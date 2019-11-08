@@ -28,6 +28,7 @@
       core = {
         pager = "${pkgs.git}/share/git/contrib/diff-highlight/diff-highlight | ${pkgs.less}/bin/less --tabs=2 -RFX";
       };
+      interactive.diffFilter = "${pkgs.git}/share/git/contrib/diff-highlight/diff-highlight";
       color = {
         status = "auto";
         diff = "auto";
