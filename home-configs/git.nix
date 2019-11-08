@@ -26,8 +26,10 @@
         user = "treffynnon";
       };
       core = {
+        # change the pager so that the changed part of the line is highlighted
         pager = "${pkgs.git}/share/git/contrib/diff-highlight/diff-highlight | ${pkgs.less}/bin/less --tabs=2 -RFX";
       };
+      # this is for diffs shown during times like `git add -p`
       interactive.diffFilter = "${pkgs.git}/share/git/contrib/diff-highlight/diff-highlight";
       color = {
         status = "auto";
