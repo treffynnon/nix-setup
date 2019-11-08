@@ -13,6 +13,7 @@ let
   luaFormat = import ./codestyle/lua-format.nix { inherit pkgs; };
   nixLinter = import ./codestyle/nix-linter.nix {};
   nixpkgsFmt = import ./codestyle/nixpkgs-fmt.nix { inherit pkgs; };
+  luaCheck = import ./codestyle/luacheck.nix { inherit pkgs; };
 
   luaBusted = (if isDarwin then (pkgs.writeShellScriptBin "busted-install" ''
     if ! [ -x "$(command -v $HOME/.luarocks/bin/busted)" ]; then
@@ -33,6 +34,7 @@ in
       nixpkgsFmt
       luarocks-nix
       luaBusted
+      luaCheck
     ];
     shellHook = ''
       if [ -x "$(command -v ${luaBusted}/bin/busted-install)" ]; then

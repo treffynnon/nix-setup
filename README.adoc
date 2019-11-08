@@ -178,6 +178,11 @@ Before upgrading to Catalina:
 * https://www.softinio.com/post/moving-from-homebrew-to-nix-package-manager/
 * http://chriswarbo.net/git/nix-helpers/git/branches/master/index.html
 * http://chriswarbo.net/projects/nixos/useful_hacks.html
+* https://github.com/samdroid-apps/nix-articles
+
+==== Lua and nix
+
+* https://github.com/NixOS/nixpkgs/pull/55302/files
 
 ==== Dot files managed by nix
 
