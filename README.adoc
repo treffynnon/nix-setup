@@ -23,9 +23,42 @@ which will perform the following actions for you:
 
 === Setup cachix
 
+==== Install to benefit from the binary cache
+
+Install the cachix package to the environment
+
 [source, bash]
 ----
 nix-env -iA cachix -f https://cachix.org/api/v1/install
+----
+
+Configure cachix to be used
+
+[source, bash]
+----
+cachix use treffynnon
+----
+
+This will use the binaries I have cached there were it can instead of spending time recompiling them on your machine.
+It is also used by GitHub Actions to speed up the linting/formatting/testing builds.
+
+==== Pushing to the binary cache
+
+Setup the necessary keys
+
+[source, bash]
+----
+cachix generate-keypair treffynnon
+----
+
+Set the signing key in `~/.config/cachix/cachix.dhall` where it should be set against the `secretKey` property.
+If you're not me then you'll need to create your own cache on https://cachix.org first as you cannot push to my cache - yoo can read from it, but not push to it.
+
+You can now push binary builds to the cachix repository.
+
+[source, bash]
+----
+cachix push treffynnon <path to some package in /nix/store>
 ----
 
 === Setup bash completions
