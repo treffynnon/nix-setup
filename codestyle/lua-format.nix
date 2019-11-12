@@ -7,17 +7,19 @@
   ) {}
 }:
 let
-  version = "afc280eaaa743b4d01e65cfa097dcb9b213b1949";
+  version = "56b1d38d233eb0001bcae3b1403af827f0e542a3";
   appName = "LuaFormatter";
 in
 rec {
   LuaFormatter = with pkgs; stdenv.mkDerivation {
     name = "${appName}-${version}";
     version = "${version}";
-    src = fetchurl {
-      name = "${appName}.zip";
-      url = "https://github.com/Koihik/${appName}/archive/${version}.zip";
-      sha256 = "0kghqk0a9rlmhzk1pqqrr1zz6895ijzgx02nz56d5nc9vknvd1sr";
+    src = fetchgit {
+      name = "${appName}";
+      url = https://github.com/Koihik/LuaFormatter.git;
+      rev = "${version}";
+      sha256 = "1z59g9v82nmw4icx0kkv5b0vbia6a2s8gz5220gfgmg3yg8xhbsh";
+      fetchSubmodules = true;
     };
     buildInputs = [ unzip ];
     nativeBuildInputs = [ cmake ];

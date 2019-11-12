@@ -6,4 +6,4 @@
     }
   ) {}
 }:
-(pkgs.lua.withPackages (ps: with ps; [ luacheck ]))
+(pkgs.lua.withPackages (ps: with ps; [ luafilesystem luacheck ]))
