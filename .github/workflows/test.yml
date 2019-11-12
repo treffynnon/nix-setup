@@ -68,6 +68,3 @@ jobs:
       - name: Run luacheck
         run: ./result/bin/luacheck --config "./codestyle/.luacheckrc.lua" "./home-configs/hammerspoon"
         shell: bash
-      - name: Check for changed files - fails if there is a git diff
-        run: git diff --quiet
-        shell: bash
