@@ -240,12 +240,18 @@ Before upgrading to Catalina:
 
 * http://macos.duh.to/#application-layer-firewall
 
-==== OSX multiple monitors losing position and rotation settings
+==== OSX screen management woes
+
+===== OSX multiple monitors losing position and rotation settings
 
 * https://apple.stackexchange.com/questions/42835/primary-display-randomly-changes/296905#296905
 * https://github.com/lucasvickers/osx-display-positioner
 * https://superuser.com/questions/1105308/mac-3-monitor-setup-my-desktop-set-keep-switching-places-between-monitors/1220526
 * https://apple.stackexchange.com/questions/249865/set-position-of-secondary-screen
+
+===== Spaces merging together on disconnecting additional monitors
+
+* https://superuser.com/questions/917958/how-can-i-stop-osx-from-combining-spaces-when-i-unplug-a-monitor
 
 == Todo
 
