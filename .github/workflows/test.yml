@@ -65,7 +65,7 @@ jobs:
           signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
           # Only needed for private caches
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-      - name: Run lua-format
+      - name: Run luacheck
         run: ./result/bin/luacheck --config "./codestyle/.luacheckrc.lua" "./home-configs/hammerspoon"
         shell: bash
       - name: Check for changed files - fails if there is a git diff
