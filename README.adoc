@@ -212,6 +212,7 @@ Before upgrading to Catalina:
 * http://chriswarbo.net/git/nix-helpers/git/branches/master/index.html
 * http://chriswarbo.net/projects/nixos/useful_hacks.html
 * https://github.com/samdroid-apps/nix-articles
+* https://matthewbauer.us/blog/all-the-versions.html
 
 ==== Lua and nix
 

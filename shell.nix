@@ -7,22 +7,19 @@ let
     }
   ) {};
 
-  inherit (builtins) currentSystem;
-  inherit (pkgs.lib.systems.elaborate { system = currentSystem; }) isLinux isDarwin;
-
   luaFormat = import ./codestyle/lua-format.nix { inherit pkgs; };
   nixLinter = import ./codestyle/nix-linter.nix {};
   nixpkgsFmt = import ./codestyle/nixpkgs-fmt.nix { inherit pkgs; };
   luaCheck = import ./codestyle/luacheck.nix { inherit pkgs; };
-
-  luaBusted = (if isDarwin then (pkgs.writeShellScriptBin "busted-install" ''
-    if ! [ -x "$(command -v $HOME/.luarocks/bin/busted)" ]; then
-      echo "Installing busted..."
-      ${pkgs.luarocks-nix}/bin/luarocks install busted --local
-    else
-      echo "Busted already installed."
-    fi
-  '') else (pkgs.lua.withPackages(ps: with ps; [ busted ])));
+  luaSystemNoGlibc = pkgs.luaPackages.luasystem.override({
+    buildInputs = [];
+  });
+  bustedNoGlibc = with pkgs; luaPackages.busted.override({
+    propagatedBuildInputs = with luaPackages; [ lua lua_cliargs luafilesystem luaSystemNoGlibc dkjson say luassert lua-term penlight mediator_lua ];
+  });
+  luaBusted = (pkgs.lua.withPackages(ps: with ps; [ bustedNoGlibc ])).override(args: {
+    ignoreCollisions = true;
+  });
 in
   with pkgs;
   stdenv.mkDerivation {
@@ -36,12 +33,4 @@ in
       luaBusted
       luaCheck
     ];
-    shellHook = ''
-      if [ -x "$(command -v ${luaBusted}/bin/busted-install)" ]; then
-        ${luaBusted}/bin/busted-install
-        if [ -x "$(command -v $HOME/.luarocks/bin/busted)" ]; then
-          export PATH="$PATH:$HOME/.luarocks/bin"
-        fi
-      fi
-    '';
   }
