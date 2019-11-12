@@ -1,10 +1,18 @@
 package.path = './?.lua;' .. package.path
-i = require "inspect"
-hs = require "mock-hammerspoon"
+hs = require('mock-hammerspoon')
+hs.logger = mock(hs.logger, true)
+hs.inspect = spy.on(hs, 'inspect')
 _G.hs = hs
-i(hs)
 package.path = './ScreenPresets.spoon/?.lua;' .. package.path
-sp = require('init')
+
+local function getInstance()
+  package.loaded['init'] = nil
+  local x = require('init')
+  x.log = hs.logger
+  return x
+end
+
+local sp = getInstance()
 
 local presets = {
   pademelon_work = {
@@ -37,26 +45,39 @@ local presets = {
   },
 }
 
+local function buildScreen(uuid)
+  local screen = {}
+  function screen:getUUID() -- luacheck: no self
+    return uuid
+  end
+  return screen
+end
+
 describe("ScreenPresets", function()
-  hs = require('mock-hammerspoon')
-	insulate("getScreenPreset", function()
-		local screens = {}
-		function screens:getUUID()
-			return {}
-		end
-		setup(function()
-			sp.log = hs.logger
-		end)
-		teardown(function()
-			sp.log = nil
-		end)
-		it("should return nil given an empty table", function()
-			local preset = sp:getScreenPreset({}, {})
-			assert.same(nil, preset)
-		end)
-		it("succeeds with valid data", function()
-			local preset = sp:getScreenPreset(screens, presets)
-			assert.same({}, preset)
-		end)
-	end)
+  insulate("getScreenPreset", function()
+    local screens = {
+      buildScreen("402D58C8-046B-82A8-CD93-2D5C7DCB94BB"),
+      buildScreen("6AECDDE9-288C-0715-DBA7-0CE2A25D2BF3"),
+      buildScreen("EEA3B508-6CD9-9ABF-3900-1777A3A46A91"),
+    }
+    before_each(function()
+      sp = getInstance()
+
+    end)
+    after_each(function()
+      sp = nil
+    end)
+
+    it("should return nil given an empty table", function()
+      assert.same(nil, sp:getScreenPreset({}, {}))
+      assert.same(nil, sp:getScreenPreset({}, presets))
+    end)
+    it("succeeds with valid data", function()
+      local preset = sp:getScreenPreset(screens, presets)
+      assert.spy(sp.log.i).was.called_with(match.is_string())
+      assert.are.equal(3, #screens)
+      assert.are.equal(3, #preset)
+      assert.same(presets['pademelon_work'], preset)
+    end)
+  end)
 end)

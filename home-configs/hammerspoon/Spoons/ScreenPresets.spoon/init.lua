@@ -159,10 +159,10 @@ function obj:initMenu()
 end
 
 function obj:init()
-	--- OpenApplication.logger
-	--- Variable
-	--- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
-	self.log = hs.logger.new("ScreenPresets", "debug")
+  --- OpenApplication.logger
+  --- Variable
+  --- Logger object used within the Spoon. Can be accessed to set the default log level for the messages coming from the Spoon.
+  self.log = hs.logger.new("ScreenPresets", "debug")
 
   self.log.i("Binding screen watcher")
   self.screenwatcher = hs.screen.watcher.new(self:updateScreenLayout())

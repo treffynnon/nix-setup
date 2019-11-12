@@ -1,10 +1,9 @@
 --- === hs.fnutils ===
 ---
 --- Functional programming utility functions
-
 local fnutils = {}
 
-local pairs,ipairs = pairs,ipairs
+local pairs, ipairs = pairs, ipairs
 local floor = math.floor
 
 --- hs.fnutils.imap(list, fn) -> list
@@ -26,13 +25,13 @@ local floor = math.floor
 function fnutils.imap(t, fn)
   local nt = {}
   for _, v in ipairs(t) do
-    nt[#nt+1] = fn(v) -- or nil < removed, as this precludes inserting false!
+    nt[#nt + 1] = fn(v) -- or nil < removed, as this precludes inserting false!
   end
   return nt
 end
 
 local function isListIndex(k)
-  return type(k)=='number' and k>=1 and floor(k)==k -- not using 5.3 syntax (k//1==k), as you never know
+  return type(k) == 'number' and k >= 1 and floor(k) == k -- not using 5.3 syntax (k//1==k), as you never know
 end
 --- hs.fnutils.map(table, fn) -> table
 --- Function
@@ -54,7 +53,7 @@ end
 function fnutils.map(t, fn)
   local nt = {}
   for k, v in pairs(t) do -- they'll potentially be out of order, but they always were anyway
-    nt[isListIndex(k) and (#nt+1) or k] = fn(v) -- meh, but required for compatibility
+    nt[isListIndex(k) and (#nt + 1) or k] = fn(v) -- meh, but required for compatibility
   end
   return nt
 end
@@ -70,7 +69,9 @@ end
 --- Returns:
 ---  * None
 function fnutils.ieach(t, fn)
-  for _, v in ipairs(t) do fn(v) end
+  for _, v in ipairs(t) do
+    fn(v)
+  end
 end
 
 --- hs.fnutils.each(table, fn)
@@ -84,9 +85,10 @@ end
 --- Returns:
 ---  * None
 function fnutils.each(t, fn)
-  for _, v in pairs(t) do fn(v) end
+  for _, v in pairs(t) do
+    fn(v)
+  end
 end
-
 
 --- hs.fnutils.ifilter(list, fn) -> list
 --- Function
@@ -105,7 +107,11 @@ end
 ---    use `hs.fnutils.map()` if your table has holes
 function fnutils.ifilter(t, fn)
   local nt = {}
-  for _, v in ipairs(t) do if fn(v) then nt[#nt+1] = v end end
+  for _, v in ipairs(t) do
+    if fn(v) then
+      nt[#nt + 1] = v
+    end
+  end
   return nt
 end
 
@@ -127,7 +133,9 @@ end
 function fnutils.filter(t, fn)
   local nt = {}
   for k, v in pairs(t) do
-    if fn(v) then nt[isListIndex(k) and (#nt+1) or k] = v end -- meh etc.
+    if fn(v) then
+      nt[isListIndex(k) and (#nt + 1) or k] = v
+    end -- meh etc.
   end
   return nt
 end
@@ -241,8 +249,12 @@ end
 ---  * The first iteration of the reducer will call fn with the first and second elements of the table. The second iteration will call fn with the result of the first iteration, and the third element. This repeats until there is only one element left
 function fnutils.reduce(t, fn)
   local len = #t
-  if len == 0 then return nil end
-  if len == 1 then return t[1] end
+  if len == 0 then
+    return nil
+  end
+  if len == 1 then
+    return t[1]
+  end
 
   local result = t[1]
   for i = 2, #t do
@@ -263,7 +275,9 @@ end
 ---  * The element of the supplied table that first caused fn to return true
 function fnutils.find(t, fn)
   for _, v in pairs(t) do
-    if fn(v) then return v end
+    if fn(v) then
+      return v
+    end
   end
   return nil
 end
@@ -312,7 +326,9 @@ end
 function fnutils.partial(fn, ...)
   local args = table.pack(...)
   return function(...)
-    for idx = args.n+1,#args do args[idx] = nil end -- clear previous values
+    for idx = args.n + 1, #args do
+      args[idx] = nil
+    end -- clear previous values
     for idx, val in ipairs(table.pack(...)) do
       args[args.n + idx] = val
     end
@@ -359,7 +375,9 @@ end
 ---  * False if the function returns `false` for any element of the table.  Note that testing stops when the first false return is detected.
 function fnutils.every(table, fn)
   for k, v in pairs(table) do
-    if not fn(v, k) then return false end
+    if not fn(v, k) then
+      return false
+    end
   end
   return true
 end
@@ -404,21 +422,33 @@ end
 ---      * function(m,n) if type(m) ~= type(n) then return tostring(m) < tostring(n) else return m < n end
 fnutils.sortByKeys = function(t, f)
   -- a default, simple comparison that treats keys as strings only if their types differ
-  f = f or function(m,n) if type(m) ~= type(n) then return tostring(m) < tostring(n) else return m < n end end
+  f = f or function(m, n)
+    if type(m) ~= type(n) then
+      return tostring(m) < tostring(n)
+    else
+      return m < n
+    end
+  end
   if t then
     local a = {}
-    for n in pairs(t) do table.insert(a, n) end
+    for n in pairs(t) do
+      table.insert(a, n)
+    end
     table.sort(a, f)
-    local i = 0      -- iterator variable
-    local iter = function ()   -- iterator function
+    local i = 0 -- iterator variable
+    local iter = function() -- iterator function
       i = i + 1
-      if a[i] == nil then return nil
-      else return a[i], t[a[i]]
+      if a[i] == nil then
+        return nil
+      else
+        return a[i], t[a[i]]
       end
     end
     return iter
   else
-    return function() return nil end
+    return function()
+      return nil
+    end
   end
 end
 
@@ -444,21 +474,35 @@ end
 ---      * function(m,n) if type(m) ~= type(n) then return tostring(m) < tostring(n) else return m < n end
 fnutils.sortByKeyValues = function(t, f)
   -- a default, simple comparison that treats keys as strings only if their types differ
-  f = f or function(m,n) if type(m) ~= type(n) then return tostring(m) < tostring(n) else return m < n end end
+  f = f or function(m, n)
+    if type(m) ~= type(n) then
+      return tostring(m) < tostring(n)
+    else
+      return m < n
+    end
+  end
   if t then
     local a = {}
-    for n in pairs(t) do table.insert(a, {n, t[n]}) end
-    table.sort(a, function(m,n) return f(m[2], n[2]) end)
-    local i = 0      -- iterator variable
-    local iter = function ()   -- iterator function
+    for n in pairs(t) do
+      table.insert(a, {n, t[n]})
+    end
+    table.sort(a, function(m, n)
+      return f(m[2], n[2])
+    end)
+    local i = 0 -- iterator variable
+    local iter = function() -- iterator function
       i = i + 1
-      if a[i] == nil then return nil
-      else return a[i][1], a[i][2]
+      if a[i] == nil then
+        return nil
+      else
+        return a[i][1], a[i][2]
       end
     end
     return iter
   else
-    return function() return nil end
+    return function()
+      return nil
+    end
   end
 end
 
@@ -487,15 +531,21 @@ function fnutils.split(sString, sSeparator, nMax, bPlain)
   sSeparator = sSeparator or ""
 
   if type(sString) ~= "string" then
-    error("sString parameter to hs.fnutils.split must be a string", 2) end
+    error("sString parameter to hs.fnutils.split must be a string", 2)
+  end
   if type(sSeparator) ~= "string" then
-    error("sSeparator parameter to hs.fnutils.split must be a string", 2) end
+    error("sSeparator parameter to hs.fnutils.split must be a string", 2)
+  end
   if type(nMax) ~= "number" and type(nMax) ~= "nil" then
-    error("nMax parameter to hs.fnutils.split must be a number, if it is provided", 2) end
+    error("nMax parameter to hs.fnutils.split must be a number, if it is provided", 2)
+  end
   if type(bPlain) ~= "boolean" and type(bPlain) ~= "nil" then
-    error("bPlain parameter to hs.fnutils.split must be a boolean, if it is provided", 2) end
+    error("bPlain parameter to hs.fnutils.split must be a boolean, if it is provided", 2)
+  end
 
-  if sSeparator == "" or nMax == 0 then return { sString } end -- degenerate cases
+  if sSeparator == "" or nMax == 0 then
+    return {sString}
+  end -- degenerate cases
 
   local aRecord = {}
 
@@ -503,13 +553,13 @@ function fnutils.split(sString, sSeparator, nMax, bPlain)
     nMax = nMax or -1
 
     local nField, nStart = 1, 1
-    local nFirst,nLast = sString:find(sSeparator, nStart, bPlain)
+    local nFirst, nLast = sString:find(sSeparator, nStart, bPlain)
     while nFirst and nMax ~= 0 do
-      aRecord[nField] = sString:sub(nStart, nFirst-1)
-      nField = nField+1
-      nStart = nLast+1
-      nFirst,nLast = sString:find(sSeparator, nStart, bPlain)
-      nMax = nMax-1
+      aRecord[nField] = sString:sub(nStart, nFirst - 1)
+      nField = nField + 1
+      nStart = nLast + 1
+      nFirst, nLast = sString:find(sSeparator, nStart, bPlain)
+      nMax = nMax - 1
     end
     aRecord[nField] = sString:sub(nStart)
   end
