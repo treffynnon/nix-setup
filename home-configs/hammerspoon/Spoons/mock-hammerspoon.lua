@@ -10,6 +10,8 @@ local M = {
     i = function()
     end,
   },
+  alert = function()
+  end,
 }
 
 return M
