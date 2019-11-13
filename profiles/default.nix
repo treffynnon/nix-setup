@@ -68,7 +68,6 @@ in
           htop
           which
           exa
-          vifm
 
           git-lfs
           git-crypt

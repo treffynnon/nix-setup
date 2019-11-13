@@ -40,9 +40,11 @@ in
     ./fzf.nix
     ./git.nix
     ./httpie.nix
+    ./irssi.nix
     ./kitty.nix
     ./neovim.nix
     ./starship.nix
+    ./vifm.nix
     ./vscode.nix
   ]
   ++ optionals isDarwin [
