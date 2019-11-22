@@ -9,6 +9,7 @@
       "editor.fontSize" = 14;
       "editor.fontFamily" = "'Fira Code', Menlo, Monaco, 'Courier New', monospace";
       "editor.fontLigatures" = true;
+      "editor.lineNumbers" = "relative";
       "terminal.integrated.shell.osx" = "${pkgs.fish}/bin/fish";
       "terminal.integrated.shellArgs.osx" = [
         "-i"

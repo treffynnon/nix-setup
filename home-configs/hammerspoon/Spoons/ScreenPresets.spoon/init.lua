@@ -59,16 +59,16 @@ function obj:handleRotation(screen, x)
   end
 end
 
-function obj:handlePosition(screen, x)
+function obj:handleOrigin(screen, x)
   return function()
     local fullFrame = screen:fullFrame()
     local current = table.concat({fullFrame._x, fullFrame._y}, "x")
-    local expected = table.concat({x.position.x, x.position.y}, "x")
+    local expected = table.concat({x.origin.x, x.origin.y}, "x")
     if (current ~= expected) then
-      -- we need to fix the position
-      -- hs.alert("Re-positioned screen from " .. current .. " to " .. expected, screen, 3)
-      self.log.i("Screen position is " .. current .. " expected it to be " .. expected
-                   .. ". You need displayplacer to move it to the correct position.")
+      -- we need to fix the origin
+      -- hs.alert("Re-origined screen from " .. current .. " to " .. expected, screen, 3)
+      self.log.i("Screen origin is " .. current .. " expected it to be " .. expected
+                   .. ". You need displayplacer to move it to the correct origin.")
       return nil
     end
     return nil
@@ -79,7 +79,7 @@ function obj:setScreenPreset(preset)
   hs.fnutils.map(preset, function(x)
     self.log.i("Setting preset for " .. x.name .. " (" .. x.id .. ")")
     local screen = hs.screen(x.id)
-    return hs.fnutils.sequence(self:handleRotation(screen, x), self:handlePosition(screen, x))()
+    return hs.fnutils.sequence(self:handleRotation(screen, x), self:handleOrigin(screen, x))()
   end)
 end
 
@@ -117,12 +117,14 @@ local function screenToPreset(screen)
   local mode = screen:currentMode()
   local frame = screen:fullFrame()
   return {
-    id = screen:getUUID(),
-    name = screen:name(),
-    resolution = {w = mode.w, h = mode.h},
-    scaling = mode.scale,
-    position = {x = frame._x, y = frame._y},
-    rotation = screen:rotate(),
+    {
+      id = screen:getUUID(),
+      name = screen:name(),
+      resolution = {w = mode.w, h = mode.h},
+      scaling = mode.scale,
+      origin = {x = frame._x, y = frame._y},
+      rotation = screen:rotate(),
+    },
   }
 end
 

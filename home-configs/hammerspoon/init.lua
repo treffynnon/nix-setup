@@ -42,30 +42,43 @@ end)
 spoon.ScreenPresets:setPresets({
   pademelon_work = {
     {
-      id = "402D58C8-046B-82A8-CD93-2D5C7DCB94BB", -- Dell
-      name = "DELL P2412H",
-      resolution = {w = 1920, h = 1080},
-      colourDepth = 8,
-      scaling = 1,
-      position = {x = 0.0, y = 0.0},
-      rotation = 0,
+      id = "29024FE7-925B-A34D-85B1-81674DCEA3C1",
+      name = "DELL P2719H",
+      origin = {x = 0.0, y = 0.0},
+      resolution = {h = 1920, w = 1080},
+      rotation = 270,
+      scaling = 1.0,
     }, {
-      id = "6AECDDE9-288C-0715-DBA7-0CE2A25D2BF3", -- Laptop screen
+      id = "6AECDDE9-288C-0715-DBA7-0CE2A25D2BF3",
       name = "Color LCD",
-      resolution = {w = 1680, h = 1050},
-      colourDepth = 4,
-      scaling = 2,
-      position = {x = 1920.0, y = 387.0},
+      origin = {x = 1080.0, y = 1207.0},
+      resolution = {h = 1050, w = 1680},
       rotation = 0,
+      scaling = 2.0,
     }, {
-      id = "EEA3B508-6CD9-9ABF-3900-1777A3A46A91", -- Dell
-      name = "DELL P2412H",
-      resolution = {w = 1080, h = 1920},
-      hz = 60,
-      colourDepth = 8,
-      scaling = 1,
-      position = {x = -1080.0, y = -423.0},
-      rotation = 90,
+      id = "FA6C6ED8-1160-EFE5-5696-78F1AFC5184E",
+      name = "DELL P2719H",
+      origin = {x = -1920.0, y = 483.0},
+      resolution = {h = 1080, w = 1920},
+      rotation = 0,
+      scaling = 1.0,
+    },
+  },
+  pademelon_home = {
+    {
+      id = "CC6F3D60-BB40-DBA1-E4A8-8C4388E352F7",
+      name = "VA2746 SERIES",
+      origin = {x = 0.0, y = 0.0},
+      resolution = {h = 1920, w = 1080},
+      rotation = 270,
+      scaling = 1.0,
+    }, {
+      id = "6AECDDE9-288C-0715-DBA7-0CE2A25D2BF3",
+      name = "Color LCD",
+      origin = {x = -1680.0, y = 1348.0},
+      resolution = {h = 1050, w = 1680},
+      rotation = 0,
+      scaling = 2.0,
     },
   },
 })
