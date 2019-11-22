@@ -31,13 +31,17 @@ end
 
 -- memoise the presets as they never change
 local presetIdentifiers = nil
-function obj:getScreenPreset(screens, presets)
-  if nil == presetIdentifiers then
+function obj:getScreenPresetId(screens, presets)
+	if nil == presetIdentifiers then
     -- memoise the presets as they never change
     presetIdentifiers = getUniqueIdentifierForAllScreenPresets(presets, #screens)
   end
   local uniqueIdentifier = getUniqueIdentifierForAllScreens(screens)
-  local presetId = hs.fnutils.indexOf(presetIdentifiers, uniqueIdentifier)
+  return hs.fnutils.indexOf(presetIdentifiers, uniqueIdentifier)
+end
+
+function obj:getScreenPreset(screens, presets)
+  local presetId = obj:getScreenPresetId(screens, presets)
   if presetId ~= nil then
     self.log.i("Using " .. presetId .. " screen layout preset")
     return presets[presetId]
@@ -142,6 +146,22 @@ function obj:menuCurrentConfigToClipboard()
   end
 end
 
+function obj:menuResetPreset()
+  -- hs.dialog.alert(x, y, callbackFn, message, [informativeText], [buttonOne], [buttonTwo], [style])
+  local presetId = obj:getScreenPresetId(self.allScreens, self.screenPresets)
+  if presetId ~= nil then
+    hs.dialog.alert(nil, nil, function(btn)
+      if btn == "Yes" then
+        self:setScreenLayout(self.allScreens)
+      end
+    end, "Do you really want to set the preset?",
+                    "This will set the screens to use the '" .. presetId .. "' configuration", "No",
+                    "Yes")
+  else
+    hs.alert("No matching preset was found. Export a configuration for these screens first.")
+  end
+end
+
 function obj:initMenu()
   self.menubar = hs.menubar.new()
   self.menubar:setTitle("S")
@@ -155,6 +175,11 @@ function obj:initMenu()
       title = "Copy current screen layout...",
       fn = function()
         obj:menuCurrentConfigToClipboard()
+      end,
+    }, {
+      title = "Set the current preset...",
+      fn = function()
+        obj:menuResetPreset()
       end,
     },
   })
