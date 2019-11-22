@@ -43,6 +43,7 @@ in
     ./irssi.nix
     ./kitty.nix
     ./neovim.nix
+    ./pgcli.nix
     ./starship.nix
     ./vifm.nix
     ./vscode.nix
