@@ -48,7 +48,6 @@ in
           dnsutils
           nmap
           telnet
-          privoxy
 
           less
           jq
