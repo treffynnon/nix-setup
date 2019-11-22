@@ -55,10 +55,11 @@ function obj:handleRotation(screen, x)
     local currentRotation = screen:rotate()
     if currentRotation ~= x.rotation then
       hs.alert("Rotated screen by " .. x.rotation .. " degrees", screen, 3)
-      self.log.i("Screen rotation is " .. currentRotation .. " expected it to be " .. x.rotation
+      self.log.i("  * Screen rotation is " .. currentRotation .. " expected it to be " .. x.rotation
                    .. " degrees. Rotating now.")
       return screen:rotate(x.rotation)
-    end
+		end
+		self.log.i("  * Rotation is already correct")
     return nil
   end
 end
@@ -68,13 +69,14 @@ function obj:handleOrigin(screen, x)
     local fullFrame = screen:fullFrame()
     local current = table.concat({fullFrame._x, fullFrame._y}, "x")
     local expected = table.concat({x.origin.x, x.origin.y}, "x")
-    if (current ~= expected) then
+    if (current ~= expected) and _G['hs']['screen']['setOrigin'] ~= nil then
       -- we need to fix the origin
-      -- hs.alert("Re-origined screen from " .. current .. " to " .. expected, screen, 3)
-      self.log.i("Screen origin is " .. current .. " expected it to be " .. expected
-                   .. ". You need displayplacer to move it to the correct origin.")
-      return nil
-    end
+      hs.alert("Re-origined screen from " .. current .. " to " .. expected, screen, 3)
+      self.log.i("  * Screen origin is " .. current .. " expected it to be " .. expected
+									 .. ". You need displayplacer to move it to the correct origin.")
+      return screen:setOrigin(x.origin.x, x.origin.y)
+		end
+		self.log.i("  * Origin is already correct")
     return nil
   end
 end
