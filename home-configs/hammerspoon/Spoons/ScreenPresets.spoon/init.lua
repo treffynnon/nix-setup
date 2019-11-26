@@ -32,12 +32,17 @@ end
 -- memoise the presets as they never change
 local presetIdentifiers = nil
 function obj:getScreenPresetId(screens, presets)
-	if nil == presetIdentifiers then
+  if nil == presetIdentifiers then
     -- memoise the presets as they never change
     presetIdentifiers = getUniqueIdentifierForAllScreenPresets(presets, #screens)
   end
   local uniqueIdentifier = getUniqueIdentifierForAllScreens(screens)
-  return hs.fnutils.indexOf(presetIdentifiers, uniqueIdentifier)
+  local presetId = hs.fnutils.indexOf(presetIdentifiers, uniqueIdentifier)
+  if presetId == nil then
+    self.log.i(
+      "No preset found for the current screen layout with identifiers: " .. uniqueIdentifier)
+  end
+  return presetId
 end
 
 function obj:getScreenPreset(screens, presets)
@@ -46,7 +51,6 @@ function obj:getScreenPreset(screens, presets)
     self.log.i("Using " .. presetId .. " screen layout preset")
     return presets[presetId]
   end
-  self.log.i("No preset found for the current screen layout with identifiers: " .. uniqueIdentifier)
   return nil
 end
 
@@ -58,8 +62,8 @@ function obj:handleRotation(screen, x)
       self.log.i("  * Screen rotation is " .. currentRotation .. " expected it to be " .. x.rotation
                    .. " degrees. Rotating now.")
       return screen:rotate(x.rotation)
-		end
-		self.log.i("  * Rotation is already correct")
+    end
+    self.log.i("  * Rotation is already correct")
     return nil
   end
 end
@@ -69,14 +73,17 @@ function obj:handleOrigin(screen, x)
     local fullFrame = screen:fullFrame()
     local current = table.concat({fullFrame._x, fullFrame._y}, "x")
     local expected = table.concat({x.origin.x, x.origin.y}, "x")
-    if (current ~= expected) and _G['hs']['screen']['setOrigin'] ~= nil then
-      -- we need to fix the origin
-      hs.alert("Re-origined screen from " .. current .. " to " .. expected, screen, 3)
-      self.log.i("  * Screen origin is " .. current .. " expected it to be " .. expected
-									 .. ". You need displayplacer to move it to the correct origin.")
-      return screen:setOrigin(x.origin.x, x.origin.y)
-		end
-		self.log.i("  * Origin is already correct")
+		if (current ~= expected) then
+			if _G['hs'] and _G['hs']['screen'] and _G['hs']['screen']['setOrigin'] ~= nil then
+				-- we need to fix the origin
+				hs.alert("Re-origined screen from " .. current .. " to " .. expected, screen, 3)
+				self.log.i("  * Screen origin is " .. current .. " expected it to be " .. expected
+										.. ". Adjusting now.")
+				return screen:setOrigin(x.origin.x, x.origin.y)
+			end
+			self.log.i("  * Could not set screen origin because your build of Hammerspoon doesn't include it")
+    end
+    self.log.i("  * Origin is already correct")
     return nil
   end
 end
