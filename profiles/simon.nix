@@ -26,7 +26,8 @@ mkMerge [
     environment.systemPackages =
       (
         with pkgs; [
-          # any-nix-shell
+          any-nix-shell
+          cmus
         ]
       );
   }

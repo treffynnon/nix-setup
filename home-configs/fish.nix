@@ -21,6 +21,7 @@ in
     # $PATH is broken for fish shell
     # https://github.com/LnL7/nix-darwin/issues/122
     shellInit = ''
+      any-nix-shell fish --info-right | source
       for p in /run/current-system/sw/bin $HOME/.nix-profile/bin /etc/profiles/per-user/$USER/bin /nix/var/nix/profiles/default/bin
         if not contains $p $fish_user_paths
           set -g fish_user_paths $p $fish_user_paths

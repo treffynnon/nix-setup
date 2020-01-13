@@ -2,7 +2,7 @@
 _: super:
 
 rec {
-  version = "0.9.76";
+  version = "0.9.77";
   appName = "Hammerspoon";
   Hammerspoon = with super; stdenv.mkDerivation {
     name = "${appName}-${version}";
@@ -10,7 +10,7 @@ rec {
     src = fetchurl {
       name = "Hammerspoon.zip";
       url = "https://github.com/${appName}/hammerspoon/releases/download/${version}/${appName}-${version}.zip";
-      sha256 = "1r6mjn2cafdyrwqrnfi74cm4wy0fns44j30rsy31800kmqi9ifdb";
+      sha256 = "1pjlip51knmzm83q2vjm33n5sshlbvmnwsc4hlabpsqsz0pz1ci4";
     };
     buildInputs = [ unzip ];
     phases = [ "unpackPhase" "installPhase" ];
