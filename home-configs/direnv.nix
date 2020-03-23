@@ -2,8 +2,8 @@ let
   nixDirenvPath = (
     builtins.fetchTarball {
       name = "nix-direnv";
-      url = https://github.com/nix-community/nix-direnv/archive/e7df598cd0addefb51b678a2a4b1607942f153e7.tar.gz;
-      sha256 = "0bj561c0qawadd62n1xidxkv6zdmdb39zhyvl2l9x2l62j1abriw";
+      url = https://github.com/nix-community/nix-direnv/archive/ea98d4112dc38867fb02db54c8bf8b57d9bf16ac.tar.gz;
+      sha256 = "11acf8s1r2ibjmjd6kv09nm1bydkvapkxc7yvwdk2861v5a2l68i";
     }
   );
 in
