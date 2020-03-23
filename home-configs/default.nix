@@ -36,7 +36,7 @@ in
     ./bat.nix
     ./direnv.nix
     ./fish.nix
-    # ./firefox.nix
+    ./firefox.nix
     ./fzf.nix
     ./git.nix
     # ./httpie.nix

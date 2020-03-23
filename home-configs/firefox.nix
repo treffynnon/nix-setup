@@ -4,8 +4,8 @@ let
 in
 {
   programs.firefox = {
-    enable = true;
-    package = if isDarwin then pkgs.Firefox else pkgs.firefox; # comes from the overlay 30-apps.nix
+    enable = !isDarwin; # package is unavailable for Mac
+    package = pkgs.firefox;
     extensions = with pkgs.nur.repos.rycee.firefox-addons; [
       darkreader
       https-everywhere
