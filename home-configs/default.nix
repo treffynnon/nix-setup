@@ -39,10 +39,10 @@ in
     # ./firefox.nix
     ./fzf.nix
     ./git.nix
-    ./httpie.nix
+    # ./httpie.nix
     ./irssi.nix
     ./kitty.nix
-    ./neovim.nix
+    # ./neovim.nix
     ./pgcli.nix
     ./starship.nix
     ./vifm.nix

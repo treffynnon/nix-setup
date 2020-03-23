@@ -17,7 +17,7 @@
       ];
       "workbench.colorTheme" = "Paraiso_dark";
       "vim.enableNeovim" = true;
-      "vim.neovimPath" = "${pkgs.neovim}/bin/nvim";
+      # "vim.neovimPath" = "${pkgs.neovim}/bin/nvim";
 
       # Paraiso dark from https://glitchbone.github.io/vscode-base16-term/#/paraiso
       "workbench.colorCustomizations" = {
