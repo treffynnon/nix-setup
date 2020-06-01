@@ -77,32 +77,46 @@ spoon.ScreenPresets:setPresets(
 				scaling = 1.0
 			}
 		},
-		pademelon_home = {
-			{
-				id = "CC6F3D60-BB40-DBA1-E4A8-8C4388E352F7",
-				name = "VA2746 SERIES",
-				origin = { x = 0.0, y = 0.0 },
-				resolution = { h = 1920, w = 1080 },
-				rotation = 270,
-				scaling = 1.0
+		pademelon_home = { {
+			id = "662C50EE-BF07-E4F4-7EFB-0DC98939812E",
+			name = "Philips 221V",
+			origin = {
+			  x = 0.0,
+			  y = 0.0
 			},
-			{
-				id = "6AECDDE9-288C-0715-DBA7-0CE2A25D2BF3",
-				name = "Color LCD",
-				origin = { x = -1680.0, y = 1556.0 },
-				resolution = { h = 800, w = 1280 },
-				rotation = 0,
-				scaling = 2.0
+			resolution = {
+			  h = 1080,
+			  w = 1920
 			},
-			{
-				id = "662C50EE-BF07-E4F4-7EFB-0DC98939812E",
-				name = "Philips 221V",
-				origin = { x = -1920.0, y = 476.0 },
-				resolution = { h = 1080, w = 1920 },
-				rotation = 0,
-				scaling = 1.0
-			}
-		}
+			rotation = 0,
+			scaling = 1.0
+		  }, {
+			id = "6AECDDE9-288C-0715-DBA7-0CE2A25D2BF3",
+			name = "Color LCD",
+			origin = {
+			  x = 520.0,
+			  y = 1080.0
+			},
+			resolution = {
+			  h = 800,
+			  w = 1280
+			},
+			rotation = 0,
+			scaling = 2.0
+		  }, {
+			id = "D857386D-1A37-B3E0-D3C3-7B4ED8B31867",
+			name = "VA2746 SERIES",
+			origin = {
+			  x = 1920.0,
+			  y = -476.0
+			},
+			resolution = {
+			  h = 1920,
+			  w = 1080
+			},
+			rotation = 270,
+			scaling = 1.0
+		  } }
 	}
 )
 spoon.ScreenPresets:start()
