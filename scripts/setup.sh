@@ -21,6 +21,13 @@ YELLOW_UL='\033[38;4;33m'
 
 NIX_EXISTS=$(type nix-env 2>/dev/null)
 NIX_DARWIN_EXISTS=$(type darwin-rebuild 2>/dev/null)
+IS_NIXOS=$(type nix-rebuild 2>/dev/null)
+IS_DARWIN=false
+CURRENT_HOSTNAME=$(hostname)
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  IS_DARWIN=true
+fi
 
 # Ensure script is not being run with root privileges
 if [ $EUID -eq 0 ]; then
@@ -37,9 +44,11 @@ fi
 # Keep-alive: update existing `sudo` time stamp until this script has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-# Close any open System Preferences panes, to prevent them from overriding settings we’re about to change
-echo "Closing any open System Preferences dialogues"
-osascript -e 'tell application "System Preferences" to quit'
+if [ "$IS_DARWIN" == true ]; then
+  # Close any open System Preferences panes, to prevent them from overriding settings we’re about to change
+  echo "Closing any open System Preferences dialogues"
+  osascript -e 'tell application "System Preferences" to quit'
+fi
 
 # Give the computer a name
 read -p "Pick a name for this machine [$(hostname)]:  " COMPUTER_NAME
@@ -54,36 +63,42 @@ if [ ! -f "$nixConfig" ]; then
   echo "{}" > "$nixConfig"
 fi
 
-# the version of curl that comes with macosx is ancient cannot deal with IPV6 addresses
-# so need disable them for now. Seems be an issue on some corporate networks for some reason.
-sudo networksetup -setv6off Wi-Fi &>/dev/null
-sudo networksetup -setv6off Ethernet &>/dev/null
+if [ "$IS_DARWIN" == true ]; then
+  # the version of curl that comes with macosx is ancient cannot deal with IPV6 addresses
+  # so need disable them for now. Seems be an issue on some corporate networks for some reason.
+  sudo networksetup -setv6off Wi-Fi &>/dev/null
+  sudo networksetup -setv6off Ethernet &>/dev/null
 
-# Set computer name (as done via System Preferences → Sharing)
-sudo scutil --set ComputerName "$COMPUTER_NAME"
-sudo scutil --set HostName "$COMPUTER_NAME"
-sudo scutil --set LocalHostName "$COMPUTER_NAME"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$COMPUTER_NAME"
-dscacheutil -flushcache
+  # Set computer name (as done via System Preferences → Sharing)
+  sudo scutil --set ComputerName "$COMPUTER_NAME"
+  sudo scutil --set HostName "$COMPUTER_NAME"
+  sudo scutil --set LocalHostName "$COMPUTER_NAME"
+  sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$COMPUTER_NAME"
+  dscacheutil -flushcache
 
-# Disable the sound effects on boot
-sudo nvram SystemAudioVolume=" "
-# Play user interface sound effects
-defaults write com.apple.systemsound com.apple.sound.uiaudio.enabled -bool false
-# Alert volume
-# Slider level:
-#  "75%": 0.7788008
-#  "50%": 0.6065307
-#  "25%": 0.4723665
-defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.000
+  # Disable the sound effects on boot
+  sudo nvram SystemAudioVolume=" "
+  # Play user interface sound effects
+  defaults write com.apple.systemsound com.apple.sound.uiaudio.enabled -bool false
+  # Alert volume
+  # Slider level:
+  #  "75%": 0.7788008
+  #  "50%": 0.6065307
+  #  "25%": 0.4723665
+  defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.000
 
-# Enable the Apple firewall
-sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
-sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -bool true
-sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -bool true
-sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true
-# Set Apple spaces to span multiple displays
-defaults write com.apple.spaces spans-displays -bool true
+  # Enable the Apple firewall
+  sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+  sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -bool true
+  sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -bool true
+  sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true
+  # Set Apple spaces to span multiple displays
+  defaults write com.apple.spaces spans-displays -bool true
+else
+  sudo sed -i "s/$CURRENT_HOSTNAME/$COMPUTER_NAME/g" /etc/hostname
+  sudo sed -i "s/$CURRENT_HOSTNAME/$COMPUTER_NAME/g" /etc/hosts
+  sudo hostname "$COMPUTER_NAME"
+fi
 
 # Nix
 if [[ ! $NIX_EXISTS ]]; then
@@ -156,10 +171,20 @@ if [[ "$SHELL" != "/run"* && "$SHELL" != "/nix"* && -L "$NIX_SUPPLIED_BASH" ]]; 
   export SHELL="$NIX_SUPPLIED_BASH"
 fi
 
-darwin-rebuild switch
+if [ "$IS_DARWIN" == true ]; then
+  darwin-rebuild switch
+elif [ "$IS_NIXOS" == true ]; then
+  nix-rebuild switch
+else
+  # this is for installs that are hosted on another linux distro
+  # see ./config.nix for the configuration
+  nix-env -iA nixpkgs.userConfiguration
+fi
 echo -e ""$GREEN"Successfully completed!"$ESC""
 echo "Restart your machine for GPG/keyring to be setup properly"
 
-# re-enable IPV6 now we have a decent curl from nixpkgs
-sudo networksetup -setv6automatic Wi-Fi &>/dev/null
-sudo networksetup -setv6automatic Ethernet &>/dev/null
+if [ "$IS_DARWIN" == true ]; then
+  # re-enable IPV6 now we have a decent curl from nixpkgs
+  sudo networksetup -setv6automatic Wi-Fi &>/dev/null
+  sudo networksetup -setv6automatic Ethernet &>/dev/null
+fi
