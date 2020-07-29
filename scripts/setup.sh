@@ -150,7 +150,7 @@ nix-channel --add https://github.com/rycee/home-manager/archive/release-20.03.ta
 nix-channel --update
 
 # nix darwin
-if [[ ! $NIX_DARWIN_EXISTS ]]; then
+if [[ ! $NIX_DARWIN_EXISTS ]] && [ "$IS_DARWIN" == true ]; then
   nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
   ./result/bin/darwin-installer
 
