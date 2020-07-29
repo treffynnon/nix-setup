@@ -20,7 +20,7 @@ in {
       export PATH=$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/sbin:/bin:/usr/sbin:/usr/bin
       export MANPATH=$HOME/.nix-profile/share/man:/nix/var/nix/profiles/default/share/man:/usr/share/man
     '';
-    userConfiguration = pkgs.buildEnv {
+    userConfiguration = lib.lowPrio buildEnv {
       name = "user-configuration";
       ignoreCollisions = true;
       paths = (
