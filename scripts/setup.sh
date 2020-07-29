@@ -179,6 +179,18 @@ else
   # this is for installs that are hosted on another linux distro
   # see ./config.nix for the configuration
   nix-env -iA nixpkgs.userConfiguration
+
+  # need to manually run home-manager in this case too
+  nix-shell '<home-manager>' -A install
+
+  homeConfigPath='/home/simon/.config/nixpkgs/home.nix'
+  replacementImports='imports = [ ../../.nixpkgs/home-configs/default.nix ];'
+
+  if [[ ! $(grep -q "home-configs/default.nix" "$homeConfigPath") ]]; then
+    sed -i "s|^\}|  ${replacement}\n}|g" "$homeConfigPath"
+  fi
+
+  home-manager switch
 fi
 echo -e ""$GREEN"Successfully completed!"$ESC""
 echo "Restart your machine for GPG/keyring to be setup properly"
