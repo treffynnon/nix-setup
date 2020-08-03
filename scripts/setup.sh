@@ -1,6 +1,10 @@
 #! /usr/bin/env bash
 
-NIXPKGS_BASEPATH=$(realpath `dirname "$0"`)
+if [ $(type realpath 2>/dev/null) ]; then
+  NIXPKGS_BASEPATH=$(readlink `dirname "$0"`)
+else
+  NIXPKGS_BASEPATH=$(ruby -e "puts File.expand_path('$(dirname "$0")')")
+fi
 
 # kitty uses something like xterm-kitty, which nix does not recognise so this will allow
 # kitty masquerade as xterm-256color for the purposes of this setup script
@@ -114,7 +118,7 @@ sudo defaults write /Library/Preferences/com.apple.driver.AppleIRController Devi
 
 # Nix
 if [[ ! $NIX_EXISTS ]]; then
-  curl https://nixos.org/nix/install | sh
+  curl -L https://nixos.org/nix/install | sh
 
   if [ ! -e private/var/run ]; then
     sudo ln -s private/var/run /run

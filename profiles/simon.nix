@@ -28,6 +28,7 @@ mkMerge [
         with pkgs; [
           any-nix-shell
           cmus
+          lorri
         ]
       );
   }
