@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-if [ $(type realpath 2>/dev/null) ]; then
+if [ "$(type realpath 2>/dev/null)" == true ]; then
   NIXPKGS_BASEPATH=$(readlink `dirname "$0"`)
 else
   NIXPKGS_BASEPATH=$(ruby -e "puts File.expand_path('$(dirname "$0")')")
