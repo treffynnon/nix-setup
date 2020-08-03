@@ -25,6 +25,13 @@ YELLOW_UL='\033[38;4;33m'
 
 NIX_EXISTS=$(type nix-env 2>/dev/null)
 NIX_DARWIN_EXISTS=$(type darwin-rebuild 2>/dev/null)
+IS_NIXOS=$(type nix-rebuild 2>/dev/null)
+IS_DARWIN=false
+CURRENT_HOSTNAME=$(hostname)
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  IS_DARWIN=true
+fi
 
 # Ensure script is not being run with root privileges
 if [ $EUID -eq 0 ]; then
@@ -41,9 +48,11 @@ fi
 # Keep-alive: update existing `sudo` time stamp until this script has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-# Close any open System Preferences panes, to prevent them from overriding settings we’re about to change
-echo "Closing any open System Preferences dialogues"
-osascript -e 'tell application "System Preferences" to quit'
+if [ "$IS_DARWIN" == true ]; then
+  # Close any open System Preferences panes, to prevent them from overriding settings we’re about to change
+  echo "Closing any open System Preferences dialogues"
+  osascript -e 'tell application "System Preferences" to quit'
+fi
 
 # Give the computer a name
 read -p "Pick a name for this machine [$(hostname)]:  " COMPUTER_NAME
@@ -58,63 +67,67 @@ if [ ! -f "$nixConfig" ]; then
   echo "{}" > "$nixConfig"
 fi
 
-# the version of curl that comes with macosx is ancient cannot deal with IPV6 addresses
-# so need disable them for now. Seems be an issue on some corporate networks for some reason.
-sudo networksetup -setv6off Wi-Fi &>/dev/null
-sudo networksetup -setv6off Ethernet &>/dev/null
+if [ "$IS_DARWIN" == true ]; then
+  # the version of curl that comes with macosx is ancient cannot deal with IPV6 addresses
+  # so need disable them for now. Seems be an issue on some corporate networks for some reason.
+  sudo networksetup -setv6off Wi-Fi &>/dev/null
+  sudo networksetup -setv6off Ethernet &>/dev/null
 
-# Set computer name (as done via System Preferences → Sharing)
-sudo scutil --set ComputerName "$COMPUTER_NAME"
-sudo scutil --set HostName "$COMPUTER_NAME"
-sudo scutil --set LocalHostName "$COMPUTER_NAME"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$COMPUTER_NAME"
-dscacheutil -flushcache
+  # Set computer name (as done via System Preferences → Sharing)
+  sudo scutil --set ComputerName "$COMPUTER_NAME"
+  sudo scutil --set HostName "$COMPUTER_NAME"
+  sudo scutil --set LocalHostName "$COMPUTER_NAME"
+  sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$COMPUTER_NAME"
+  dscacheutil -flushcache
 
-# Disable the sound effects on boot
-sudo nvram SystemAudioVolume=" "
-# Play user interface sound effects
-defaults write com.apple.systemsound com.apple.sound.uiaudio.enabled -bool false
-# Alert volume
-# Slider level:
-#  "75%": 0.7788008
-#  "50%": 0.6065307
-#  "25%": 0.4723665
-defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.000
+  # Disable the sound effects on boot
+  sudo nvram SystemAudioVolume=" "
+  # Play user interface sound effects
+  defaults write com.apple.systemsound com.apple.sound.uiaudio.enabled -bool false
+  # Alert volume
+  # Slider level:
+  #  "75%": 0.7788008
+  #  "50%": 0.6065307
+  #  "25%": 0.4723665
+  defaults write NSGlobalDomain com.apple.sound.beep.volume -float 0.000
 
-# Enable the Apple firewall
-sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
-sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -bool true
-sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -bool true
-sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true
+  # Enable the Apple firewall
+  sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+  sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -bool true
+  sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -bool true
+  sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool true
+  # Set Apple spaces to span multiple displays
+  defaults write com.apple.spaces spans-displays -bool true
 
-# Set Apple spaces to span multiple displays
-defaults write com.apple.spaces spans-displays -bool true
+  # Display login window as: Name and password
+  sudo defaults write /Library/Preferences/com.apple.loginwindow "SHOWFULLNAME" -bool true
+  # Disable automatic login
+  sudo defaults delete /Library/Preferences/com.apple.loginwindow autoLoginUser 2>/dev/null
+  # Allow guests to login to this computer
+  sudo defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool false
+  # Show password hints after count (0 to disable)
+  defaults write NSGlobalDomain RetriesUntilHint -int 0
 
-# Display login window as: Name and password
-sudo defaults write /Library/Preferences/com.apple.loginwindow "SHOWFULLNAME" -bool true
-# Disable automatic login
-sudo defaults delete /Library/Preferences/com.apple.loginwindow autoLoginUser 2>/dev/null
-# Allow guests to login to this computer
-sudo defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool false
-# Show password hints after count (0 to disable)
-defaults write NSGlobalDomain RetriesUntilHint -int 0
+  # Require password 5 seconds after sleep or screen saver begins
+  defaults write com.apple.screensaver askForPassword -bool true
+  defaults write com.apple.screensaver askForPasswordDelay -int 5
 
-# Require password 5 seconds after sleep or screen saver begins
-defaults write com.apple.screensaver askForPassword -bool true
-defaults write com.apple.screensaver askForPasswordDelay -int 5
+  # Disable automatic login
+  sudo defaults delete /Library/Preferences/com.apple.loginwindow autoLoginUser &> /dev/null
 
-# Disable automatic login
-sudo defaults delete /Library/Preferences/com.apple.loginwindow autoLoginUser &> /dev/null
+  # Disable the “Are you sure you want to open this application?” dialog
+  defaults write com.apple.LaunchServices LSQuarantine -bool false
 
-# Disable the “Are you sure you want to open this application?” dialog
-defaults write com.apple.LaunchServices LSQuarantine -bool false
+  # Allow applications downloaded from anywhere
+  sudo spctl --master-disable
 
-# Allow applications downloaded from anywhere
-sudo spctl --master-disable
-
-# Disable Infared Remote
-sudo defaults write /Library/Preferences/com.apple.driver.AppleIRController DeviceEnabled -bool false
-
+  # Disable Infared Remote
+  sudo defaults write /Library/Preferences/com.apple.driver.AppleIRController DeviceEnabled -bool false
+else
+  sudo sed -i "s/$CURRENT_HOSTNAME/$COMPUTER_NAME/g" /etc/hostname
+  sudo sed -i "s/$CURRENT_HOSTNAME/$COMPUTER_NAME/g" /etc/hosts
+  sudo hostname "$COMPUTER_NAME"
+fi
 
 # Nix
 if [[ ! $NIX_EXISTS ]]; then
@@ -166,7 +179,7 @@ nix-channel --add https://github.com/rycee/home-manager/archive/release-20.03.ta
 nix-channel --update
 
 # nix darwin
-if [[ ! $NIX_DARWIN_EXISTS ]]; then
+if [[ ! $NIX_DARWIN_EXISTS ]] && [ "$IS_DARWIN" == true ]; then
   nix-build https://github.com/LnL7/nix-darwin/archive/master.tar.gz -A installer
   ./result/bin/darwin-installer
 
@@ -187,10 +200,32 @@ if [[ "$SHELL" != "/run"* && "$SHELL" != "/nix"* && -L "$NIX_SUPPLIED_BASH" ]]; 
   export SHELL="$NIX_SUPPLIED_BASH"
 fi
 
-darwin-rebuild switch
+if [ "$IS_DARWIN" == true ]; then
+  darwin-rebuild switch
+elif [ "$IS_NIXOS" == true ]; then
+  nix-rebuild switch
+else
+  # this is for installs that are hosted on another linux distro
+  # see ./config.nix for the configuration
+  nix-env -iA nixpkgs.userConfiguration
+
+  # need to manually run home-manager in this case too
+  nix-shell '<home-manager>' -A install
+
+  homeConfigPath='/home/simon/.config/nixpkgs/home.nix'
+  replacementImports='imports = [ ../../.nixpkgs/home-configs/default.nix ];'
+
+  if [[ ! $(grep -q "home-configs/default.nix" "$homeConfigPath") ]]; then
+    sed -i "s|^\}|  ${replacement}\n}|g" "$homeConfigPath"
+  fi
+
+  home-manager switch
+fi
 echo -e ""$GREEN"Successfully completed!"$ESC""
 echo "Restart your machine for GPG/keyring to be setup properly"
 
-# re-enable IPV6 now we have a decent curl from nixpkgs
-sudo networksetup -setv6automatic Wi-Fi &>/dev/null
-sudo networksetup -setv6automatic Ethernet &>/dev/null
+if [ "$IS_DARWIN" == true ]; then
+  # re-enable IPV6 now we have a decent curl from nixpkgs
+  sudo networksetup -setv6automatic Wi-Fi &>/dev/null
+  sudo networksetup -setv6automatic Ethernet &>/dev/null
+fi
