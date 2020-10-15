@@ -83,15 +83,6 @@ in
         ]
       );
 
-    environment.shellAliases = {
-      ls = "exa";
-      ll = "exa -lh";
-      la = "exa -lhaa";
-      lt = "exa -lTh";
-      lg = "exa -lh --git";
-      lgt = "exa -lTh --git";
-    };
-
     programs.bash = {
       enable = true;
       enableCompletion = true;
