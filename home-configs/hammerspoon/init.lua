@@ -116,6 +116,47 @@ spoon.ScreenPresets:setPresets(
 			},
 			rotation = 270,
 			scaling = 1.0
+		  } },
+		
+		  thylacine_home = { {
+			id = "54FA99AE-7460-427B-C3BA-326D27EAE58D",
+			name = "DELL S2722QC (2)",
+			origin = {
+			  x = 0.0,
+			  y = 0.0
+			},
+			resolution = {
+			  h = 1440,
+			  w = 2560
+			},
+			rotation = 0,
+			scaling = 2.0
+		  }, {
+			id = "C705FF01-976B-8D0C-6E02-51D75CD3123D",
+			name = "Built-in Retina Display",
+			origin = {
+			  x = -1792.0,
+			  y = 1080.0
+			},
+			resolution = {
+			  h = 1120,
+			  w = 1792
+			},
+			rotation = 0,
+			scaling = 2.0
+		  }, {
+			id = "3D2B059D-B890-5E46-9702-DF2017843E08",
+			name = "DELL S2722QC (1)",
+			origin = {
+			  x = 2560.0,
+			  y = -531.0
+			},
+			resolution = {
+			  h = 2560,
+			  w = 1440
+			},
+			rotation = 270,
+			scaling = 2.0
 		  } }
 	}
 )

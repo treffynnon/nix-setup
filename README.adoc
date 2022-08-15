@@ -93,6 +93,8 @@ Otherwise you can create one using this comprehensive guide - https://blog.tinne
 
 === Setting up hammerspoon
 
+Install Hammerspoon from https://www.hammerspoon.org/
+
 Hammerspoon provides:
 
 * Window management via the keyboard
@@ -104,7 +106,7 @@ Run Hammerspoon (use Spotlight with kbd:[Command] + kbd:[Space]) - note that it 
 * Enable Accessibility
 * (optionally) untick "Show dock icon"
 
-The nix derivation that installs Hammerspoon it is in `./overlays/hammerspoon.nix` and the configuration is in `./home-configs/hammerspoon.nix` and `./home-configs/hammerspoon`.
+The configuration is in `./home-configs/hammerspoon.nix` and `./home-configs/hammerspoon`.
 
 === Environment variables
 
