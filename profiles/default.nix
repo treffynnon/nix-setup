@@ -37,6 +37,11 @@ in
     services.nix-daemon.enable = true;
     nix.package = pkgs.nix;
 
+    nix.extraOptions = ''
+      keep-outputs = true
+      keep-derivations = true
+    '';
+
     environment.systemPackages =
       (
         with pkgs; [

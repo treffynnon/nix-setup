@@ -1,14 +1,8 @@
 let
-  pkgs = import (
-    builtins.fetchTarball {
-      name = "nix-master-d793d53b0d829";
-      url = https://github.com/NixOS/nixpkgs/archive/d793d53b0d829090b8a38b14384dfcaae9ab1ae5.tar.gz;
-      sha256 = "09pz7wkk4w4kwifzwdjwxpqdqqb8g1nd2i4kwdlx8jg8ydb44pm8";
-    }
-  ) {};
+  pkgs = (import <nixpkgs> {});
 
   luaFormat = import ./codestyle/lua-format.nix { inherit pkgs; };
-  nixLinter = import ./codestyle/nix-linter.nix {};
+  nixLinter = import ./codestyle/nix-linter.nix { inherit pkgs; };
   nixpkgsFmt = import ./codestyle/nixpkgs-fmt.nix { inherit pkgs; };
   luaCheck = import ./codestyle/luacheck.nix { inherit pkgs; };
 in
