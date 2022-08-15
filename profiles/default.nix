@@ -47,7 +47,7 @@ in
           wget
           dnsutils
           nmap
-          telnet
+          inetutils 
 
           less
           jq

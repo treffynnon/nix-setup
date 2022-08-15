@@ -11,7 +11,8 @@ in
   programs.direnv = {
     enable = true;
     enableBashIntegration = true;
-    enableFishIntegration = true;
+    # no longer required as it is always enabled in fish
+    # enableFishIntegration = true;
   };
   # https://github.com/nix-community/nix-direnv
   home.file.".nix-direnv/direnvrc".source = "${nixDirenvPath}/direnvrc";

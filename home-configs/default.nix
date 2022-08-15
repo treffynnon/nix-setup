@@ -51,4 +51,6 @@ in
   ++ optionals isDarwin [
     ./hammerspoon.nix
   ];
+
+  home.stateVersion = "22.11";
 }
