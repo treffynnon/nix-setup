@@ -18,7 +18,7 @@ rec {
       mkdir -p "$out/Applications/${appName}.app"
       cp -R . "$out/Applications/${appName}.app"
     '';
-    meta = with stdenv.lib; {
+    meta = with lib; {
       description = "Staggeringly powerful macOS desktop automation with Lua";
       homepage = https://www.hammerspoon.org/;
       license = licenses.mit;

@@ -32,7 +32,7 @@ rec {
       mkdir -p $out/bin
       cp lua-format $out/bin
     '';
-    meta = with stdenv.lib; {
+    meta = with lib; {
       description = "Code formatter for Lua";
       homepage = https://github.com/Koihik/LuaFormatter;
       license = licenses.asl20;
