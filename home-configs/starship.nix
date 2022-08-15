@@ -4,8 +4,8 @@
 
     settings = {
       add_newline = false;
-      character.symbol = "└─λ.";
-      directory.fish_style_pwd_dir_length = 1;
+      character.success_symbol = "└─λ.(bold green)";
+      character.error_symbol = "└─λ.(bold red)";
 
       # disable stuff I don't use
       conda.disabled = true;
