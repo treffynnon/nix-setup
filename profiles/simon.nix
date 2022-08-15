@@ -37,7 +37,7 @@ mkMerge [
     optionalAttrs isLinux {
       users.defaultUserShell = pkgs.fish;
 
-      home-manager.users.root = homeManager;
+      home-manager.users."${username}" = homeManager;
 
       users.users."${username}" = {
         isNormalUser = true;
