@@ -15,6 +15,7 @@
       ".DS_Store"
       ".AppleDouble"
       ".LSOverride"
+      ".direnv"
     ];
 
     aliases = {
