@@ -32,6 +32,8 @@
       };
       # this is for diffs shown during times like `git add -p`
       interactive.diffFilter = "${pkgs.git}/share/git/contrib/diff-highlight/diff-highlight";
+      add.interactive.useBuiltin = false; # required for git 2.37.0
+
       color = {
         status = "auto";
         diff = "auto";
