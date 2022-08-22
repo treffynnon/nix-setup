@@ -5,10 +5,10 @@
     enable = true;
     userName = "Simon Holywell";
     userEmail = "simon@holywell.com.au";
-    signing = {
-      key = "3346447094AB9095";
-      signByDefault = true;
-    };
+    # signing = {
+    #   key = "3346447094AB9095";
+    #   signByDefault = true;
+    # };
 
     ignores = [
       "*.sw?"
