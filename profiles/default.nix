@@ -95,10 +95,10 @@ in
     programs.zsh.enable = true;
     programs.fish.enable = true;
 
-    programs.gnupg.agent = {
-      enable = true;
-      enableSSHSupport = true;
-    };
+    # programs.gnupg.agent = {
+    #   enable = true;
+    #   enableSSHSupport = true;
+    # };
 
     time.timeZone = "Australia/Brisbane";
   }
