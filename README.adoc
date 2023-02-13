@@ -21,6 +21,15 @@ which will perform the following actions for you:
 1. moves default ZSH zprofile and zshrc to *.local (they still get loaded!)
 1. runs `darwin-rebuild switch` to install all the dependencies with nix
 
+=== Rebuilding the configuration when you change the files
+
+[source, bash]
+----
+TERM=xterm-256color darwin-rebuild switch
+----
+
+The TERM environment var is changed here because modern term emulators like kitty confuse the darwin-rebuild util.
+
 === Setup cachix
 
 ==== Install to benefit from the binary cache
@@ -169,6 +178,8 @@ nix-shell
 == Managing development environments
 
 === Direnv and Lorri
+
+**I no longer use lorri because I am using nix-direnv instead.**
 
 Install link:https://github.com/target/lorri[Lorri] (not currently a Nix package due to their rapid development cycles while in beta).
 

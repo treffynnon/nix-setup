@@ -214,7 +214,7 @@ in
           NSTableViewDefaultSizeMode = 1;
 
           # Configures the trackpad tracking speed (0 to 3).  The default is "1".
-          "com.apple.trackpad.scaling" = "2.9999999";
+          "com.apple.trackpad.scaling" = 2.999;
 
           # Configures the keyboard control behavior.  Mode 3 enables full keyboard control.
           AppleKeyboardUIMode = 3;
@@ -226,7 +226,7 @@ in
           AppleMetricUnits = 1;
           AppleTemperatureUnit = "Celsius";
 
-          "com.apple.sound.beep.volume" = "0.000";
+          "com.apple.sound.beep.volume" = 0.000;
           "com.apple.sound.beep.feedback" = 0;
         };
         alf = {
