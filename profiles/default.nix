@@ -60,7 +60,6 @@ in
           imagemagick
 
           ripgrep
-          ncdu
 
           unzip
           zip
