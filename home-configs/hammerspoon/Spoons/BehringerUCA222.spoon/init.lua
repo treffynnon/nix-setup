@@ -18,7 +18,7 @@ obj.device = {productName = "USB Audio CODEC ", vendorName = "Burr-Brown from TI
 
 obj.logger = hs.logger.new("BehringerUCA222", "debug")
 
-function obj:connected()
+function obj.connected()
   local behringer = nil
 
   hs.timer.waitUntil(function()
@@ -35,12 +35,12 @@ function obj:connected()
   end, 0.1)
 end
 
-function obj:disconnected()
+function obj.disconnected()
   obj.logger.i("Muting everything!")
   hs.fnutils.each(hs.audiodevice.allOutputDevices(), function(x) x:setOutputMuted(true) end)
 end
 
-function obj:handleUsbChange()
+function obj.handleUsbChange()
   return function(event)
     if (event.productName == obj.device.productName and event.vendorName == obj.device.vendorName) then
       if (event.eventType == "added") then return obj:connected() end

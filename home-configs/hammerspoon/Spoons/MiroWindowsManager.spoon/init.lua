@@ -1,6 +1,6 @@
 -- Copyright (c) 2018 Miro Mannino
--- Permission is hereby granted, free of charge, to any person obtaining a copy of this 
--- software and associated documentation files (the "Software"), to deal in the Software 
+-- Permission is hereby granted, free of charge, to any person obtaining a copy of this
+-- software and associated documentation files (the "Software"), to deal in the Software
 -- without restriction, including without limitation the rights to use, copy, modify, merge,
 -- publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 -- to whom the Software is furnished to do so, subject to the following conditions:
@@ -8,16 +8,16 @@
 -- The above copyright notice and this permission notice shall be included in all copies
 -- or substantial portions of the Software.
 --
--- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
--- INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+-- INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 -- PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
--- FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
--- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+-- FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+-- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 --- === MiroWindowsManager ===
 ---
 --- With this script you will be able to move the window in halves and in corners using your keyboard and mainly using arrows. You would also be able to resize them by thirds, quarters, or halves.
---- 
+---
 --- Official homepage for more info and documentation: [https://github.com/miromannino/miro-windows-manager](https://github.com/miromannino/miro-windows-manager)
 ---
 --- Download: [https://github.com/miromannino/miro-windows-manager/raw/master/MiroWindowsManager.spoon.zip](https://github.com/miromannino/miro-windows-manager/raw/master/MiroWindowsManager.spoon.zip)
@@ -34,14 +34,14 @@ obj.license = "MIT - https://opensource.org/licenses/MIT"
 
 --- MiroWindowsManager.sizes
 --- Variable
---- The sizes that the window can have. 
+--- The sizes that the window can have.
 --- The sizes are expressed as dividend of the entire screen's size.
 --- For example `{2, 3, 3/2}` means that it can be 1/2, 1/3 and 2/3 of the total screen's size
 obj.sizes = {2, 3, 3 / 2}
 
 --- MiroWindowsManager.fullScreenSizes
 --- Variable
---- The sizes that the window can have in full-screen. 
+--- The sizes that the window can have in full-screen.
 --- The sizes are expressed as dividend of the entire screen's size.
 --- For example `{1, 4/3, 2}` means that it can be 1/1 (hence full screen), 3/4 and 1/2 of the total screen's size
 obj.fullScreenSizes = {1, 4 / 3, 2}
@@ -60,10 +60,9 @@ function obj:_nextStep(dim, offs, cb)
     local oppDim = dim == 'w' and 'h' or 'w'
     local oppAxis = dim == 'w' and 'y' or 'x'
     local win = hs.window.frontmostWindow()
-    local id = win:id()
     local screen = win:screen()
 
-    cell = hs.grid.get(win, screen)
+    local cell = hs.grid.get(win, screen)
 
     local nextSize = self.sizes[1]
     for i = 1, #self.sizes do
@@ -87,10 +86,9 @@ end
 function obj:_nextFullScreenStep()
   if hs.window.focusedWindow() then
     local win = hs.window.frontmostWindow()
-    local id = win:id()
     local screen = win:screen()
 
-    cell = hs.grid.get(win, screen)
+    local cell = hs.grid.get(win, screen)
 
     local nextSize = self.fullScreenSizes[1]
     for i = 1, #self.fullScreenSizes do
@@ -111,10 +109,9 @@ function obj:_nextFullScreenStep()
   end
 end
 
-function obj:_moveNextScreenStep()
+function obj._moveNextScreenStep()
   if hs.window.focusedWindow() then
     local win = hs.window.frontmostWindow()
-    local id = win:id()
     local screen = win:screen()
 
     win:move(win:frame():toUnitRect(screen:frame()), screen:next(), true, 0)
@@ -124,9 +121,8 @@ end
 function obj:_fullDimension(dim)
   if hs.window.focusedWindow() then
     local win = hs.window.frontmostWindow()
-    local id = win:id()
     local screen = win:screen()
-    cell = hs.grid.get(win, screen)
+    local cell = hs.grid.get(win, screen)
 
     if (dim == 'x') then
       cell = '0,0 ' .. self.GRID.w .. 'x' .. self.GRID.h
@@ -223,7 +219,7 @@ function obj:bindHotkeys(mapping)
 
 end
 
-function obj:init()
+function obj.init()
   print("Initializing Miro's Windows Manager")
   hs.grid.setGrid(obj.GRID.w .. 'x' .. obj.GRID.h)
   hs.grid.MARGINX = 0
