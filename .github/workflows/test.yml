@@ -8,6 +8,9 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: cachix/install-nix-action@v25
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - uses: DeterminateSystems/magic-nix-cache-action@v2
       - name: Check nix lint
         run: nix-shell --run "statix check"
         shell: bash
