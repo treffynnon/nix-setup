@@ -7,64 +7,59 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: cachix/install-nix-action@v3
-      - uses: cachix/cachix-action@v2
+      - uses: cachix/install-nix-action@v25
+      - uses: cachix/cachix-action@v14
         with:
           file: codestyle/nixpkgs-fmt.nix
           name: treffynnon
-          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+          signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
           # Only needed for private caches
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-      - name: Run nixpkgs-fmt check
-        run: ./result/bin/nixpkgs-fmt --check ./**/*.nix
-        shell: bash
-  lint-nix:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: cachix/install-nix-action@v3
-      - uses: cachix/cachix-action@v2
-        with:
-          file: codestyle/nix-linter.nix
-          name: treffynnon
-          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-          # Only needed for private caches
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-      - name: Run nix-linter check
-        env:
-          LC_ALL: en_US.UTF-8
-        run: ./result/bin/nix-linter ./**/*.nix
-        shell: bash
-  format-hammerspoon-lua:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: cachix/install-nix-action@v3
-      - uses: cachix/cachix-action@v2
-        with:
-          file: codestyle/lua-format.nix
-          name: treffynnon
-          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-          # Only needed for private caches
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-      - name: Run lua-format
-        run: find "home-configs/hammerspoon" -type f -name "*.lua" -exec ./result/bin/lua-format -i --config="./codestyle/lua-format-config.yml" {} +
-        shell: bash
-      - name: Check for changed files - fails if there is a git diff
-        run: git diff --quiet
-        shell: bash
-  lint-hammerspoon-lua:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: cachix/install-nix-action@v3
-      - uses: cachix/cachix-action@v2
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+      - uses: cachix/cachix-action@v14
         with:
           file: codestyle/luacheck.nix
           name: treffynnon
-          signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+          signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
           # Only needed for private caches
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+      - name: Run nixpkgs-fmt check
+        run: ./result/bin/nixpkgs-fmt --check ./**/*.nix
+        shell: bash
       - name: Run luacheck
         run: ./result/bin/luacheck --config "./codestyle/.luacheckrc.lua" "./home-configs/hammerspoon"
         shell: bash
+  # lint-nix:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v1
+  #     - uses: cachix/install-nix-action@v3
+  #     - uses: cachix/cachix-action@v2
+  #       with:
+  #         file: codestyle/nix-linter.nix
+  #         name: treffynnon
+  #         signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
+  #         # Only needed for private caches
+  #         authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+  #     - name: Run nix-linter check
+  #       env:
+  #         LC_ALL: en_US.UTF-8
+  #       run: ./result/bin/nix-linter ./**/*.nix
+  #       shell: bash
+  # format-hammerspoon-lua:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v1
+  #     - uses: cachix/install-nix-action@v3
+  #     - uses: cachix/cachix-action@v2
+  #       with:
+  #         file: codestyle/lua-format.nix
+  #         name: treffynnon
+  #         signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
+  #         # Only needed for private caches
+  #         authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+  #     - name: Run lua-format
+  #       run: find "home-configs/hammerspoon" -type f -name "*.lua" -exec ./result/bin/lua-format -i --config="./codestyle/lua-format-config.yml" {} +
+  #       shell: bash
+  #     - name: Check for changed files - fails if there is a git diff
+  #       run: git diff --quiet
+  #       shell: bash

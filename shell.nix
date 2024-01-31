@@ -17,5 +17,6 @@ in
       luarocks-nix
       (pkgs.lua.withPackages(ps: with ps; [ busted ]))
       luaCheck
+      statix
     ];
   }
