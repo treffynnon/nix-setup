@@ -11,12 +11,14 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
       - uses: DeterminateSystems/magic-nix-cache-action@v2
+
       - name: Check nix lint
         run: nix-shell --run "statix check"
         shell: bash
       - name: Run nixpkgs-fmt check
         run: nix-shell --run "nixpkgs-fmt --check ./**/*.nix"
         shell: bash
+
       - name: Run luacheck
         run: nix-shell --run "luacheck --config \"./codestyle/.luacheckrc.lua\" \"./home-configs/hammerspoon\""
         shell: bash
@@ -26,38 +28,3 @@ jobs:
       - name: Check for changed files - fails if there is a git diff
         run: nix-shell --run "git diff --quiet"
         shell: bash
-  # lint-nix:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v1
-  #     - uses: cachix/install-nix-action@v3
-  #     - uses: cachix/cachix-action@v2
-  #       with:
-  #         file: codestyle/nix-linter.nix
-  #         name: treffynnon
-  #         signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
-  #         # Only needed for private caches
-  #         authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
-  #     - name: Run nix-linter check
-  #       env:
-  #         LC_ALL: en_US.UTF-8
-  #       run: ./result/bin/nix-linter ./**/*.nix
-  #       shell: bash
-  # format-hammerspoon-lua:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v1
-  #     - uses: cachix/install-nix-action@v3
-  #     - uses: cachix/cachix-action@v2
-  #       with:
-  #         file: codestyle/lua-format.nix
-  #         name: treffynnon
-  #         signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
-  #         # Only needed for private caches
-  #         authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
-  #     - name: Run lua-format
-  #       run: find "home-configs/hammerspoon" -type f -name "*.lua" -exec ./result/bin/lua-format -i --config="./codestyle/lua-format-config.yml" {} +
-  #       shell: bash
-  #     - name: Check for changed files - fails if there is a git diff
-  #       run: git diff --quiet
-  #       shell: bash

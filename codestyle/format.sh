@@ -7,7 +7,7 @@ echo "Done."
 echo " "
 
 echo "Linting nix files"
-nix-linter "$NIXPKGS_BASEPATH"/**/*.nix
+statix check "$NIXPKGS_BASEPATH"
 echo "Done."
 echo " "
 
