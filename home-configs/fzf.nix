@@ -20,39 +20,34 @@ let
     color0E = "#815ba4";
     color0F = "#e96ba8";
   };
-  theme = (
-    builtins.concatStringsSep "," (
-      with paraiso-base16-theme; [
-        # base line style
-        "fg:${color04}"
-        "bg:${color00}"
-        "hl:${color0D}"
-
-        # current line
-        "fg+:${color0B}"
-        "bg+:${color01}"
-        "hl+:${color0D}"
-
-        "spinner:${color0C}" # streaming input indicator
-        "header:${color0D}"
-        "info:${color0A}"
-        "pointer:${color0C}" # pointer to the current line
-        "marker:${color0C}" # multi-select marker
-        "prompt:${color0A}"
-      ]
-    )
-  );
 in
 
 {
   programs.fzf = {
     enable = true;
     enableBashIntegration = true;
-  };
+    enableFishIntegration = true;
 
-  home.sessionVariables = {
-    FZF_DEFAULT_OPTS = "--color ${theme}";
-    FZF_DEFAULT_COMMAND = "${pkgs.fd}/bin/fd --type f";
-    FZF_CTRL_T_COMMAND = "${pkgs.fd}/bin/fd --type f \$dir";
+    colors = with paraiso-base16-theme; {
+      # base line style
+      fg = "${color04}";
+      bg = "${color00}";
+      hl = "${color0D}";
+
+      # current line
+      "fg+" = "${color0B}";
+      "bg+" = "${color01}";
+      "hl+" = "${color0D}";
+
+      spinner = "${color0C}"; # streaming input indicator
+      header = "${color0D}";
+      info = "${color0A}";
+      pointer = "${color0C}"; # pointer to the current line
+      marker = "${color0C}"; # multi-select marker
+      prompt = "${color0A}";
+    };
+
+    defaultCommand = "${pkgs.fzf}/bin/fd --type f";
+    fileWidgetCommand = "${pkgs.fzf}/bin/fd --type f \$dir";
   };
 }

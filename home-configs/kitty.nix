@@ -1,23 +1,24 @@
 { pkgs, ... }:
 
 {
-  home.packages = (
-    with pkgs; [
-      kitty
-    ]
-  );
-
-  programs.bash.initExtra = ''
-    source <(${pkgs.kitty}/bin/kitty + complete setup bash)
-  '';
-
-  programs.fish.interactiveShellInit = ''
-    ${pkgs.kitty}/bin/kitty + complete setup fish | source
-  '';
-
-  programs.zsh.initExtra = ''
-    ${pkgs.kitty}/bin/kitty + complete setup zsh | source /dev/stdin
-  '';
+  programs.kitty = {
+    enable = true;
+    settings = {
+      scrollback_lines = 10000;
+      font_family = "mplusNerdFontCompleteM-regular";
+      font_size = 15;
+      enable_audio_bell = false;
+      active_border_color = "#48b685";
+      bell_border_color = "#ef6155";
+      macos_custom_beam_cursor = true;
+    };
+    theme = "Parasio Dark";
+    shellIntegration = {
+      enableBashIntegration = true;
+      enableFishIntegration = true;
+      enableZshIntegration = true;
+    };
+  };
 
   programs.git.extraConfig = {
     diff.tool = "kitty";
@@ -29,6 +30,5 @@
   };
 
   # https://discourse.nixos.org/t/bootstrapping-new-system/3455/9
-  xdg.configFile."kitty/kitty.conf".source = ./kitty/kitty.conf;
   xdg.configFile."kitty/diff.conf".source = ./kitty/diff.conf;
 }
