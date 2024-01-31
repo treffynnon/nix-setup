@@ -9,19 +9,19 @@ jobs:
       - uses: actions/checkout@v1
       - uses: cachix/install-nix-action@v25
       - name: Check nix lint
-        run: nix-shell --run statix check
+        run: nix-shell --run "statix check"
         shell: bash
       - name: Run nixpkgs-fmt check
-        run: nix-shell --run nixpkgs-fmt --check ./**/*.nix
+        run: nix-shell --run "nixpkgs-fmt --check ./**/*.nix"
         shell: bash
       - name: Run luacheck
-        run: nix-shell --run luacheck --config "./codestyle/.luacheckrc.lua" "./home-configs/hammerspoon"
+        run: nix-shell --run "luacheck --config \"./codestyle/.luacheckrc.lua\" \"./home-configs/hammerspoon\""
         shell: bash
       - name: Run lua-format
-        run: nix-shell --run find "home-configs/hammerspoon" -type f -name "*.lua" -exec ./result/bin/lua-format -i --config="./codestyle/lua-format-config.yml" {} +
+        run: nix-shell --run "find \"home-configs/hammerspoon\" -type f -name \"*.lua\" -exec ./result/bin/lua-format -i --config=\"./codestyle/lua-format-config.yml\" {} +"
         shell: bash
       - name: Check for changed files - fails if there is a git diff
-        run: nix-shell --run git diff --quiet
+        run: nix-shell --run "git diff --quiet"
         shell: bash
   # lint-nix:
   #   runs-on: ubuntu-latest
