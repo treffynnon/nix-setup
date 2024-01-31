@@ -12,6 +12,10 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
       - uses: DeterminateSystems/magic-nix-cache-action@v2
 
+      - name: "Initial nix-shell run"
+        run: nix-shell --run "echo \"Initial nix-shell run\""
+        shell: bash
+
       - name: Check nix lint
         run: nix-shell --run "statix check"
         shell: bash
@@ -23,7 +27,7 @@ jobs:
         run: nix-shell --run "luacheck --config \"./codestyle/.luacheckrc.lua\" \"./home-configs/hammerspoon\""
         shell: bash
       - name: Run lua-format
-        run: nix-shell --run "find \"home-configs/hammerspoon\" -type f -name \"*.lua\" -exec ./result/bin/lua-format -i --config=\"./codestyle/lua-format-config.yml\" {} +"
+        run: nix-shell --run "find \"home-configs/hammerspoon\" -type f -name \"*.lua\" -exec lua-format -i --config=\"./codestyle/lua-format-config.yml\" {} +"
         shell: bash
       - name: Check for changed files - fails if there is a git diff
         run: nix-shell --run "git diff --quiet"

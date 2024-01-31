@@ -159,7 +159,7 @@ Create a `/etc/sudoers.d/nix-darwin` file with this content:
 This project uses:
 
 * link:https://github.com/nix-community/nixpkgs-fmt[nixpkgs-fmt]
-* link:https://github.com/Synthetica9/nix-linter[nix-linter]
+* link:https://github.com/nerdypepper/statix[statix]
 * link:https://github.com/Koihik/LuaFormatter[LuaFormatter]
 * link:https://github.com/mpeterv/luacheck[luacheck]
 
