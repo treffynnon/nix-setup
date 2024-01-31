@@ -6,7 +6,7 @@ let
   inherit (lib) flatten;
 
   hostName = import ./hostname.nix { inherit lib; };
-  optionalPath = file: if (pathExists file) then [ file ] else [];
+  optionalPath = file: if (pathExists file) then [ file ] else [ ];
 
 in
 
