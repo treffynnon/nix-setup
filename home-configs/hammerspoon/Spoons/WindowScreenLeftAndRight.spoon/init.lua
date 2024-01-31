@@ -42,16 +42,12 @@ local function _setFC()
   hs.window.setFrameCorrectness = obj.use_frame_correctness
 end
 
-local function _restoreFC()
-  hs.window.setFrameCorrectness = obj._savedFC
-end
+local function _restoreFC() hs.window.setFrameCorrectness = obj._savedFC end
 
 -- Move current window to a different screen
 function obj.moveCurrentWindowToScreen(how)
   local win = hs.window.focusedWindow()
-  if win == nil then
-    return
-  end
+  if win == nil then return end
   _setFC()
   if how == "left" then
     win:moveOneScreenWest()

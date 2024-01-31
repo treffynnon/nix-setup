@@ -79,9 +79,7 @@ local function buildScreen(uuid)
     return uuid
   end
   function screen:rotate(rotation) -- luacheck: no self
-    if rotation == nil then
-      return 0
-    end
+    if rotation == nil then return 0 end
     return rotation
   end
   function screen:fullFrame() -- luacheck: no self
@@ -91,9 +89,7 @@ local function buildScreen(uuid)
 end
 
 insulate("ScreenPresets", function()
-  before_each(function()
-    sp = getInstance()
-  end)
+  before_each(function() sp = getInstance() end)
   after_each(function()
     sp = nil
     teardownHsMock()

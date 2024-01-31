@@ -35,16 +35,12 @@ obj.defaultHotkeys = {
 function obj.open(name)
   return function()
     hs.application.launchOrFocus(name)
-    if name == 'Finder' then
-      hs.appfinder.appFromName(name):activate()
-    end
+    if name == 'Finder' then hs.appfinder.appFromName(name):activate() end
   end
 end
 
 function obj:bindHotkeys(mapping)
-  for _, k in ipairs(mapping) do
-    hs.hotkey.bind(k[1], k[2], obj.open(k[3]))
-  end
+  for _, k in ipairs(mapping) do hs.hotkey.bind(k[1], k[2], obj.open(k[3])) end
   return self
 end
 

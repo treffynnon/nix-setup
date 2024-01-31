@@ -68,11 +68,7 @@ end
 ---
 --- Returns:
 ---  * None
-function fnutils.ieach(t, fn)
-  for _, v in ipairs(t) do
-    fn(v)
-  end
-end
+function fnutils.ieach(t, fn) for _, v in ipairs(t) do fn(v) end end
 
 --- hs.fnutils.each(table, fn)
 --- Function
@@ -84,11 +80,7 @@ end
 ---
 --- Returns:
 ---  * None
-function fnutils.each(t, fn)
-  for _, v in pairs(t) do
-    fn(v)
-  end
-end
+function fnutils.each(t, fn) for _, v in pairs(t) do fn(v) end end
 
 --- hs.fnutils.ifilter(list, fn) -> list
 --- Function
@@ -107,11 +99,7 @@ end
 ---    use `hs.fnutils.map()` if your table has holes
 function fnutils.ifilter(t, fn)
   local nt = {}
-  for _, v in ipairs(t) do
-    if fn(v) then
-      nt[#nt + 1] = v
-    end
-  end
+  for _, v in ipairs(t) do if fn(v) then nt[#nt + 1] = v end end
   return nt
 end
 
@@ -133,9 +121,7 @@ end
 function fnutils.filter(t, fn)
   local nt = {}
   for k, v in pairs(t) do
-    if fn(v) then
-      nt[isListIndex(k) and (#nt + 1) or k] = v
-    end -- meh etc.
+    if fn(v) then nt[isListIndex(k) and (#nt + 1) or k] = v end -- meh etc.
   end
   return nt
 end
@@ -151,9 +137,7 @@ end
 ---  * A new table containing the same data as the input table
 function fnutils.copy(t)
   local nt = {}
-  for k, v in pairs(t) do
-    nt[k] = v
-  end
+  for k, v in pairs(t) do nt[k] = v end
   return nt
 end
 
@@ -168,11 +152,7 @@ end
 --- Returns:
 ---  * A boolean, true if the element could be found in the table, otherwise false
 function fnutils.contains(t, el)
-  for _, v in pairs(t) do
-    if v == el then
-      return true
-    end
-  end
+  for _, v in pairs(t) do if v == el then return true end end
   return false
 end
 
@@ -187,11 +167,7 @@ end
 --- Returns:
 ---  * A number containing the index of the element in the table, or nil if it could not be found
 function fnutils.indexOf(t, el)
-  for k, v in pairs(t) do
-    if v == el then
-      return k
-    end
-  end
+  for k, v in pairs(t) do if v == el then return k end end
   return nil
 end
 
@@ -209,9 +185,7 @@ end
 --- Notes:
 ---  * table2 cannot be a sparse table, see [http://www.luafaq.org/gotchas.html#T6.4](http://www.luafaq.org/gotchas.html#T6.4)
 function fnutils.concat(t1, t2)
-  for i = 1, #t2 do
-    t1[#t1 + 1] = t2[i]
-  end
+  for i = 1, #t2 do t1[#t1 + 1] = t2[i] end
   return t1
 end
 
@@ -227,9 +201,7 @@ end
 ---  * A table containing the concatenated results of calling fn(element) for every element in the supplied table
 function fnutils.mapCat(t, fn)
   local nt = {}
-  for _, v in pairs(t) do
-    fnutils.concat(nt, fn(v))
-  end
+  for _, v in pairs(t) do fnutils.concat(nt, fn(v)) end
   return nt
 end
 
@@ -249,17 +221,11 @@ end
 ---  * The first iteration of the reducer will call fn with the first and second elements of the table. The second iteration will call fn with the result of the first iteration, and the third element. This repeats until there is only one element left
 function fnutils.reduce(t, fn)
   local len = #t
-  if len == 0 then
-    return nil
-  end
-  if len == 1 then
-    return t[1]
-  end
+  if len == 0 then return nil end
+  if len == 1 then return t[1] end
 
   local result = t[1]
-  for i = 2, #t do
-    result = fn(result, t[i])
-  end
+  for i = 2, #t do result = fn(result, t[i]) end
   return result
 end
 
@@ -274,11 +240,7 @@ end
 --- Returns:
 ---  * The element of the supplied table that first caused fn to return true
 function fnutils.find(t, fn)
-  for _, v in pairs(t) do
-    if fn(v) then
-      return v
-    end
-  end
+  for _, v in pairs(t) do if fn(v) then return v end end
   return nil
 end
 
@@ -295,9 +257,7 @@ function fnutils.sequence(...)
   local arg = table.pack(...)
   return function()
     local results = {}
-    for _, fn in ipairs(arg) do
-      table.insert(results, fn())
-    end
+    for _, fn in ipairs(arg) do table.insert(results, fn()) end
     return results
   end
 end
@@ -326,12 +286,8 @@ end
 function fnutils.partial(fn, ...)
   local args = table.pack(...)
   return function(...)
-    for idx = args.n + 1, #args do
-      args[idx] = nil
-    end -- clear previous values
-    for idx, val in ipairs(table.pack(...)) do
-      args[args.n + idx] = val
-    end
+    for idx = args.n + 1, #args do args[idx] = nil end -- clear previous values
+    for idx, val in ipairs(table.pack(...)) do args[args.n + idx] = val end
     return fn(table.unpack(args))
   end
 end
@@ -374,11 +330,7 @@ end
 ---  * True if the application of fn on every element of the table is true
 ---  * False if the function returns `false` for any element of the table.  Note that testing stops when the first false return is detected.
 function fnutils.every(table, fn)
-  for k, v in pairs(table) do
-    if not fn(v, k) then
-      return false
-    end
-  end
+  for k, v in pairs(table) do if not fn(v, k) then return false end end
   return true
 end
 
@@ -394,9 +346,7 @@ end
 ---  * True if the application of fn on any element of the table is true.  Note that testing stops when the first true return is detected.
 ---  * False if the function returns `false` for all elements of the table.
 function fnutils.some(table, fn)
-  local function is_invalid(v, k)
-    return not fn(v, k)
-  end
+  local function is_invalid(v, k) return not fn(v, k) end
   return not fnutils.every(table, is_invalid)
 end
 
@@ -431,9 +381,7 @@ fnutils.sortByKeys = function(t, f)
   end
   if t then
     local a = {}
-    for n in pairs(t) do
-      table.insert(a, n)
-    end
+    for n in pairs(t) do table.insert(a, n) end
     table.sort(a, f)
     local i = 0 -- iterator variable
     local iter = function() -- iterator function
@@ -446,9 +394,7 @@ fnutils.sortByKeys = function(t, f)
     end
     return iter
   else
-    return function()
-      return nil
-    end
+    return function() return nil end
   end
 end
 
@@ -483,12 +429,8 @@ fnutils.sortByKeyValues = function(t, f)
   end
   if t then
     local a = {}
-    for n in pairs(t) do
-      table.insert(a, {n, t[n]})
-    end
-    table.sort(a, function(m, n)
-      return f(m[2], n[2])
-    end)
+    for n in pairs(t) do table.insert(a, {n, t[n]}) end
+    table.sort(a, function(m, n) return f(m[2], n[2]) end)
     local i = 0 -- iterator variable
     local iter = function() -- iterator function
       i = i + 1
@@ -500,9 +442,7 @@ fnutils.sortByKeyValues = function(t, f)
     end
     return iter
   else
-    return function()
-      return nil
-    end
+    return function() return nil end
   end
 end
 
@@ -524,9 +464,7 @@ end
 ---  * Optional parameters `nMax` and `bPlain` are identified by their type -- if parameter 3 or 4 is a number or nil, it will be considered a value for `nMax`; if parameter 3 or 4 is a boolean value, it will be considered a value for `bPlain`.
 ---  * Lua patterns are more flexible for pattern matching, but can also be slower if the split point is simple. See §6.4.1 of the _Lua_Reference_Manual_ at http://www.lua.org/manual/5.3/manual.html#6.4.1 for more information on Lua patterns.
 function fnutils.split(sString, sSeparator, nMax, bPlain)
-  if type(nMax) == "boolean" then
-    nMax, bPlain = bPlain, nMax
-  end
+  if type(nMax) == "boolean" then nMax, bPlain = bPlain, nMax end
 
   sSeparator = sSeparator or ""
 
@@ -543,9 +481,7 @@ function fnutils.split(sString, sSeparator, nMax, bPlain)
     error("bPlain parameter to hs.fnutils.split must be a boolean, if it is provided", 2)
   end
 
-  if sSeparator == "" or nMax == 0 then
-    return {sString}
-  end -- degenerate cases
+  if sSeparator == "" or nMax == 0 then return {sString} end -- degenerate cases
 
   local aRecord = {}
 

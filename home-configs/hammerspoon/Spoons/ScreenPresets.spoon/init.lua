@@ -14,16 +14,12 @@ local function buildUniqueScreenLayoutIdentifier(fn, screens)
   return table.concat(identifiers, "*")
 end
 local function getUniqueIdentifierForAllScreens(allScreens)
-  return buildUniqueScreenLayoutIdentifier(function(screen)
-    return screen:getUUID()
-  end, allScreens)
+  return buildUniqueScreenLayoutIdentifier(function(screen) return screen:getUUID() end, allScreens)
 end
 local function getUniqueIdentifierForAllScreenPresets(presets, screenCount)
   return hs.fnutils.map(presets, function(setup)
     if #setup == screenCount then
-      return buildUniqueScreenLayoutIdentifier(function(x)
-        return x.id
-      end, setup)
+      return buildUniqueScreenLayoutIdentifier(function(x) return x.id end, setup)
     end
     return ""
   end)
@@ -161,9 +157,7 @@ function obj:menuResetPreset()
   local presetId = obj:getScreenPresetId(self.allScreens, self.screenPresets)
   if presetId ~= nil then
     hs.dialog.alert(nil, nil, function(btn)
-      if btn == "Yes" then
-        self:setScreenLayout(self.allScreens)
-      end
+      if btn == "Yes" then self:setScreenLayout(self.allScreens) end
     end, "Do you really want to set the preset?",
                     "This will set the screens to use the '" .. presetId .. "' configuration", "No",
                     "Yes")
@@ -176,22 +170,11 @@ function obj:initMenu()
   self.menubar = hs.menubar.new()
   self.menubar:setTitle("S")
   self.menubar:setMenu({
+    {title = "Identify screens", fn = function() obj:menuIdentifyScreens() end},
     {
-      title = "Identify screens",
-      fn = function()
-        obj:menuIdentifyScreens()
-      end,
-    }, {
       title = "Copy current screen layout...",
-      fn = function()
-        obj:menuCurrentConfigToClipboard()
-      end,
-    }, {
-      title = "Set the current preset...",
-      fn = function()
-        obj:menuResetPreset()
-      end,
-    },
+      fn = function() obj:menuCurrentConfigToClipboard() end,
+    }, {title = "Set the current preset...", fn = function() obj:menuResetPreset() end},
   })
 end
 
@@ -215,9 +198,7 @@ function obj:init()
   self:initMenu()
 end
 
-function obj:setPresets(presets)
-  self.screenPresets = presets
-end
+function obj:setPresets(presets) self.screenPresets = presets end
 
 function obj:start()
   -- ensure the presets are set at initialisation
@@ -228,8 +209,6 @@ function obj:start()
   self.log.i("Initialisation complete")
 end
 
-function obj:stop()
-  self.screenwatcher:stop()
-end
+function obj:stop() self.screenwatcher:stop() end
 
 return obj
