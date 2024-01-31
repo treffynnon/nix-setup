@@ -1,1 +1,8 @@
-configuration.nix
+{
+  imports = [
+    ./channels
+    ./modules
+    ./nix/auto-host.nix
+    ./profiles
+  ];
+}
