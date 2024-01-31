@@ -47,6 +47,7 @@ in
     ./starship.nix
     ./vifm.nix
     ./vscode.nix
+    ./webstorm.nix
   ]
   ++ optionals isDarwin [
     ./hammerspoon.nix
