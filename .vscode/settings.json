@@ -1,5 +1,3 @@
 {
-	"lua.format.lineWidth": 100,
-	"lua.format.linebreakMultipleAssignments": true,
-  "lua.targetVersion": "5.2"
+	"vscode-lua-format.configPath": "./codestyle/lua-format-config.yml"
 }

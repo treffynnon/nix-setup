@@ -3,30 +3,25 @@ on:
   pull_request:
   push:
 jobs:
-  format-nix:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - uses: cachix/install-nix-action@v25
-      - uses: cachix/cachix-action@v14
-        with:
-          file: codestyle/nixpkgs-fmt.nix
-          name: treffynnon
-          signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
-          # Only needed for private caches
-          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
-      - uses: cachix/cachix-action@v14
-        with:
-          file: codestyle/luacheck.nix
-          name: treffynnon
-          signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
-          # Only needed for private caches
-          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+      - name: Check nix lint
+        run: nix develop --command statix check
+        shell: bash
       - name: Run nixpkgs-fmt check
-        run: ./result/bin/nixpkgs-fmt --check ./**/*.nix
+        run: nixpkgs-fmt --check ./**/*.nix
         shell: bash
       - name: Run luacheck
-        run: ./result/bin/luacheck --config "./codestyle/.luacheckrc.lua" "./home-configs/hammerspoon"
+        run: luacheck --config "./codestyle/.luacheckrc.lua" "./home-configs/hammerspoon"
+        shell: bash
+      - name: Run lua-format
+        run: find "home-configs/hammerspoon" -type f -name "*.lua" -exec ./result/bin/lua-format -i --config="./codestyle/lua-format-config.yml" {} +
+        shell: bash
+      - name: Check for changed files - fails if there is a git diff
+        run: git diff --quiet
         shell: bash
   # lint-nix:
   #   runs-on: ubuntu-latest

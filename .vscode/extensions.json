@@ -1,0 +1,7 @@
+{
+	"recommendations": [
+		"koihik.vscode-lua-format",
+		"bbenoist.nix",
+		"arrterian.nix-env-selector",
+	]
+}

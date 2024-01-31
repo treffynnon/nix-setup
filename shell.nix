@@ -11,12 +11,10 @@ in
     name = "nix-setup";
     buildInputs = [
       bashInteractive
-      #luaFormat.LuaFormatter
-      #nixLinter
-      nixpkgsFmt
-      luarocks-nix
-      (pkgs.lua.withPackages(ps: with ps; [ busted ]))
-      luaCheck
       statix
+      nixpkgsFmt
+      # luarocks-nix
+      (pkgs.lua.withPackages(ps: with ps; [ busted luafilesystem luacheck ]))
+      luaformatter
     ];
   }
