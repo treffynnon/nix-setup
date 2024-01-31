@@ -1,5 +1,5 @@
 let
-  pkgs = (import <nixpkgs> {});
+  pkgs = import <nixpkgs> {};
 
   luaFormat = import ./codestyle/lua-format.nix { inherit pkgs; };
   nixLinter = import ./codestyle/nix-linter.nix { inherit pkgs; };

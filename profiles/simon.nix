@@ -24,13 +24,11 @@ mkMerge [
       ];
     };
     environment.systemPackages =
-      (
-        with pkgs; [
+      with pkgs; [
           any-nix-shell
           cmus
           lorri
-        ]
-      );
+        ];
   }
 
   (

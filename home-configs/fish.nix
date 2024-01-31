@@ -33,13 +33,16 @@ in
 
 
   # https://discourse.nixos.org/t/bootstrapping-new-system/3455/9
-  xdg.configFile."fish/conf.d" = {
+  xdg = {
+  configFile."fish/conf.d" = {
     source = ./fish/conf.d;
     recursive = true;
   };
-  xdg.configFile."fish/functions" = {
+  configFile."fish/functions" = {
     source = ./fish/functions;
     recursive = true;
+  };
+
   };
   xdg.configFile."fish/completions/nix.fish".source = "${pkgs.nix}/share/fish/vendor_completions.d/nix.fish";
 }

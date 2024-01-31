@@ -87,12 +87,14 @@ in
         ]
       );
 
-    programs.bash = {
+    programs = {
+    bash = {
       enable = true;
       enableCompletion = true;
     };
-    programs.zsh.enable = true;
-    programs.fish.enable = true;
+    zsh.enable = true;
+    fish.enable = true;
+    };
 
     # programs.gnupg.agent = {
     #   enable = true;
@@ -142,7 +144,8 @@ in
       environment.shells = with pkgs; [ bashInteractive fish zsh ];
 
       # https://github.com/LnL7/nix-darwin/blob/master/modules/system/keyboard.nix
-      system.keyboard = {
+      system = {
+        keyboard = {
         # Whether to enable keyboard mappings.
         enableKeyMapping = true;
         # Whether to remap the Caps Lock key to Control.
@@ -150,7 +153,7 @@ in
       };
 
       # https://github.com/LnL7/nix-darwin/tree/master/modules/system/defaults
-      system.defaults = {
+      defaults = {
         # https://github.com/LnL7/nix-darwin/blob/master/modules/system/defaults/finder.nix
         finder = {
           # Whether to always show file extensions.  The default is false.
@@ -248,7 +251,8 @@ in
 
       # Used for backwards compatibility, please read the changelog before changing.
       # $ darwin-rebuild changelog
-      system.stateVersion = 4;
+      stateVersion = 4;
+      };
     }
   )
 ]
