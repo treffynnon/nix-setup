@@ -16,38 +16,56 @@
         "-l"
       ];
       "workbench.colorTheme" = "Paraíso (dark)";
-      "vim.enableNeovim" = true;
-      "vim.neovimPath" = "${pkgs.neovim}/bin/nvim";
+
+      "[typescript][json][javascript]" = {
+        "editor.defaultFormatter" = "esbenp.prettier-vscode";
+      };
+
+      "editor.formatOnPaste" = false;
+      "editor.formatOnType" = false;
+      "editor.formatOnSave" = true;
+      "editor.formatOnSaveMode" = "file";
+
+      "extensions.experimental.affinity" = {
+        "asvetliakov.vscode-neovim" = 1;
+      };
+
+      "vscode-neovim.neovimExecutablePaths.darwin" = "${pkgs.neovim-unwrapped}/bin/nvim";
+      "vscode-neovim.neovimExecutablePaths.linux" = "${pkgs.neovim-unwrapped}/bin/nvim";
+
+      "projectManager.git.baseFolders" = [
+        "~/projects"
+      ];
 
       # Paraiso dark from https://glitchbone.github.io/vscode-base16-term/#/paraiso
-      "workbench.colorCustomizations" = {
-        "terminal.background" = "#2F1E2E";
-        "terminal.foreground" = "#A39E9B";
-        "terminal.ansiBlack" = "#2F1E2E";
-        "terminal.ansiBlue" = "#06B6EF";
-        "terminal.ansiBrightBlack" = "#776E71";
-        "terminal.ansiBrightBlue" = "#06B6EF";
-        "terminal.ansiBrightCyan" = "#5BC4BF";
-        "terminal.ansiBrightGreen" = "#48B685";
-        "terminal.ansiBrightMagenta" = "#815BA4";
-        "terminal.ansiBrightRed" = "#EF6155";
-        "terminal.ansiBrightWhite" = "#E7E9DB";
-        "terminal.ansiBrightYellow" = "#FEC418";
-        "terminal.ansiCyan" = "#5BC4BF";
-        "terminal.ansiGreen" = "#48B685";
-        "terminal.ansiMagenta" = "#815BA4";
-        "terminal.ansiRed" = "#EF6155";
-        "terminal.ansiWhite" = "#A39E9B";
-        "terminal.ansiYellow" = "#FEC418";
-        "terminalCursor.background" = "#A39E9B";
-        "terminalCursor.foreground" = "#A39E9B";
-      };
+      # "workbench.colorCustomizations" = {
+      #   "terminal.background" = "#2F1E2E";
+      #   "terminal.foreground" = "#A39E9B";
+      #   "terminal.ansiBlack" = "#2F1E2E";
+      #   "terminal.ansiBlue" = "#06B6EF";
+      #   "terminal.ansiBrightBlack" = "#776E71";
+      #   "terminal.ansiBrightBlue" = "#06B6EF";
+      #   "terminal.ansiBrightCyan" = "#5BC4BF";
+      #   "terminal.ansiBrightGreen" = "#48B685";
+      #   "terminal.ansiBrightMagenta" = "#815BA4";
+      #   "terminal.ansiBrightRed" = "#EF6155";
+      #   "terminal.ansiBrightWhite" = "#E7E9DB";
+      #   "terminal.ansiBrightYellow" = "#FEC418";
+      #   "terminal.ansiCyan" = "#5BC4BF";
+      #   "terminal.ansiGreen" = "#48B685";
+      #   "terminal.ansiMagenta" = "#815BA4";
+      #   "terminal.ansiRed" = "#EF6155";
+      #   "terminal.ansiWhite" = "#A39E9B";
+      #   "terminal.ansiYellow" = "#FEC418";
+      #   "terminalCursor.background" = "#A39E9B";
+      #   "terminalCursor.foreground" = "#A39E9B";
+      # };
       "vsicons.dontShowNewVersionMessage" = true;
     };
     # if you install vscode extensions then it locks the dir to only allow
     # nix sourced extensions to be installed and you cannot install from the
     # internal vscode marketplace. This may be fixed in the future though:
-    # https://github.com/Microsoft/vscode/issues/27972
+    # https://github.com/microsoft/vscode/issues/148945
     #
     # extensions = with pkgs.vscode-extensions; [
     #   bbenoist.Nix

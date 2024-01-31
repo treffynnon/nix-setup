@@ -2,19 +2,28 @@
 
 {
   programs.neovim = {
-    package = pkgs.neovim-unwrapped;
     enable = true;
     viAlias = true;
     vimAlias = true;
+    vimdiffAlias = true;
 
     plugins = with pkgs.vimPlugins; [
-      base16-vim
+      {
+        plugin = nvim-base16;
+        type = "lua";
+        config = ''
+          if not vim.g.vscode then
+            vim.cmd('colorscheme base16-paraiso')
+          end
+        '';
+      }
+
+      nvim-treesitter.withAllGrammars
 
       haskell-vim
       vim-fish
       vim-nix
       typescript-vim
     ];
-    extraConfig = builtins.readFile ./neovim/vimrc.vim;
   };
 }

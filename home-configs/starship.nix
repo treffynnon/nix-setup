@@ -13,7 +13,6 @@
       golang.disabled = true;
       java.disabled = true;
       ruby.disabled = true;
-      rust.disabled = true;
     };
   };
 }

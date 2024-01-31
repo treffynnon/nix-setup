@@ -52,7 +52,7 @@ in
           wget
           dnsutils
           nmap
-          inetutils 
+          inetutils
 
           less
           jq
@@ -70,7 +70,7 @@ in
           pv
           htop
           which
-          exa
+          eza
 
           git-lfs
           git-crypt
@@ -118,7 +118,7 @@ in
         xkbOptions = "caps:escape";
       };
 
-      system.stateVersion = "19.09";
+      system.stateVersion = "23.11";
     }
   )
 

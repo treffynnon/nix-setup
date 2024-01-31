@@ -11,8 +11,8 @@ in
     name = "nix-setup";
     buildInputs = [
       bashInteractive
-      luaFormat.LuaFormatter
-      nixLinter
+      #luaFormat.LuaFormatter
+      #nixLinter
       nixpkgsFmt
       luarocks-nix
       (pkgs.lua.withPackages(ps: with ps; [ busted ]))
