@@ -145,7 +145,7 @@ To easily run the formatters locally you can use the supplied
 `nix-shell`:
 
     nix-shell
-    ./codestyle/format.sh
+    format
 
 # Managing development environments
 

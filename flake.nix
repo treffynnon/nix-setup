@@ -46,6 +46,29 @@
           ${pkgs.alejandra}/bin/alejandra --check --exclude .direnv .
         '';
 
+        runAllLintersAndFormatters = pkgs.writeScriptBin "format" ''
+          #!${pkgs.bash}/bin/bash
+          echo "Linting lua code"
+          lint-lua
+          echo "Done."
+          echo " "
+
+          echo "Linting nix files"
+          lint-nix
+          echo "Done."
+          echo " "
+
+          echo "Formatting Hammerspoon lua code"
+          format-lua
+          echo "Done."
+          echo " "
+
+          echo "Formatting nix files"
+          format-nix
+          echo "Done."
+          echo " "
+        '';
+
         # needed at run time
         buildInputs = with pkgs; [
           bashInteractive
@@ -59,6 +82,7 @@
           lintNix
           formatNix
           ciFormatNix
+          runAllLintersAndFormatters
         ];
       in
         with pkgs; {
