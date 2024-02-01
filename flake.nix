@@ -23,6 +23,7 @@
         # needed at compile time
         nativeBuildInputs = with pkgs; [];
 
+        # sets up scripts that can easily be called on the command line
         lintLua = pkgs.writeScriptBin "lint-lua" ''
           #!${pkgs.bash}/bin/bash
           luacheck --config ./codestyle/.luacheckrc.lua "./home-configs/hammerspoon"
