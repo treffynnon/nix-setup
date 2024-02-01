@@ -1,7 +1,8 @@
 {
 	"recommendations": [
-		"koihik.vscode-lua-format",
-		"bbenoist.nix",
-		"arrterian.nix-env-selector",
+		"koihik.vscode-lua-format", // lua formatter
+		"bbenoist.nix", // nix language support
+		"kamadorueda.alejandra", // nix formatter
+		"mkhl.direnv", // load the nix shell via direnv
 	]
 }

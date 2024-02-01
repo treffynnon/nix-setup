@@ -1,3 +1,11 @@
 {
-	"vscode-lua-format.configPath": "./codestyle/lua-format-config.yml"
+	"vscode-lua-format.configPath": "./codestyle/lua-format-config.yml",
+	"[nix]": {
+    "editor.defaultFormatter": "kamadorueda.alejandra",
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": false
+  },
+	"alejandra.program": "alejandra",
+	"nixEnvSelector.nixFile": "${workspaceRoot}/flake.nix"
 }

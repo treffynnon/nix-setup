@@ -13,22 +13,23 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@v2
 
       - name: "Initial nix-shell run"
-        run: nix-shell --run "echo \"Initial nix-shell run\""
+        run: nix develop --command "echo \"Initial run to get all the dependencies pulled down\""
         shell: bash
 
       - name: Check nix lint
-        run: nix-shell --run "statix check"
+        # see the flake file for where the lint-nix command comes from
+        run: nix develop --command "lint-nix"
         shell: bash
       - name: Run nixpkgs-fmt check
-        run: nix-shell --run "nixpkgs-fmt --check ./**/*.nix"
+        run: nix develop --command "ci-format-nix"
         shell: bash
 
       - name: Run luacheck
-        run: nix-shell --run "luacheck --config \"./codestyle/.luacheckrc.lua\" \"./home-configs/hammerspoon\""
+        run: nix develop --command "lint-lua"
         shell: bash
       - name: Run lua-format
-        run: nix-shell --run "find \"home-configs/hammerspoon\" -type f -name \"*.lua\" -exec lua-format -i --config=\"./codestyle/lua-format-config.yml\" {} +"
+        run: nix develop --command "format-lua"
         shell: bash
       - name: Check for changed files - fails if there is a git diff
-        run: nix-shell --run "git diff --quiet"
+        run: git diff --quiet
         shell: bash

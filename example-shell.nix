@@ -12,12 +12,11 @@ let
     }
   ) {};
 in
-
   with import <nixpkgs> {};
-  stdenv.mkDerivation {
-    name = "ftr-beast";
-    buildInputs = [
-      bashInteractive
-      nix1809.nodejs-8_x
-    ];
-  }
+    stdenv.mkDerivation {
+      name = "ftr-beast";
+      buildInputs = [
+        bashInteractive
+        nix1809.nodejs-8_x
+      ];
+    }
