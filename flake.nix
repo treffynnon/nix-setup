@@ -87,6 +87,7 @@
       in
         with pkgs; {
           devShells.default = mkShell {
+            name = "nix-setup";
             inherit buildInputs nativeBuildInputs;
           };
         }

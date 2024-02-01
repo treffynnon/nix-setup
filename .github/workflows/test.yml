@@ -5,6 +5,10 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - uses: actions/checkout@v1
       - uses: cachix/install-nix-action@v25
@@ -13,23 +17,17 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@v2
 
       - name: "Initial nix-shell run"
-        run: nix develop --command "echo \"Initial run to get all the dependencies pulled down\""
-        shell: bash
+        run: nix develop --command echo "Initial run to get all the dependencies pulled down"
 
       - name: Check nix lint
         # see the flake file for where the lint-nix command comes from
-        run: nix develop --command "lint-nix"
-        shell: bash
+        run: nix develop --command lint-nix
       - name: Run nixpkgs-fmt check
-        run: nix develop --command "ci-format-nix"
-        shell: bash
+        run: nix develop --command ci-format-nix
 
       - name: Run luacheck
-        run: nix develop --command "lint-lua"
-        shell: bash
+        run: nix develop --command lint-lua
       - name: Run lua-format
-        run: nix develop --command "format-lua"
-        shell: bash
+        run: nix develop --command format-lua
       - name: Check for changed files - fails if there is a git diff
         run: git diff --quiet
-        shell: bash
