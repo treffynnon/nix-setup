@@ -1,9 +1,6 @@
-{ pkgs, ... }:
-
-let
-  aliases = (import ./common/aliases.nix) { inherit pkgs; };
-in
-{
+{pkgs, ...}: let
+  aliases = (import ./common/aliases.nix) {inherit pkgs;};
+in {
   programs.bash = {
     enable = true;
     # using starship instead of a custom PS1 now

@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-let
+{pkgs, ...}: let
   # copied from https://github.com/nicodebo/base16-fzf/blob/6d40da6cc12265911c688b48d986dda0f9bded93/bash/base16-paraiso.config
   paraiso-base16-theme = {
     color00 = "#2f1e2e";
@@ -20,9 +18,7 @@ let
     color0E = "#815ba4";
     color0F = "#e96ba8";
   };
-in
-
-{
+in {
   programs.fzf = {
     enable = true;
     enableBashIntegration = true;

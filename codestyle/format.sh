@@ -17,6 +17,6 @@ echo "Done."
 echo " "
 
 echo "Formatting nix files"
-nixpkgs-fmt "$NIXPKGS_BASEPATH"/**/*.nix
+alejandra "$NIXPKGS_BASEPATH"/**/*.nix
 echo "Done."
 echo " "

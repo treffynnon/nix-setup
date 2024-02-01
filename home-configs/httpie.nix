@@ -1,12 +1,9 @@
-{ pkgs, ... }:
-
-let
+{pkgs, ...}: let
   configDir = "$HOME/.config/httpie";
   configData = {
-    default_options = [ "--style=paraiso-dark" ];
+    default_options = ["--style=paraiso-dark"];
   };
-in
-{
+in {
   # Note that httpie version is overriden in overlays. This is because HTTPie tries to
   # write to its configuration file in the current version, but the pre-release version
   # in master does not. Obviously, when installed via Nix the configuration directory

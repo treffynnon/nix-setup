@@ -1,9 +1,6 @@
-{ pkgs, ... }:
-
-let
+{pkgs, ...}: let
   configDir = "$HOME/.config/vifm";
-in
-{
+in {
   home.packages = with pkgs; [
     vifm
   ];

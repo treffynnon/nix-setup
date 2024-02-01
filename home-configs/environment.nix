@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   home.sessionVariables = {
     DEVELOPER = "sholywell";
     VISUAL = "${pkgs.neovim-unwrapped}/bin/nvim";

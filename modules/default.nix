@@ -1,12 +1,8 @@
-{ lib, ... }:
-
-let
+{lib, ...}: let
   inherit (lib) optional flatten;
   inherit (builtins) attrNames readDir currentSystem;
-  inherit (lib.systems.elaborate { system = currentSystem; }) isLinux isDarwin;
-in
-
-{
+  inherit (lib.systems.elaborate {system = currentSystem;}) isLinux isDarwin;
+in {
   imports = flatten [
     ./home-manager.nix
     ./nix.nix

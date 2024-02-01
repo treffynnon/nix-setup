@@ -1,8 +1,6 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   inherit (pkgs.stdenv.hostPlatform) isDarwin;
-in
-{
+in {
   programs.firefox = {
     enable = !isDarwin; # package is unavailable for Mac
     package = pkgs.firefox;

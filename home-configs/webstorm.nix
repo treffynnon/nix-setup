@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   home.packages = [
     (pkgs.writeScriptBin "storm" ''
       #!/usr/bin/env bash

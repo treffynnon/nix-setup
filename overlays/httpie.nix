@@ -1,6 +1,4 @@
-_: super:
-
-rec {
+_: super: rec {
   httpie = super.httpie.overrideAttrs (
     # oldAttrs: rec {
     _: rec {
