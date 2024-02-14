@@ -14,7 +14,7 @@ jobs:
       - uses: cachix/install-nix-action@v25
         with:
           nix_path: nixpkgs=channel:nixos-unstable
-      - uses: DeterminateSystems/magic-nix-cache-action@v2
+      - uses: DeterminateSystems/magic-nix-cache-action@v3
 
       - name: "Initial nix-shell run"
         run: nix develop --command echo "Initial run to get all the dependencies pulled down"
