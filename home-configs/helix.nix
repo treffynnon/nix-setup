@@ -4,7 +4,7 @@
     defaultEditor = true;
 
     settings = {
-      theme = "base16-terminal";
+      theme = "base16_terminal";
       editor = {
         line-number = "relative";
         shell = ["${pkgs.fish}/bin/fish" "-c"];
