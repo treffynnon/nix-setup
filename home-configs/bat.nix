@@ -1,7 +1,17 @@
-{
-  xdg.configFile."bat/config".source = ./bat/config;
-  xdg.configFile."bat/themes" = {
-    source = ./bat/themes;
-    recursive = true;
+{pkgs, ...}: {
+  programs.bat = {
+    enable = true;
+
+    config = {
+      theme = "paraiso_dark";
+      tabs = "2";
+      pager = "less -FR";
+    };
+
+    themes = {
+      paraiso_dark = {
+        src = ./bat/paraiso_dark.tmTheme;
+      };
+    };
   };
 }

@@ -1,9 +1,0 @@
---theme="base16"
-
-# Set the tab width to T spaces. Use a width of 0 to pass tabs through
-# directly
---tabs=2
-
-# Add mouse scrolling support in less (does not work with older
-# versions of "less")
-#--pager="less -FR"
