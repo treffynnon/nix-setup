@@ -55,7 +55,6 @@ in
             "render"
             "scanner"
             "lp" # SANE
-            "vboxusers"
             "video"
             "wheel"
             "wireshark"

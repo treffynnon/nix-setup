@@ -37,6 +37,7 @@ in {
       # ./firefox.nix
       ./fzf.nix
       ./git.nix
+      ./helix.nix
       # ./httpie.nix
       ./irssi.nix
       ./kitty.nix

@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   home.sessionVariables = {
     DEVELOPER = "sholywell";
-    VISUAL = "${pkgs.neovim-unwrapped}/bin/nvim";
-    EDITOR = "${pkgs.neovim-unwrapped}/bin/nvim";
+    VISUAL = "${pkgs.helix}/bin/hx";
+    EDITOR = "${pkgs.helix}/bin/hx";
   };
 }

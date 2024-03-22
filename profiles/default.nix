@@ -58,7 +58,6 @@ in
 
             less
             jq
-            bat
             imagemagick
 
             ripgrep
