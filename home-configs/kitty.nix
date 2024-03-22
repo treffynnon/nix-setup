@@ -9,6 +9,7 @@
       active_border_color = "#48b685";
       bell_border_color = "#ef6155";
       macos_custom_beam_cursor = true;
+      shell = "${pkgs.fish}/bin/fish --login --interactive";
     };
     theme = "Parasio Dark";
     shellIntegration = {
