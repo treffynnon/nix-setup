@@ -18,13 +18,13 @@ local speakersName = "EDIFIER R1280DB"
 local headphonesName = "External Headphones"
 
 function AudioSwitcher.setAudioOutputDevice(deviceName)
-	  local device = hs.audiodevice.findOutputByName(deviceName)
-  	if device then
-		device:setDefaultOutputDevice()
-		print(string.format("Set default output device to: %s", device:name()))
-	else
-		print(string.format("No %s device found.", deviceName))
-	end
+  local device = hs.audiodevice.findOutputByName(deviceName)
+  if device then
+  device:setDefaultOutputDevice()
+  print(string.format("Set default output device to: %s", device:name()))
+  else
+  print(string.format("No %s device found.", deviceName))
+  end
 end
 
 AudioSwitcher.onHeadphones = hs.fnutils.partial(AudioSwitcher.setAudioOutputDevice, headphonesName)
@@ -32,9 +32,9 @@ AudioSwitcher.onSpeakers = hs.fnutils.partial(AudioSwitcher.setAudioOutputDevice
 
 function AudioSwitcher:bindHotkeys(mapping)
   local hotkeyDefinitions = {
-		headphones = self.onHeadphones,
-		speakers = self.onSpeakers
-	}
+    headphones = self.onHeadphones,
+    speakers = self.onSpeakers
+  }
   -- Use defaultHotkeys if mapping is nil or empty
   mapping = mapping or self.defaultHotkeys
   hs.spoons.bindHotkeysToSpec(hotkeyDefinitions, mapping)
