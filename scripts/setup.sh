@@ -133,14 +133,14 @@ fi
 if [[ ! $NIX_EXISTS ]]; then
   curl -L https://nixos.org/nix/install | sh
 
-  if [ ! -e private/var/run ]; then
-    sudo ln -s private/var/run /run
+  if [ ! -e /run ]; then
+    sudo ln -s /private/var/run /run
   fi
 
   # Create this empty directory to prevent warnings coming from nix
   mkdir -p /nix/var/nix/profiles/per-user/root/channels
 
-  NIX_INIT_SCRIPT="$HOME/.nix-profile/etc/profile.d/nix.sh"
+  NIX_INIT_SCRIPT="/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
   if [ -f $NIX_INIT_SCRIPT ]; then
     source "$NIX_INIT_SCRIPT"
   else

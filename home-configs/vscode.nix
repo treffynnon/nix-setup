@@ -4,7 +4,8 @@
     userSettings = {
       "telemetry.enableTelemetry" = false;
       "telemetry.enableCrashReporter" = false;
-      "editor.fontSize" = 14;
+      "editor.wordWrap" = "on";
+      "editor.fontSize" = 16;
       "editor.fontFamily" = "'Fira Code', Menlo, Monaco, 'Courier New', monospace";
       "editor.fontLigatures" = true;
       "editor.lineNumbers" = "relative";
@@ -14,6 +15,7 @@
         "-l"
       ];
       "workbench.colorTheme" = "Paraíso (dark)";
+      "workbench.sideBar.location" = "right";
 
       "[typescript][json][javascript]" = {
         "editor.defaultFormatter" = "esbenp.prettier-vscode";
@@ -34,6 +36,8 @@
       "projectManager.git.baseFolders" = [
         "~/projects"
       ];
+
+      "chat.agent.enabled" = true;
 
       # Paraiso dark from https://glitchbone.github.io/vscode-base16-term/#/paraiso
       # "workbench.colorCustomizations" = {

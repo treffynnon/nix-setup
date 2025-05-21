@@ -65,9 +65,13 @@ in {
         format = "ssh";
       };
 
+      "gpg \"ssh\"" = {
+        program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+      };
+
       user = {
         # use the SSH key to sign commits instead of GPG
-        signingkey = sshPubKey;
+        signingkey = signingSshKey;
       };
 
       commit = {

@@ -15,8 +15,7 @@ in
       home-manager.users."${username}" = homeManager;
       users.users."${username}".home = mkIf isDarwin "/Users/${username}";
       fonts = {
-        fontDir.enable = true;
-        fonts = with pkgs; [
+        packages = with pkgs; [
           fira-code
           fira-code-symbols
           # mplus-outline-fonts

@@ -18,6 +18,13 @@ hs.loadSpoon("ControlEscape"):start()
 
 hs.loadSpoon("BehringerUCA222"):start()
 
+hs.loadSpoon("AudioSwitcher")
+
+spoon.AudioSwitcher:bindHotkeys({
+	speakers = {{"cmd", "alt"}, "s"},
+	headphones = {{"cmd", "alt"}, "h"},
+})
+
 -- A little window manager for pushing around windows with
 -- the keyboard
 spoon.MiroWindowsManager:bindHotkeys({

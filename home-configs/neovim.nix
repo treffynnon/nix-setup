@@ -7,7 +7,7 @@
 
     plugins = with pkgs.vimPlugins; [
       {
-        plugin = nvim-base16;
+        plugin = base16-nvim;
         type = "lua";
         config = ''
           if not vim.g.vscode then
