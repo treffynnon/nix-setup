@@ -20,6 +20,8 @@ hs.loadSpoon("BehringerUCA222"):start()
 
 hs.loadSpoon("AudioSwitcher")
 
+hs.loadSpoon("URLDispatcher"):start()
+
 spoon.AudioSwitcher:bindHotkeys({
 	speakers = {{"cmd", "alt"}, "s"},
 	headphones = {{"cmd", "alt"}, "h"},
@@ -123,3 +125,10 @@ spoon.ScreenPresets:setPresets({
   },
 })
 spoon.ScreenPresets:start()
+
+
+spoon.URLDispatcher.default_handler = "org.mozilla.firefox"
+spoon.URLDispatcher.set_system_handler = true
+spoon.URLDispatcher.url_patterns = {
+	{ "https?://meet%.google%.com", "com.google.Chrome" },
+}
