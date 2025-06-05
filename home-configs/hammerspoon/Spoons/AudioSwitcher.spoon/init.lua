@@ -30,6 +30,14 @@ end
 AudioSwitcher.onHeadphones = hs.fnutils.partial(AudioSwitcher.setAudioOutputDevice, headphonesName)
 AudioSwitcher.onSpeakers = hs.fnutils.partial(AudioSwitcher.setAudioOutputDevice, speakersName)
 
+function AudioSwitcher.listAudioDevices()
+	local devices = hs.audiodevice.allOutputDevices()
+  print("Available audio output devices:")
+  for _, device in ipairs(devices) do
+    print(string.format("- %s", device:name()))
+  end
+end
+
 function AudioSwitcher:bindHotkeys(mapping)
   local hotkeyDefinitions = {
     headphones = self.onHeadphones,
@@ -38,6 +46,10 @@ function AudioSwitcher:bindHotkeys(mapping)
   -- Use defaultHotkeys if mapping is nil or empty
   mapping = mapping or self.defaultHotkeys
   hs.spoons.bindHotkeysToSpec(hotkeyDefinitions, mapping)
+
+  -- List available audio devices for reference
+  self.listAudioDevices()
+
   return self
 end
 
