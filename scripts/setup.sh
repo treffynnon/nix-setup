@@ -5,6 +5,42 @@
 
 set -euo pipefail
 
+# Configuration validation
+validate_nix_config() {
+  echo "🔍 Validating Nix configuration..."
+  if ! nix flake check --no-build "$NIXPKGS_BASEPATH" &>/dev/null; then
+    echo -e "${RED}❌ Nix configuration validation failed${ESC}"
+    echo "Please fix configuration errors before running setup"
+    return 1
+  fi
+  echo "✅ Nix configuration is valid"
+}
+
+# Error recovery function
+cleanup_on_error() {
+  local exit_code=$?
+  echo -e "${RED}❌ Setup failed with exit code $exit_code${ESC}"
+  echo "Performing cleanup..."
+
+  # Re-enable IPv6 if we disabled it
+  if [ "$IS_DARWIN" == true ] && [ "${IPV6_DISABLED:-false}" == "true" ]; then
+    sudo networksetup -setv6automatic Wi-Fi &>/dev/null || true
+    sudo networksetup -setv6automatic Ethernet &>/dev/null || true
+  fi
+
+  exit $exit_code
+}
+trap cleanup_on_error ERR
+
+# Progress tracking
+TOTAL_STEPS=7
+CURRENT_STEP=0
+
+progress() {
+  CURRENT_STEP=$((CURRENT_STEP + 1))
+  echo -e "${BLUE}[$CURRENT_STEP/$TOTAL_STEPS] $1${ESC}"
+}
+
 # Get the base path of the nixpkgs directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NIXPKGS_BASEPATH="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -29,6 +65,7 @@ YELLOW_UL='\033[38;4;33m'
 # System detection
 IS_DARWIN=false
 IS_NIXOS=false
+IPV6_DISABLED=false
 CURRENT_HOSTNAME=$(hostname)
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -63,8 +100,14 @@ echo -e "${GREEN}🚀 Starting Modern Nix Configuration Setup${ESC}"
 echo -e "Setting up flake-based configuration from: ${BLUE}$NIXPKGS_BASEPATH${ESC}"
 echo
 
+progress "Validating configuration"
+# Validate configuration before starting setup
+if command -v nix &>/dev/null; then
+  validate_nix_config
+fi
+
 if [ "$IS_DARWIN" == true ]; then
-  echo -e "${BLUE}📱 macOS Setup${ESC}"
+  progress "macOS System Setup"
 
   # Install Xcode command line tools first
   echo "Installing Xcode command line tools..."
@@ -84,6 +127,7 @@ if [ "$IS_DARWIN" == true ]; then
 fi
 
 # Give the computer a name
+progress "Setting up hostname and host configuration"
 read -p "Pick a name for this machine [$(hostname)]: " COMPUTER_NAME
 if [ -z "$COMPUTER_NAME" ]; then
   COMPUTER_NAME=$(hostname)
@@ -119,8 +163,9 @@ if [ "$IS_DARWIN" == true ]; then
   echo "🍎 Configuring macOS system settings..."
 
   # Disable IPv6 temporarily (some corporate networks have issues)
-  sudo networksetup -setv6off Wi-Fi &>/dev/null
-  sudo networksetup -setv6off Ethernet &>/dev/null
+  echo "Temporarily disabling IPv6 for network compatibility..."
+  sudo networksetup -setv6off Wi-Fi &>/dev/null && IPV6_DISABLED=true
+  sudo networksetup -setv6off Ethernet &>/dev/null || true
 
   # Set computer name (as done via System Preferences → Sharing)
   sudo scutil --set ComputerName "$COMPUTER_NAME"
@@ -148,7 +193,7 @@ else
 fi
 
 # Nix Installation with Flakes
-echo -e "${BLUE}📦 Installing Nix with Flakes Support${ESC}"
+progress "Installing Nix with Flakes Support"
 if [[ ! $NIX_EXISTS ]]; then
   echo "Installing Nix with the Determinate Systems installer (includes flakes)..."
   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
@@ -173,7 +218,7 @@ else
 fi
 
 # Platform-specific setup and configuration
-echo -e "${BLUE}🔧 Platform-specific Setup${ESC}"
+progress "Platform-specific Configuration"
 
 # sets the host for the configuration to pick up
 export HOST="$COMPUTER_NAME"
@@ -208,19 +253,22 @@ if [ "$IS_DARWIN" == true ]; then
 
   echo "Building and switching to Darwin configuration..."
   sudo darwin-rebuild switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
+  echo "✅ Darwin configuration applied successfully"
 
 elif [ "$IS_NIXOS" == true ]; then
   echo "🐧 Setting up NixOS configuration..."
   sudo nixos-rebuild switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
+  echo "✅ NixOS configuration applied successfully"
 
 else
   echo "🏠 Setting up Home Manager (standalone)..."
   # For other Linux distributions
   nix run home-manager/master -- switch --flake "$NIXPKGS_BASEPATH#simon@$COMPUTER_NAME"
+  echo "✅ Home Manager configuration applied successfully"
 fi
 
 # Shell Setup
-echo -e "${BLUE}🐚 Shell Setup${ESC}"
+progress "Shell Configuration"
 NIX_SUPPLIED_BASH="/run/current-system/sw/bin/bash"
 NIX_SUPPLIED_FISH="/run/current-system/sw/bin/fish"
 
@@ -237,7 +285,7 @@ if [[ "$SHELL" != "/run"* && "$SHELL" != "/nix"* ]]; then
 fi
 
 # 1Password SSH Agent Setup
-echo -e "${BLUE}🔑 1Password SSH Agent Setup${ESC}"
+progress "1Password SSH Agent Setup"
 if [ -f "$NIXPKGS_BASEPATH/scripts/1password-ssh.sh" ]; then
   echo "Running 1Password SSH agent setup..."
   bash "$NIXPKGS_BASEPATH/scripts/1password-ssh.sh"
@@ -247,10 +295,16 @@ else
 fi
 
 # Re-enable IPv6 on macOS now that we have modern curl from Nix
-if [ "$IS_DARWIN" == true ]; then
+if [ "$IS_DARWIN" == true ] && [ "$IPV6_DISABLED" == "true" ]; then
+  echo "Re-enabling IPv6..."
   sudo networksetup -setv6automatic Wi-Fi &>/dev/null
   sudo networksetup -setv6automatic Ethernet &>/dev/null
 fi
+
+# Final validation
+progress "Final validation"
+echo "Performing final configuration validation..."
+validate_nix_config
 
 echo
 echo -e "${GREEN}🎉 Setup Complete!${ESC}"
