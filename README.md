@@ -373,6 +373,132 @@ This configuration modernizes from a legacy setup with the following improvement
 
 ## 🔨 Manual Setup Steps
 
+### Setting up 1Password SSH Agent
+
+The Nix configuration automatically creates the 1Password SSH agent configuration file (`~/.config/1password/ssh/agent.toml`), but to keep your SSH host configurations private, you need to manually configure SSH to use the 1Password agent.
+
+#### Automated Setup (Recommended)
+
+Run the consolidated setup and verification script:
+
+```bash
+./scripts/1password-ssh.sh
+```
+
+This script will:
+
+- **Setup Phase:**
+
+  - Backup your existing SSH config (with timestamp)
+  - Add 1Password SSH agent configuration to `~/.ssh/config`
+  - Preserve your existing host configurations
+  - Set appropriate permissions (600) on SSH config
+
+- **Verification Phase:**
+  - Verify 1Password app installation
+  - Check SSH agent socket availability
+  - Test SSH agent connectivity and list available keys
+  - Validate `agent.toml` configuration and configured vaults
+  - Test GitHub SSH authentication with username detection
+
+You can also run specific operations:
+
+```bash
+./scripts/1password-ssh.sh setup   # Setup SSH config only
+./scripts/1password-ssh.sh verify  # Verification tests only (alias: check)
+```
+
+The script provides detailed status indicators:
+
+- ✅ Success indicators for working components
+- ⚠️ Warnings for non-critical issues
+- ❌ Error indicators for problems requiring attention
+- ℹ️ Informational messages with helpful context
+
+#### Manual Setup
+
+If you prefer to configure SSH manually, add this to your `~/.ssh/config` file:
+
+```ssh-config
+# 1Password SSH Agent Configuration
+# Added by Nix configuration setup script
+Host *
+  IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+```
+
+Or configure it for specific hosts only:
+
+```ssh-config
+Host github.com
+  HostName github.com
+  User git
+  IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+```
+
+#### Verification
+
+After setup, the script automatically verifies the configuration, but you can also test manually:
+
+```fish
+# Test SSH connection to GitHub (uses 1Password SSH agent automatically)
+ssh -T git@github.com
+
+# List available SSH keys from 1Password
+SSH_AUTH_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" ssh-add -l
+```
+
+**Note:** You don't need to set `SSH_AUTH_SOCK` in your shell environment. The SSH config's `IdentityAgent` directive tells SSH to use 1Password directly for each connection.
+
+#### Troubleshooting 1Password SSH
+
+If the automated script reports issues, here are common solutions:
+
+**1Password App Not Found:**
+
+```fish
+# Verify 1Password is installed
+ls -la "/Applications/1Password.app"
+```
+
+**SSH Agent Socket Missing:**
+
+```fish
+# Check if 1Password SSH agent is enabled
+# Open 1Password → Settings → Developer → Use the SSH agent
+ls -la "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+```
+
+**No SSH Keys Found:**
+
+```fish
+# Verify SSH keys are stored in 1Password vaults
+# Keys should be in one of the vaults configured in agent.toml
+./scripts/1password-ssh.sh verify  # Shows configured vaults
+```
+
+**GitHub Authentication Failed:**
+
+```fish
+# Test GitHub SSH manually with verbose output
+ssh -vT git@github.com
+# Should show: "Hi username! You've successfully authenticated"
+```
+
+**agent.toml Missing:**
+
+```fish
+# Rebuild Nix configuration to create agent.toml
+darwin-rebuild switch --flake ~/.nixpkgs#(hostname)
+```
+
+**Restore SSH Config:**
+
+```fish
+# If setup went wrong, restore from backup
+# Backups are created with timestamps, e.g.:
+cp ~/.ssh/config.backup.20250619_160056 ~/.ssh/config
+```
+
 ### Setting up Hammerspoon
 
 Install Hammerspoon from <https://www.hammerspoon.org/>
