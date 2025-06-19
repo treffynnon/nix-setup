@@ -22,6 +22,8 @@ hs.loadSpoon("AudioSwitcher")
 
 hs.loadSpoon("URLDispatcher"):start()
 
+hs.loadSpoon("ElgatoStreamDeck")
+
 spoon.AudioSwitcher:bindHotkeys({
 	speakers = {{"cmd", "alt"}, "s"},
 	headphones = {{"cmd", "alt"}, "h"},
@@ -132,3 +134,12 @@ spoon.URLDispatcher.set_system_handler = true
 spoon.URLDispatcher.url_patterns = {
 	{ "https?://meet%.google%.com", "com.google.Chrome" },
 }
+
+-- Load and start uhubctl library
+local uhubctl = require('uhubctl')
+uhubctl.start()
+
+-- Start ElgatoStreamDeck Spoon for sleep/wake USB power management
+spoon.ElgatoStreamDeck.deviceName = "Elgato Stream Deck MK.2"
+spoon.ElgatoStreamDeck:start()
+
