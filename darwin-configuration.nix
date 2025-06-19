@@ -1,21 +1,26 @@
-{pkgs, home-manager, lib, opnix, ...}: 
-let
+{
+  pkgs,
+  home-manager,
+  lib,
+  opnix,
+  ...
+}: let
   # Import our centralised configuration directly
   defaults = import ./lib/defaults.nix;
 in {
   # Import shared configuration
   imports = [
     ./shared-configuration.nix
-    ./lib/opnix-system.nix  # System-level opnix configuration
+    ./lib/opnix-system.nix # System-level opnix configuration
     home-manager.darwinModules.home-manager
   ];
-  
+
   # Note: system.stateVersion is now set in individual host configurations
   # See hosts/*/configuration.nix for per-host stateVersion values
-  
+
   # Set primary user for system defaults using centralised config
   system.primaryUser = defaults.user.username;
-  
+
   # Note: ids.gids.nixbld is now set in individual host configurations
   # See hosts/*/configuration.nix for per-host GID overrides
 
@@ -124,7 +129,7 @@ in {
       screencapture.location = defaults.paths.screenshotLocation;
     };
   };
-  
+
   # Darwin-specific user configuration using centralised defaults
   users.users.${defaults.user.username} = {
     shell = pkgs.fish;
@@ -144,10 +149,10 @@ in {
     findutils
     gnugrep
     fontconfig
-    fish  # Fish is managed differently on Linux
+    fish # Fish is managed differently on Linux
   ];
 
-  # macOS-specific programs  
+  # macOS-specific programs
   programs = {
     bash = {
       enable = true;
@@ -155,6 +160,30 @@ in {
     };
     fish.enable = true;
     zsh.enable = true;
+  };
+
+  # Homebrew configuration managed by nix-darwin
+  homebrew = {
+    enable = true;
+    # Configure Homebrew behaviour
+    onActivation = {
+      autoUpdate = false; # Don't auto-update during nix-darwin activation
+      upgrade = false; # Don't auto-upgrade packages during activation
+      cleanup = "zap"; # Remove unlisted formulae and casks
+    };
+
+    # Homebrew formulae (command-line tools)
+    # Minimal list - most packages moved to Nix for better reproducibility
+    brews = [
+      # Only keeping packages that work significantly better via Homebrew
+      # or are not available/problematic in Nix on macOS
+    ];
+
+    # Homebrew casks (GUI applications)
+    # These are typically not available in Nix or work better as native macOS apps
+    casks = [
+      "betterdisplay" # macOS display management utility
+    ];
   };
 
   # Home Manager configuration using shared configuration
@@ -166,7 +195,7 @@ in {
       imports = [
         opnix.homeManagerModules.default
         ./home-configs/shared.nix
-        ./home-configs/hammerspoon.nix  # macOS-specific module
+        ./home-configs/hammerspoon.nix # macOS-specific module
       ];
     };
   };
