@@ -24,7 +24,7 @@
 *.iml
 .vscode/settings.json
 
-# Nix build artifacts
+# Nix build artefacts
 result-*
 .direnv/
 *.qcow2
