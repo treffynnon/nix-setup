@@ -1,7 +1,7 @@
 {
   pkgs,
   lib,
-  osConfig,
+  osConfig ? null,  # osConfig is only available in nix-darwin/NixOS, not standalone home-manager
   ...
 }: let
   aliases = (import ./common/aliases.nix) {inherit pkgs;};
@@ -23,7 +23,7 @@ in
         dquote = str: "\"" + str + "\"";
 
         makeBinPathList = map (path: path + "/bin");
-      in ''
+      in lib.optionalString (osConfig != null) ''
         fish_add_path --move --prepend --path ${lib.concatMapStringsSep " " dquote (makeBinPathList osConfig.environment.profiles)}
         set fish_user_paths $fish_user_paths
       '';

@@ -11,7 +11,7 @@
       macos_custom_beam_cursor = true;
       shell = "${pkgs.fish}/bin/fish --login --interactive";
     };
-    theme = "Parasio Dark";
+    themeFile = "Parasio_Dark";
     shellIntegration = {
       enableBashIntegration = true;
       enableFishIntegration = true;

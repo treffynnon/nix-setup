@@ -1,5 +1,14 @@
-{pkgs, ...}: let
-  sshPubKey = "~/.ssh/id_rsa.pub";
+{pkgs, lib, config, ...}: let
+  # Import our centralized configuration  
+  helpers = import ../lib/helpers.nix { inherit lib; };
+  defaults = helpers.defaults;
+  secrets = import ../lib/secrets.nix { inherit lib pkgs; };
+  
+  # Use the SSH signing key from 1Password directly
+  # Since op command is working, we can use the SSH key directly
+  sshSigningKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAKqMvnmAaxdZgF/4rgPZnH3FJD2yl1KJHMb+CmHD7C2";
+      
+  hasSigningKey = sshSigningKey != "";
 in {
   programs.git = {
     enable = true;
@@ -22,8 +31,9 @@ in {
         };
       };
     };
-    userName = "Simon Holywell";
-    userEmail = "simon@holywell.au";
+    # Use centralized user configuration
+    userName = defaults.user.fullName;
+    userEmail = defaults.user.email;
 
     ignores = [
       "*.sw?"
@@ -70,13 +80,13 @@ in {
       };
 
       user = {
-        # use the SSH key to sign commits instead of GPG
-        signingkey = signingSshKey;
+        # use the SSH key to sign commits instead of GPG (only if available)
+        signingkey = lib.mkIf hasSigningKey sshSigningKey;
       };
 
       commit = {
-        # automatically sign all the commits
-        gpgsign = true;
+        # automatically sign all the commits (only if key is available)
+        gpgsign = hasSigningKey;
       };
 
       push = {
