@@ -1,5 +1,5 @@
 {pkgs, lib, config, ...}: let
-  # Import our centralized configuration  
+  # Import our centralised configuration  
   helpers = import ../lib/helpers.nix { inherit lib; };
   defaults = helpers.defaults;
   secrets = import ../lib/secrets.nix { inherit lib pkgs; };
@@ -31,7 +31,7 @@ in {
         };
       };
     };
-    # Use centralized user configuration
+    # Use centralised user configuration
     userName = defaults.user.fullName;
     userEmail = defaults.user.email;
 

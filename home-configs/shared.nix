@@ -3,7 +3,7 @@
 # darwin-configuration.nix, nixos-configuration.nix, and home-manager-configuration.nix
 {pkgs, lib, config, ...}:
 let
-  # Import our centralized configuration directly to avoid circular dependencies
+  # Import our centralised configuration directly to avoid circular dependencies
   defaults = import ../lib/defaults.nix;
 in {
   # Note: home.stateVersion is now set in individual host configurations

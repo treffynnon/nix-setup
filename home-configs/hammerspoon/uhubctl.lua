@@ -19,7 +19,7 @@ uhubctl.discoveredDevices = {}  -- Will store discovered USB devices
 uhubctl.deviceStates = {}  -- Will store current device states
 uhubctl.isDiscovering = false
 
--- Initialize the library
+-- Initialise the library
 function uhubctl.start()
   uhubctl.loadState()
   uhubctl.discoverDevices()
@@ -122,7 +122,7 @@ function uhubctl.parseUhubctlOutput(output)
             powered = isPowered
           }
 
-          -- Initialize state if not exists
+          -- Initialise state if not exists
           if uhubctl.deviceStates[deviceInfo] == nil then
             uhubctl.deviceStates[deviceInfo] = isPowered
           end

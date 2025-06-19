@@ -1,6 +1,6 @@
 {pkgs, home-manager, lib, opnix, ...}: 
 let
-  # Import our centralized configuration directly
+  # Import our centralised configuration directly
   defaults = import ./lib/defaults.nix;
 in {
   # Import shared configuration
@@ -9,11 +9,11 @@ in {
     home-manager.nixosModules.home-manager
   ];
 
-  # NixOS/Linux-specific configuration using centralized defaults
+  # NixOS/Linux-specific configuration using centralised defaults
   # Set reasonable default stateVersion for NixOS - should be overridden by host configs
   system.stateVersion = "24.05"; # Default fallback - set appropriate version in host configs
   
-  # Linux-specific user configuration using centralized defaults
+  # Linux-specific user configuration using centralised defaults
   users.users.${defaults.user.username} = {
     isNormalUser = true;
     shell = pkgs.fish;

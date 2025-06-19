@@ -1,7 +1,7 @@
-# Centralized configuration constants and defaults
+# Centralised configuration constants and defaults
 # This is the single source of truth for all user data, versions, and common settings
 {
-  # User configuration - centralized for consistency
+  # User configuration - centralised for consistency
   user = {
     username = "simon";
     fullName = "Simon Holywell";
@@ -13,7 +13,7 @@
   };
 
   # Version management - DEPRECATED: stateVersions moved to per-host configurations
-  # stateVersion should match when you first installed each system and should NOT be centralized
+  # stateVersion should match when you first installed each system and should NOT be centralised
   # Do NOT update stateVersions unless you understand the migration implications
   # See: https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   versions = {

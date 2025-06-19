@@ -1,6 +1,6 @@
 {pkgs, home-manager, lib, opnix, ...}: 
 let
-  # Import our centralized configuration directly
+  # Import our centralised configuration directly
   defaults = import ./lib/defaults.nix;
 in {
   # Import shared configuration
@@ -13,7 +13,7 @@ in {
   # Note: system.stateVersion is now set in individual host configurations
   # See hosts/*/configuration.nix for per-host stateVersion values
   
-  # Set primary user for system defaults using centralized config
+  # Set primary user for system defaults using centralised config
   system.primaryUser = defaults.user.username;
   
   # Note: ids.gids.nixbld is now set in individual host configurations
@@ -90,7 +90,7 @@ in {
         # Configures the trackpad tracking speed (0 to 3).
         "com.apple.trackpad.scaling" = 2.999;
 
-        # Configures the keyboard control behavior. Mode 3 enables full keyboard control.
+        # Configures the keyboard control behaviour. Mode 3 enables full keyboard control.
         AppleKeyboardUIMode = 3;
         ApplePressAndHoldEnabled = false;
         InitialKeyRepeat = 10;
@@ -125,7 +125,7 @@ in {
     };
   };
   
-  # Darwin-specific user configuration using centralized defaults
+  # Darwin-specific user configuration using centralised defaults
   users.users.${defaults.user.username} = {
     shell = pkgs.fish;
     home = "/Users/${defaults.user.username}";

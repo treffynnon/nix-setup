@@ -1,6 +1,6 @@
 {pkgs, lib, opnix, ...}:
 let
-  # Import our centralized configuration directly  
+  # Import our centralised configuration directly  
   defaults = import ./lib/defaults.nix;
 in {
   # Import our unified home-manager configuration

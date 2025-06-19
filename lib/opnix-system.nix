@@ -1,15 +1,17 @@
 # System-level opnix configuration for nix-darwin
 # This module handles system-level requirements for opnix integration
-{pkgs, lib, config, ...}:
-
-let
-  # Import our centralized configuration
-  defaults = import ../lib/defaults.nix;
-in
 {
+  pkgs,
+  lib,
+  config,
+  ...
+}: let
+  # Import our centralised configuration
+  defaults = import ../lib/defaults.nix;
+in {
   # Create onepassword-secrets group for opnix
   users.groups.onepassword-secrets = {
-    members = [ defaults.user.username ];
+    members = [defaults.user.username];
   };
 
   # System activation script to fix opnix token permissions
