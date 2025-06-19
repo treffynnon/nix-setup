@@ -39,6 +39,34 @@
 
       "chat.agent.enabled" = true;
 
+      # Australian English Settings
+      "cSpell.language" = "en-GB";
+      "cSpell.enabledLanguageIds" = [
+        "markdown"
+        "text"
+        "typescript"
+        "javascript"
+        "nix"
+        "lua"
+        "fish"
+        "bash"
+        "shell"
+        "yaml"
+        "json"
+        "jsonc"
+      ];
+
+      # GitHub Copilot settings for Australian English
+      "github.copilot.editor.enableAutoCompletions" = true;
+      "github.copilot.advanced" = {
+        "inlineSuggestEnable" = true;
+        "listCount" = 10;
+        "length" = 500;
+      };
+
+      # Custom instructions for code generation
+      "github.copilot.chat.welcomeMessage" = "Always use Australian English spelling and grammar (e.g., 'colour' not 'color', 'centre' not 'center', 'behaviour' not 'behavior', 'licence' not 'license', 'optimise' not 'optimize', 'initialise' not 'initialize', 'centralise' not 'centralize').";
+
       # Paraiso dark from https://glitchbone.github.io/vscode-base16-term/#/paraiso
       # "workbench.colorCustomizations" = {
       #   "terminal.background" = "#2F1E2E";

@@ -4,5 +4,7 @@
 		"bbenoist.nix", // nix language support
 		"kamadorueda.alejandra", // nix formatter
 		"mkhl.direnv", // load the nix shell via direnv
+		"streetsidesoftware.code-spell-checker", // spell checker with Australian English support
+		"streetsidesoftware.code-spell-checker-australian-english" // Australian English dictionary for spell checker
 	]
 }
