@@ -40,7 +40,7 @@
       "chat.agent.enabled" = true;
 
       # Australian English Settings
-      "cSpell.language" = "en-GB";
+      "cSpell.language" = "en-AU,en-GB";
       "cSpell.enabledLanguageIds" = [
         "markdown"
         "text"
