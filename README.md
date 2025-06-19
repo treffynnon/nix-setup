@@ -510,6 +510,8 @@ statix check .
 ### Configuration Examples
 
 - [Dustin Lyons Config](https://github.com/dustinlyons/nixos-config) - Comprehensive example
+- [jnsgruk's NixOS Config](https://github.com/jnsgruk/nixos-config) - Sophisticated desktop configurations and theme management ⚠️ _Archived (owner moved to Ubuntu)_
+- [kaleocheng's Nix Dots](https://github.com/kaleocheng/nix-dots) - Multi-platform features/flavours organisation
 - [Daniel's Home](https://github.com/danieldk/nix-home/tree/master/cfg) - Clean config examples
 - [Jomik's Dotfiles](https://github.com/Jomik/dotfiles/tree/master/.config/nixpkgs) - Good structure
 - [jwiegley's config](https://github.com/jwiegley/nix-config/blob/master/overlays/30-apps.nix) - Advanced overlays
@@ -527,8 +529,7 @@ statix check .
 
 - [macOS Settings Values](https://gist.github.com/smgt/3227665) - List of macOS defaults
 - [Starter macOS Scripts](https://github.com/joeyhoer/starter/tree/master/system)
-- [macOS Security Settings](http://macos.duh.to/#application-layer-firewall)
-- [Nix on macOS Wiki](https://wiki.nikitavoloboev.xyz/package-managers/nix/nix-darwin)
+- [Nix Darwin Documentation](https://daiderd.com/nix-darwin/) - Official nix-darwin documentation
 - [Homebrew to Nix Migration](https://www.softinio.com/post/moving-from-homebrew-to-nix-package-manager/)
 
 ### Monitor Management (macOS)
