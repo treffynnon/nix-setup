@@ -1,7 +1,8 @@
-_: super: rec {
-  vscode = super.vscode.overrideAttrs (
-    _: rec {
-      runtimeDependencies = super.lib.optional super.stdenv.isLinux [super.systemd.lib super.fontconfig.lib];
-    }
-  );
+final: prev: {
+  vscode = prev.vscode.overrideAttrs (oldAttrs: {
+    runtimeDependencies = prev.lib.optionals prev.stdenv.isLinux [
+      prev.systemd
+      prev.fontconfig.lib
+    ];
+  });
 }

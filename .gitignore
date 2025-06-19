@@ -1,3 +1,35 @@
 /result
 .luacheckcache
+
+# Sensitive files - never commit these
 /github.pat
+# Actual secret files (not configuration files)
+/secrets/*.key
+/secrets/*.token
+/secrets/*.pat
+/secrets/actual-secrets/
+**/*secret-values*
+**/*private-key*
+*.pem
+*.p12
+*.pfx
+
+# But allow our secret configuration modules
+!lib/secrets.nix
+!home-configs/opnix.nix
+!secrets/secrets.nix
+
+# IDE files
+.idea/
+*.iml
+.vscode/settings.json
+
+# Nix build artifacts
+result-*
+.direnv/
+*.qcow2
+
+# Backup files
+*.bak
+*.backup
+*~
