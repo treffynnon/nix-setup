@@ -1,14 +1,15 @@
 # Shared home-manager configuration
-# This eliminates the massive duplication of home-manager imports across 
+# This eliminates the massive duplication of home-manager imports across
 # darwin-configuration.nix, nixos-configuration.nix, and home-manager-configuration.nix
-{pkgs, lib, config, ...}:
-let
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}: let
   # Import our centralised configuration directly to avoid circular dependencies
   defaults = import ../lib/defaults.nix;
 in {
-  # Note: home.stateVersion is now set in individual host configurations
-  # See hosts/*/configuration.nix for per-host stateVersion values
-  
   # Core home-manager module imports
   imports = [
     ./git.nix
@@ -27,12 +28,12 @@ in {
     ./pgcli.nix
     ./vifm.nix
     ./webstorm.nix
-    ./opnix.nix  # 1Password secrets management
+    ./opnix.nix # 1Password secrets management
+    ./1password-ssh.nix # 1Password SSH agent configuration
     # Platform-specific modules will be imported by individual configs
     # Uncomment these if needed:
     # ./firefox.nix
     # ./httpie.nix
-    # ./ssh.nix
   ];
 
   # Core home packages that work everywhere
@@ -47,7 +48,7 @@ in {
   # Nix configuration for home-manager
   nix = {
     # Enable experimental flakes support
-    settings.experimental-features = [ "nix-command" "flakes" ];
+    settings.experimental-features = ["nix-command" "flakes"];
   };
 
   # Note: nixpkgs.config and nixpkgs.overlays are intentionally NOT set here
