@@ -107,6 +107,25 @@ in {
 
         "com.apple.sound.beep.volume" = 0.000;
         "com.apple.sound.beep.feedback" = 0;
+
+        # Password and security settings
+        RetriesUntilHint = 0; # Show password hints after count (0 to disable)
+
+        # Disable automatic substitutions
+        NSAutomaticCapitalizationEnabled = false;
+        NSAutomaticDashSubstitutionEnabled = false;
+        NSAutomaticPeriodSubstitutionEnabled = false;
+        NSAutomaticQuoteSubstitutionEnabled = false;
+        NSAutomaticSpellingCorrectionEnabled = false;
+      };
+
+      # Spaces settings
+      spaces.spans-displays = true; # Set Apple spaces to span multiple displays
+
+      # Screen saver settings
+      screensaver = {
+        askForPassword = true;
+        askForPasswordDelay = 5; # Require password 5 seconds after sleep begins
       };
 
       # Firewall settings
@@ -123,6 +142,11 @@ in {
         autoLoginUser = "";
         SHOWFULLNAME = true;
         GuestEnabled = false;
+      };
+
+      # System sound settings
+      systemsound = {
+        "com.apple.sound.uiaudio.enabled" = 0; # Disable UI sound effects
       };
 
       # Screenshot settings
