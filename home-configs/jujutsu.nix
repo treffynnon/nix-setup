@@ -10,8 +10,13 @@
 
       ui = {
         editor = "nvim";
-        pager = pkgs.delta;
+        pager = "${pkgs.delta}/bin/delta";
         paginate = "auto";
+      };
+
+      experimental-advance-branches = {
+        enabled-branches = ["glob:*"];
+        disabled-branches = ["master" "main"];
       };
     };
   };

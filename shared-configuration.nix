@@ -50,53 +50,53 @@
   };
 
   # Core system packages that work on all platforms
-  environment.systemPackages = with pkgs;
-    [
-      # Core utilities
-      gnupg
-      pass
-      curl
-      wget
-      dnsutils
-      nmap
-      inetutils
+  environment.systemPackages = with pkgs; [
+    # Core utilities
+    gnupg
+    pass
+    curl
+    wget
+    dnsutils
+    nmap
+    inetutils
 
-      # Secrets management
-      _1password-cli
+    # Secrets management
+    _1password-cli
 
-      # File and text processing
-      less
-      jq # JSON processor
-      yq # YAML/JSON processor
-      imagemagick
-      ripgrep
-      unzip
-      zip
-      gzip
-      zstd
+    # File and text processing
+    less
+    delta
+    jq # JSON processor
+    yq # YAML/JSON processor
+    imagemagick
+    ripgrep
+    unzip
+    zip
+    gzip
+    zstd
 
-      # System tools
-      fd
-      file
-      pv
-      htop
-      which
-      eza
+    # System tools
+    fd
+    file
+    pv
+    htop
+    which
+    eza
 
-      # Git tools
-      git-lfs
-      git-crypt
+    # Git tools
+    git-lfs
+    git-crypt
 
-      # Nix tools
-      any-nix-shell
+    # Nix tools
+    any-nix-shell
 
-      # Development tools
-      cmus
+    # Development tools
+    cmus
 
-      # Git tools (previously under pkgs.gitAndTools, now top-level)
-      gitFull
-      git-fame
-    ];
+    # Git tools (previously under pkgs.gitAndTools, now top-level)
+    gitFull
+    git-fame
+  ];
 
   # Shared fonts (works on both platforms)
   fonts = {
