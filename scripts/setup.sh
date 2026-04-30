@@ -334,10 +334,11 @@ else
 fi
 
 # Re-enable IPv6 on macOS now that we have modern curl from Nix
+# Tolerate missing interfaces (e.g. laptops without Ethernet) so set -e doesn't kill us
 if [ "$IS_DARWIN" == true ] && [ "$IPV6_DISABLED" == "true" ]; then
   echo "Re-enabling IPv6..."
-  sudo networksetup -setv6automatic Wi-Fi &>/dev/null
-  sudo networksetup -setv6automatic Ethernet &>/dev/null
+  sudo networksetup -setv6automatic Wi-Fi &>/dev/null || true
+  sudo networksetup -setv6automatic Ethernet &>/dev/null || true
 fi
 
 # Final validation
