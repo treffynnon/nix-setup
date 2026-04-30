@@ -92,11 +92,11 @@
 
       # Development tools
       cmus
-    ]
-    ++ (with pkgs.gitAndTools; [
+
+      # Git tools (previously under pkgs.gitAndTools, now top-level)
       gitFull
       git-fame
-    ]);
+    ];
 
   # Shared fonts (works on both platforms)
   fonts = {

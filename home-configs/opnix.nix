@@ -4,20 +4,22 @@
 
 {
   # Configure 1Password secrets management with opnix
+  # Note: new opnix API takes `secrets` as an attrset keyed by camelCase name
+  # instead of a list. Key names must match /^[a-z][a-zA-Z0-9]*$/.
   programs.onepassword-secrets = {
     enable = true;
-    secrets = [
-      {
+    secrets = {
+      sshSigningKey = {
         # SSH signing key for git commits
         path = ".ssh-signing-key";
         reference = "op://Nix Config/GitHub Commit Signing Key/public key";
-      }
-      {
+      };
+      githubToken = {
         # GitHub personal access token
         path = ".github-token";
         reference = "op://Nix Config/GitHub-PAT/password";
-      }
-    ];
+      };
+    };
   };
 
   # System-level requirements for opnix

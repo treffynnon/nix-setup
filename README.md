@@ -52,7 +52,36 @@ This configuration has been modernized from a legacy, duplicated setup to a clea
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Automated Setup (Recommended)
+
+For the best experience, use the optimized setup script:
+
+```bash
+git clone <repository-url> ~/.nixpkgs
+cd ~/.nixpkgs
+./scripts/setup.sh
+```
+
+#### 🎯 Setup Script Features
+
+The modernized `setup.sh` includes several optimizations:
+
+- **🔍 Pre-flight Validation** - Checks configuration validity before starting
+- **📊 Progress Tracking** - Clear step indicators (1/7, 2/7, etc.)
+- **🛡️ Error Recovery** - Automatic cleanup on failure with IPv6 restoration
+- **🔄 Smart Network Handling** - Temporary IPv6 disable/re-enable for compatibility
+- **✅ Post-setup Validation** - Verifies configuration after installation
+- **🖥️ Host-specific Config** - Automatically creates host configurations with auto-detected state versions
+- **🎯 Smart State Detection** - Detects appropriate system and Home Manager state versions from:
+  - Existing system installations (`nixos-version`, `darwin-version`)
+  - Current nixpkgs version (`nix eval nixpkgs#lib.version`)
+  - Reference configurations from other hosts
+- **🐚 Shell Integration** - Switches to Nix-managed Fish/Bash shells
+- **🔑 1Password Integration** - Sets up SSH agent with 1Password
+
+### Manual Setup (Advanced Users)
+
+#### Prerequisites
 
 1. **Install Nix** with flakes enabled:
 
@@ -344,6 +373,52 @@ This configuration modernizes from a legacy setup with the following improvement
 - **Proper group management** - Secure permissions and access control
 
 ## 🆘 Troubleshooting
+
+### Setup Script Issues
+
+1. **Setup script fails at validation step:**
+
+   ```bash
+   # Check configuration syntax manually
+   nix flake check --show-trace ~/.nixpkgs
+
+   # Run validation separately
+   cd ~/.nixpkgs && nix flake check --no-build
+   ```
+
+2. **Xcode Command Line Tools installation hangs:**
+
+   - Cancel the installation (`Ctrl+C`)
+   - Try manual installation: `xcode-select --install`
+   - Rerun setup script after tools are installed
+
+3. **IPv6 issues causing network failures:**
+
+   ```bash
+   # Re-enable IPv6 manually if script fails
+   sudo networksetup -setv6automatic Wi-Fi
+   sudo networksetup -setv6automatic Ethernet
+   ```
+
+4. **Host configuration creation fails:**
+
+   ```bash
+   # Check permissions in hosts directory
+   ls -la ~/.nixpkgs/hosts/
+
+   # Create directory manually if needed
+   mkdir -p ~/.nixpkgs/hosts/$(hostname)
+   ```
+
+5. **Darwin rebuild fails with "not found" errors:**
+
+   ```bash
+   # Source Nix environment manually
+   source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+
+   # Check if nix-darwin is available
+   command -v darwin-rebuild
+   ```
 
 ### Common Issues
 

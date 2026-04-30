@@ -1,39 +1,44 @@
-{pkgs, lib, config, ...}: let
-  # Import our centralised configuration  
-  helpers = import ../lib/helpers.nix { inherit lib; };
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}: let
+  # Import our centralised configuration
+  helpers = import ../lib/helpers.nix {inherit lib;};
   defaults = helpers.defaults;
-  secrets = import ../lib/secrets.nix { inherit lib pkgs; };
-  
+  secrets = import ../lib/secrets.nix {inherit lib pkgs;};
+
   # Use the SSH signing key from 1Password directly
   # Since op command is working, we can use the SSH key directly
-  sshSigningKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAKqMvnmAaxdZgF/4rgPZnH3FJD2yl1KJHMb+CmHD7C2";
-      
+  sshSigningKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAxVpvFsxIhH6LTKrAEVuTiZnqHEalzDlxcNCFcYf3T5";
   hasSigningKey = sshSigningKey != "";
 in {
-  programs.git = {
+  # delta moved out of programs.git; now a top-level home-manager module
+  programs.delta = {
     enable = true;
-    delta = {
-      enable = true;
-      options = {
-        hyperlinks = true;
-        hyperlinks-file-link-format = "vscode://file/{path}:{line}";
+    # new home-manager requires explicit opt-in for git integration
+    enableGitIntegration = true;
+    options = {
+      hyperlinks = true;
+      hyperlinks-file-link-format = "vscode://file/{path}:{line}";
 
-        features = "decorations interactive";
+      features = "decorations interactive";
 
-        interactive = {
-          keep-plus-minus-markers = false;
-        };
+      interactive = {
+        keep-plus-minus-markers = false;
+      };
 
-        decorations = {
-          commit-decoration-style = "bold yellow box ul";
-          file-style = "bold yellow ul";
-          file-decoration-style = "none";
-        };
+      decorations = {
+        commit-decoration-style = "bold yellow box ul";
+        file-style = "bold yellow ul";
+        file-decoration-style = "none";
       };
     };
-    # Use centralised user configuration
-    userName = defaults.user.fullName;
-    userEmail = defaults.user.email;
+  };
+
+  programs.git = {
+    enable = true;
 
     ignores = [
       "*.sw?"
@@ -41,16 +46,29 @@ in {
       ".AppleDouble"
       ".LSOverride"
       ".direnv"
+      ".jj"
     ];
 
-    aliases = {
-      wd = "diff --word-diff";
-      d = "difftool --no-symlinks --dir-diff";
-      bl = "git blame -w -C -C -C";
-      pickaxe = "log -S";
-    };
+    # adopt new default; silences pre-25.05 legacy openpgp warning
+    signing.format = null;
 
-    extraConfig = {
+    # settings replaces extraConfig/aliases/userName/userEmail in newer home-manager
+    settings = {
+      # Use centralised user configuration
+      user = {
+        name = defaults.user.fullName;
+        email = defaults.user.email;
+        # use the SSH key to sign commits instead of GPG (only if available)
+        signingkey = lib.mkIf hasSigningKey sshSigningKey;
+      };
+
+      alias = {
+        wd = "diff --word-diff";
+        d = "difftool --no-symlinks --dir-diff";
+        bl = "git blame -w -C -C -C";
+        pickaxe = "log -S";
+      };
+
       init = {
         defaultBranch = "main";
       };
@@ -77,11 +95,6 @@ in {
 
       "gpg \"ssh\"" = {
         program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
-      };
-
-      user = {
-        # use the SSH key to sign commits instead of GPG (only if available)
-        signingkey = lib.mkIf hasSigningKey sshSigningKey;
       };
 
       commit = {

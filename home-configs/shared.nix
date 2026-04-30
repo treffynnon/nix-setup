@@ -28,8 +28,10 @@ in {
     ./pgcli.nix
     ./vifm.nix
     ./webstorm.nix
-    ./opnix.nix # 1Password secrets management
-    ./1password-ssh.nix # 1Password SSH agent configuration
+    ./opnix.nix
+    ./1password-ssh.nix
+    ./claude-code.nix
+    ./jujutsu.nix
     # Platform-specific modules will be imported by individual configs
     # Uncomment these if needed:
     # ./firefox.nix

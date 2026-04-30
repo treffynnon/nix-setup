@@ -20,6 +20,7 @@
       "[typescript][json][javascript]" = {
         "editor.defaultFormatter" = "esbenp.prettier-vscode";
       };
+      "typescript.preferences.useAliasesForRenames" = false;
 
       "editor.formatOnPaste" = false;
       "editor.formatOnType" = false;

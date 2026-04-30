@@ -1,6 +1,7 @@
-{pkgs, ...}: {
+{pkgs, lib, ...}: {
   home.sessionVariables = {
     DEVELOPER = "sholywell";
-    VISUAL = "${pkgs.helix}/bin/hx";
+    # mkForce: new home-manager neovim module also sets VISUAL; we prefer helix
+    VISUAL = lib.mkForce "${pkgs.helix}/bin/hx";
   };
 }

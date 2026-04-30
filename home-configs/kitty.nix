@@ -19,7 +19,8 @@
     };
   };
 
-  programs.git.extraConfig = {
+  # extraConfig was renamed to settings in newer home-manager
+  programs.git.settings = {
     diff.tool = "kitty";
     diff.guitool = "kitty.gui";
     difftool.prompt = false;

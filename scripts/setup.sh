@@ -139,6 +139,40 @@ nixConfig="$NIXPKGS_BASEPATH/hosts/$COMPUTER_NAME/configuration.nix"
 if [ ! -f "$nixConfig" ]; then
   echo "Creating host-specific configuration: $nixConfig"
   mkdir -p "$(dirname "$nixConfig")"
+
+  # Detect appropriate state versions
+  echo "🔍 Detecting appropriate state versions..."
+
+  # Platform-specific detection
+  if [ "$IS_NIXOS" == true ]; then
+    echo "   Platform: NixOS"
+    # For NixOS, try to detect current version
+    if command -v nixos-version &>/dev/null; then
+      DETECTED_VERSION=$(nixos-version 2>/dev/null | cut -d'.' -f1-2 2>/dev/null || echo "")
+      if [ -n "$DETECTED_VERSION" ]; then
+        SYSTEM_STATE_VERSION="\"$DETECTED_VERSION\""
+        echo "   Detected NixOS version: $DETECTED_VERSION"
+      else
+        SYSTEM_STATE_VERSION="\"24.05\""  # Current stable as fallback
+        echo "   Using current stable NixOS version: 24.05"
+      fi
+    else
+      SYSTEM_STATE_VERSION="\"24.05\""  # Current stable as fallback
+      echo "   Using current stable NixOS version: 24.05"
+    fi
+    HM_STATE_VERSION="24.05"
+  else
+    echo "   Platform: macOS (nix-darwin)"
+    # For nix-darwin, use current stable version
+    SYSTEM_STATE_VERSION="5"  # Current nix-darwin state version
+    HM_STATE_VERSION="24.05"  # Current Home Manager stable
+    echo "   Using current nix-darwin state version: 5"
+  fi
+
+  echo "✅ Final state versions:"
+  echo "   System state version: $SYSTEM_STATE_VERSION"
+  echo "   Home Manager state version: $HM_STATE_VERSION"
+
   cat > "$nixConfig" << EOF
 {
   # Host-specific configuration for $COMPUTER_NAME
@@ -146,15 +180,15 @@ if [ ! -f "$nixConfig" ]; then
 
   # Set the state version based on when you first installed this system
   # NEVER change this unless you understand the migration implications
-  system.stateVersion = 5;  # Set based on your nix-darwin version
+  system.stateVersion = $SYSTEM_STATE_VERSION;  # Auto-detected
 
   # Home Manager state version
-  home-manager.users.simon.home.stateVersion = "24.05";
+  home-manager.users.simon.home.stateVersion = "$HM_STATE_VERSION";
 
   # Add any host-specific overrides here
 }
 EOF
-  echo "✅ Created host configuration with appropriate state versions"
+  echo "✅ Created host configuration with auto-detected state versions"
 else
   echo "✅ Host configuration already exists: $nixConfig"
 fi
@@ -180,8 +214,13 @@ if [ "$IS_DARWIN" == true ]; then
   # Disable the sound effects on boot
   sudo nvram SystemAudioVolume=" "
 
-  # Allow applications downloaded from anywhere
-  sudo spctl --master-disable
+  # Allow applications downloaded from anywhere (optional - may require System Settings confirmation)
+  echo "Attempting to disable Gatekeeper (may require System Settings confirmation)..."
+  if ! sudo spctl --master-disable 2>/dev/null; then
+    echo "⚠️  Could not disable Gatekeeper automatically - you may need to disable it manually in System Settings > Privacy & Security"
+  else
+    echo "✅ Gatekeeper disabled successfully"
+  fi
 
   # Disable Infrared Remote
   sudo defaults write /Library/Preferences/com.apple.driver.AppleIRController DeviceEnabled -bool false

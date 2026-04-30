@@ -29,8 +29,8 @@ in {
     keyboard = {
       # Whether to enable keyboard mappings.
       enableKeyMapping = true;
-      # Whether to remap the Caps Lock key to Control.
-      remapCapsLockToControl = true;
+      # Whether to remap the Caps Lock key to Escape.
+      remapCapsLockToEscape = true;
     };
 
     defaults = {
@@ -107,20 +107,10 @@ in {
 
         "com.apple.sound.beep.volume" = 0.000;
         "com.apple.sound.beep.feedback" = 0;
-
-        # Password and security settings
-        RetriesUntilHint = 0; # Show password hints after count (0 to disable)
-
-        # Disable automatic substitutions
-        NSAutomaticCapitalizationEnabled = false;
-        NSAutomaticDashSubstitutionEnabled = false;
-        NSAutomaticPeriodSubstitutionEnabled = false;
-        NSAutomaticQuoteSubstitutionEnabled = false;
-        NSAutomaticSpellingCorrectionEnabled = false;
       };
 
       # Spaces settings
-      spaces.spans-displays = true; # Set Apple spaces to span multiple displays
+      spaces.spans-displays = false; # Set Apple spaces to span multiple displays
 
       # Screen saver settings
       screensaver = {
@@ -128,25 +118,11 @@ in {
         askForPasswordDelay = 5; # Require password 5 seconds after sleep begins
       };
 
-      # Firewall settings
-      alf = {
-        globalstate = 1;
-        allowsignedenabled = 1;
-        allowdownloadsignedenabled = 1;
-        loggingenabled = 1;
-        stealthenabled = 1;
-      };
-
       # Login window settings
       loginwindow = {
         autoLoginUser = "";
         SHOWFULLNAME = true;
         GuestEnabled = false;
-      };
-
-      # System sound settings
-      systemsound = {
-        "com.apple.sound.uiaudio.enabled" = 0; # Disable UI sound effects
       };
 
       # Screenshot settings
@@ -161,6 +137,14 @@ in {
   };
 
   # Darwin-specific shell configuration
+  # Application firewall (replaces system.defaults.alf.* removed in nix-darwin)
+  networking.applicationFirewall = {
+    enable = true;
+    allowSigned = true;
+    allowSignedApp = true;
+    enableStealthMode = true;
+  };
+
   environment.shells = with pkgs; [bashInteractive fish zsh];
 
   # macOS-specific system packages
@@ -214,6 +198,7 @@ in {
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;
+    backupFileExtension = ".hm-bak";
     users.${defaults.user.username} = {
       # Import our unified home-manager configuration
       imports = [
