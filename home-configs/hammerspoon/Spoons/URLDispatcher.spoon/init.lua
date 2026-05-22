@@ -162,7 +162,7 @@ function obj:read_and_store(patfile)
    self.pat_files[patfile] = hs.fnutils.copy(pats)
 end
 
-function obj:patfileWatcher(patfile, paths, flags)
+function obj:patfileWatcher(patfile, _paths, flags)
    -- Only trigger re-reading the file when the 'itemModified' flag is present,
    -- otherwise the file gets read multiple times due to file manipulations done
    -- by editors
@@ -185,6 +185,136 @@ function obj:setupPatfile(patfile)
    end
 end
 
+function obj.getSenderAppName(senderPid)
+   if senderPid == -1 then
+      return ""
+   end
+   return hs.application.applicationForPID(senderPid):name()
+end
+
+function obj:maybeDecodeSlackUrl(url)
+   if not self.decode_slack_redir_urls then
+      return url
+   end
+   local newUrl = string.match(url, 'https://slack.redir.net/.*url=(.*)')
+   if not newUrl then
+      return url
+   end
+   url = obj.unescape(newUrl)
+   self.logger.df("  Decoded Slack redirect. New URL: '%s'", url)
+   return url
+end
+
+function obj:applyRedirDecoder(dec, scheme, host, params, fullUrl, senderPid, url, currentApp)
+   self.logger.df("  Testing decoder '%s'", dec[1])
+   if not self.matchapps(currentApp, dec[5]) then
+      return url
+   end
+   local processed = false
+   if type(dec[2]) == "string" then
+      if string.find(url, dec[2]) then
+         self.logger.df("    Applying pattern-based decoder '%s' to URL '%s'", dec[1], url)
+         url = string.gsub(url, dec[2], dec[3])
+         self.logger.df("    Decoded URL: '%s'", url)
+         processed = true
+      end
+   elseif type(dec[2]) == "function" then
+      self.logger.df("    Applying function-based decoder '%s' to URL '%s'", dec[1], url)
+      url = dec[2](scheme, host, params, fullUrl, senderPid)
+      self.logger.df("    Decoded URL: '%s'", url)
+      processed = true
+   else
+      self.logger.ef("    Decoder '%s' has an unknown second value of type '%s'", dec[1], dec[2])
+   end
+   if processed and (not dec[4]) then
+      self.logger.df("    Unescaping decoded URL '%s'", url)
+      url = obj.unescape(url)
+      self.logger.df("    Unescaped URL: '%s'", url)
+   end
+   return url
+end
+
+function obj:applyRedirDecoders(scheme, host, params, fullUrl, senderPid, url, currentApp)
+   for _, dec in ipairs(self.url_redir_decoders) do
+      url = self:applyRedirDecoder(dec, scheme, host, params, fullUrl, senderPid, url, currentApp)
+   end
+   return url
+end
+
+function obj:resolvePatternList(pats)
+   if type(pats) ~= "string" then
+      return pats
+   end
+   if self.pat_files[pats] then
+      self.logger.df("    File '%s' is already read, using its contents.", pats)
+      return self.pat_files[pats]
+   end
+   local patsfile = self:setupPatfile(pats)
+   if patsfile then
+      return patsfile
+   end
+   self.logger.df("  Single pattern given, converting to list for processing.")
+   return { pats }
+end
+
+function obj:openUrlWithHandler(url, app, func)
+   local id = nil
+   if type(app) == "string" then
+      id = app
+   elseif type(app) == "function" then
+      func = app
+   end
+   if id ~= nil then
+      self.logger.df("    Match found, opening with '%s'", id)
+      hs.application.launchOrFocusByBundleID(id)
+      hs.urlevent.openURLWithBundle(url, id)
+      return true
+   end
+   if func ~= nil then
+      self.logger.df("    Match found, calling func '%s'", func)
+      func(url)
+      return true
+   end
+   return false
+end
+
+function obj:openMatchingPatterns(url, pats, app, func)
+   for _, p in ipairs(pats) do
+      self.logger.df("  Testing URL with pattern '%s'", p)
+      if string.match(url, p) and self:openUrlWithHandler(url, app, func) then
+         return true
+      end
+   end
+   return false
+end
+
+function obj:tryUrlRule(url, pair, currentApp)
+   self.logger.df("Evaluating rule %s", hs.inspect(pair))
+   local pats = pair[1]
+   local app = pair[2]
+   local func = pair[3]
+   local app_pats = pair[4]
+   if not self.matchapps(currentApp, app_pats) then
+      return false
+   end
+   pats = self:resolvePatternList(pats)
+   return self:openMatchingPatterns(url, pats, app, func)
+end
+
+function obj:openWithDefaultHandler(url)
+   if type(self.default_handler) == "string" then
+      self.logger.df("No match found, opening with default handler '%s'", self.default_handler)
+      hs.application.launchOrFocusByBundleID(self.default_handler)
+      hs.urlevent.openURLWithBundle(url, self.default_handler)
+   elseif type(self.default_handler) == "function" then
+      self.logger.df("No match found, opening with default handler func '%s'", self.default_handler)
+      self.default_handler(url)
+   else
+      self.logger.ef("Unknown type '%s' for default_handler '%s', must be a string or a function.",
+                     type(self.default_handler), self.default_handler)
+   end
+end
+
 --- URLDispatcher:dispatchURL(scheme, host, params, fullUrl, senderPid)
 --- Method
 --- Dispatch a URL to an application according to the defined `url_patterns`.
@@ -199,114 +329,17 @@ end
 --- Notes:
 ---  * The parameters (follow to the [httpCallback](http://www.hammerspoon.org/docs/hs.urlevent.html#httpCallback) specification)
 function obj:dispatchURL(scheme, host, params, fullUrl, senderPid)
-   local url = fullUrl
-   local currentApp = ""
-   if senderPid ~= -1 then
-      currentApp = hs.application.applicationForPID(senderPid):name()
-   end
+   local currentApp = obj.getSenderAppName(senderPid)
+   local url = self:maybeDecodeSlackUrl(fullUrl)
    self.logger.df("Dispatching URL '%s' from application '%s'", url, currentApp)
-   if self.decode_slack_redir_urls then
-      local newUrl = string.match(url, 'https://slack.redir.net/.*url=(.*)')
-      if newUrl then
-         url = obj.unescape(newUrl)
-         self.logger.df("  Decoded Slack redirect. New URL: '%s'", url)
-      end
-   end
-   for i,dec in ipairs(self.url_redir_decoders) do
-      self.logger.df("  Testing decoder '%s'", dec[1])
-      local processed = false
-      if self.matchapps(currentApp, dec[5]) then
-         if type(dec[2]) == "string" then
-            if string.find(url, dec[2]) then
-               self.logger.df("    Applying pattern-based decoder '%s' to URL '%s'", dec[1], url)
-               url = string.gsub(url, dec[2], dec[3])
-               self.logger.df("    Decoded URL: '%s'", url)
-               processed = true
-            end
-         elseif type(dec[2]) == "function" then
-            self.logger.df("    Applying function-based decoder '%s' to URL '%s'", dec[1], url)
-            url = dec[2](scheme, host, params, fullUrl, senderPid)
-            self.logger.df("    Decoded URL: '%s'", url)
-            processed = true
-         else
-            self.logger.ef("    Decoder '%s' has an unknown second value of type '%s'", dec[1], dec[2])
-         end
-         if processed and (not dec[4]) then
-            self.logger.df("    Unescaping decoded URL '%s'", url)
-            url = obj.unescape(url)
-            self.logger.df("    Unescaped URL: '%s'", url)
-         end
-
-      end
-   end
+   url = self:applyRedirDecoders(scheme, host, params, fullUrl, senderPid, url, currentApp)
    self.logger.df("Final URL to open: '%s'", url)
-   for i,pair in ipairs(self.url_patterns) do
-      self.logger.df("Evaluating rule %s", hs.inspect(pair))
-
-      local pats = pair[1]
-      local app = pair[2]
-      local func = pair[3]
-      local app_pats = pair[4]
-
-      -- If app_pats is given, then first of all check whether the source app
-      -- matches, otherwise we skip the whole thing
-      if self.matchapps(currentApp, app_pats) then
-         -- First determine how to interpret the url-patterns
-         if type(pats) == "string" then
-            -- A string can be a single pattern, or a filename to load
-            if self.pat_files[pats] then
-               -- If it's already a known pattern file, use its content
-               self.logger.df("    File '%s' is already read, using its contents.", pats)
-               pats = self.pat_files[pats]
-            else
-               -- Else, try to load it as a file
-               local patsfile = self:setupPatfile(pats)
-               -- If this fails, we use it as a single pattern
-               if patsfile then
-                  pats = patsfile
-               else
-                  self.logger.df("  Single pattern given, converting to list for processing.")
-                  pats = { pats }
-               end
-            end
-         end
-
-         for i,p in ipairs(pats) do
-            self.logger.df("  Testing URL with pattern '%s'", p)
-            if string.match(url, p) then
-               local id = nil
-               if type(app) == "string" then
-                  id = app
-               elseif type(app) == "function" then
-                  func = app
-               end
-               if id ~= nil then
-                  self.logger.df("    Match found, opening with '%s'", id)
-                  hs.application.launchOrFocusByBundleID(id)
-                  hs.urlevent.openURLWithBundle(url, id)
-                  return
-               end
-               if func ~= nil then
-                  self.logger.df("    Match found, calling func '%s'", func)
-                  func(url)
-                  return
-               end
-            end
-         end
+   for _, pair in ipairs(self.url_patterns) do
+      if self:tryUrlRule(url, pair, currentApp) then
+         return
       end
    end
-   -- Fall through to the default handler
-   if type(self.default_handler) == "string" then
-      self.logger.df("No match found, opening with default handler '%s'", self.default_handler)
-      hs.application.launchOrFocusByBundleID(self.default_handler)
-      hs.urlevent.openURLWithBundle(url, self.default_handler)
-   elseif type(self.default_handler) == "function" then
-      self.logger.df("No match found, opening with default handler func '%s'", self.default_handler)
-      self.default_handler(url)
-   else
-      self.logger.ef("Unknown type '%s' for default_handler '%s', must be a string or a function.",
-                     type(self.default_handler), self.default_handler)
-   end
+   self:openWithDefaultHandler(url)
 end
 
 --- URLDispatcher:start()

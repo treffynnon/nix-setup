@@ -92,7 +92,6 @@ function uhubctl.parseUhubctlOutput(output)
   uhubctl.discoveredDevices = {}
 
   local currentHub = nil
-  local currentLocation = nil
 
   for line in output:gmatch("[^\r\n]+") do
     -- Look for hub lines like "Current status for hub 1 [1a40:0101 USB 2.0 Hub, USB 2.00, 4 ports]"
@@ -104,7 +103,7 @@ function uhubctl.parseUhubctlOutput(output)
     -- Look for port lines like "  Port 1: 0100 power"
     local port, status = line:match("^%s*Port (%d+):%s*(%S+)")
     if port and status and currentHub then
-      currentLocation = currentHub .. "-" .. port
+      local currentLocation = currentHub .. "-" .. port
 
       -- Look for device information on the same line or next lines
       local deviceInfo = line:match("Port %d+:%s*%S+%s+(.+)")
@@ -193,7 +192,7 @@ function uhubctl.setDevicePower(deviceName, powerOn)
   print(string.format("uhubctl: Turning %s device '%s' at location '%s'",
                       action, device.name, device.location))
 
-  local task = hs.task.new(uhubctl.uhubctlPath, function(exitCode, stdOut, stdErr)
+  local task = hs.task.new(uhubctl.uhubctlPath, function(exitCode, _stdOut, stdErr)
     if exitCode == 0 then
       uhubctl.deviceStates[device.name] = powerOn
       uhubctl.saveState()
@@ -257,7 +256,7 @@ end
 
 -- Check if uhubctl is available
 function uhubctl.isAvailable()
-  local task = hs.task.new("/usr/bin/which", function(exitCode, stdOut, stdErr)
+  local task = hs.task.new("/usr/bin/which", function(exitCode, stdOut, _stdErr)
     if exitCode == 0 then
       print("uhubctl: Found uhubctl at " .. stdOut:gsub("%s+", ""))
       return true
