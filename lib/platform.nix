@@ -2,14 +2,14 @@
 { lib, pkgs, ... }:
 let
   inherit (lib) optionals optional;
-  inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux system;
+  inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux system isAarch64 isx86_64;
 in {
   # Enhanced platform detection
   platform = {
     inherit isDarwin isLinux system;
     isMacOS = isDarwin;
-    isAarch64 = pkgs.stdenv.hostPlatform.isAarch64;
-    isX86_64 = pkgs.stdenv.hostPlatform.isx86_64;
+    inherit isAarch64;
+    isX86_64 = isx86_64;
     
     # Convenient platform strings
     platformName = 
@@ -18,15 +18,15 @@ in {
       else "unknown";
     
     # Architecture strings
-    arch = pkgs.stdenv.hostPlatform.system;
+    arch = system;
   };
 
   # Platform-specific conditionals (returns lists)
   onDarwin = list: optionals isDarwin list;
   onLinux = list: optionals isLinux list;
   onMacOS = list: optionals isDarwin list;
-  onAarch64 = list: optionals pkgs.stdenv.hostPlatform.isAarch64 list;
-  onX86_64 = list: optionals pkgs.stdenv.hostPlatform.isx86_64 list;
+  onAarch64 = list: optionals isAarch64 list;
+  onX86_64 = list: optionals isx86_64 list;
 
   # Platform-specific conditionals (returns single values)
   ifDarwin = then_: else_: if isDarwin then then_ else else_;
@@ -51,8 +51,8 @@ in {
       common 
       ++ (optionals isDarwin darwin)
       ++ (optionals isLinux linux)
-      ++ (optionals pkgs.stdenv.hostPlatform.isAarch64 aarch64)
-      ++ (optionals pkgs.stdenv.hostPlatform.isx86_64 x86_64);
+      ++ (optionals isAarch64 aarch64)
+      ++ (optionals isx86_64 x86_64);
 
   # Smart module selection helper
   platformModules = modules:

@@ -10,15 +10,14 @@ in {
   ];
   
   # Required for standalone home-manager
-  home.username = defaults.user.username;
-  home.homeDirectory = 
-    if pkgs.stdenv.isDarwin 
-    then "/Users/${defaults.user.username}"
-    else "/home/${defaults.user.username}";
-  
-  # Note: home.stateVersion should be set in host-specific configurations
-  # For standalone home-manager, set it here based on when you first installed it
-  home.stateVersion = "24.05"; # Adjust based on your installation date
+  home = {
+    inherit (defaults.user) username;
+    homeDirectory =
+      if pkgs.stdenv.isDarwin
+      then "/Users/${defaults.user.username}"
+      else "/home/${defaults.user.username}";
+    stateVersion = "24.05";
+  };
 
   # Required for standalone home-manager: set nix package
   nix.package = pkgs.nix;

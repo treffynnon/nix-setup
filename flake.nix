@@ -31,7 +31,7 @@
     currentSystem = builtins.currentSystem or "aarch64-darwin";
     
     # Helper function to generate configurations for multiple systems
-    forEachSystem = systems: f: nixpkgs.lib.genAttrs systems (system: f system);
+    forEachSystem = systems: f: nixpkgs.lib.genAttrs systems f;
     
     # Import platform-specific configuration modules
     darwinConfiguration = import ./darwin-configuration.nix;

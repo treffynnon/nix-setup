@@ -39,12 +39,11 @@ in {
     name = username;
     value =
       {
-        shell = shell;
+        inherit shell extraGroups;
         home =
           if builtins.elem builtins.currentSystem ["aarch64-darwin" "x86_64-darwin"]
           then "/Users/${username}"
           else "/home/${username}";
-        extraGroups = extraGroups;
       }
       // extraConfig;
   };
@@ -66,8 +65,7 @@ in {
           if defaults.platform.isDarwin
           then "/Users/${username}"
           else "/home/${username}";
-        shell = shell;
-        extraGroups = extraGroups;
+        inherit shell extraGroups;
         # Use secrets-aware SSH key
         openssh.authorisedKeys.keys = lib.optional (sshKey != null) sshKey;
       }
@@ -91,9 +89,11 @@ in {
         keep-outputs = true
         keep-derivations = true
       '';
-      settings = {
-        substituters = defaults.nix.substituters;
-        trusted-public-keys = defaults.nix.trustedPublicKeys;
+      settings = let
+        inherit (defaults.nix) substituters trustedPublicKeys;
+      in {
+        inherit substituters;
+        trusted-public-keys = trustedPublicKeys;
         experimental-features = ["nix-command" "flakes"];
       };
       gc = {
@@ -149,10 +149,9 @@ in {
     linuxPackages ? [],
     aarch64Packages ? [],
   }: let
-    currentSystem = builtins.currentSystem;
-    isDarwin = builtins.elem currentSystem ["aarch64-darwin" "x86_64-darwin"];
-    isLinux = builtins.elem currentSystem ["aarch64-linux" "x86_64-linux"];
-    isAarch64 = builtins.elem currentSystem ["aarch64-darwin" "aarch64-linux"];
+    isDarwin = builtins.elem builtins.currentSystem ["aarch64-darwin" "x86_64-darwin"];
+    isLinux = builtins.elem builtins.currentSystem ["aarch64-linux" "x86_64-linux"];
+    isAarch64 = builtins.elem builtins.currentSystem ["aarch64-darwin" "aarch64-linux"];
   in
     basePackages
     ++ (
@@ -175,10 +174,7 @@ in {
   mkVersionManagement = {autoDetectVersions ? true}:
     if autoDetectVersions
     then {
-      # Use defaults but allow for future auto-detection
-      homeManagerStateVersion = defaults.versions.homeManagerStateVersion;
-      darwinStateVersion = defaults.versions.darwinStateVersion;
-      nixosStateVersion = defaults.versions.nixosStateVersion;
+      inherit (defaults.versions) homeManagerStateVersion darwinStateVersion nixosStateVersion;
 
       # Future: Add logic to detect latest stable versions automatically
       _meta = {

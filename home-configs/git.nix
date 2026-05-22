@@ -6,7 +6,7 @@
 }: let
   # Import our centralised configuration
   helpers = import ../lib/helpers.nix {inherit lib;};
-  defaults = helpers.defaults;
+  inherit (helpers) defaults;
 
   sshSigningKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAxVpvFsxIhH6LTKrAEVuTiZnqHEalzDlxcNCFcYf3T5";
   hasSigningKey = sshSigningKey != "";
@@ -54,7 +54,7 @@ in {
       # Use centralised user configuration
       user = {
         name = defaults.user.fullName;
-        email = defaults.user.email;
+        inherit (defaults.user) email;
         # use the SSH key to sign commits instead of GPG (only if available)
         signingkey = lib.mkIf hasSigningKey sshSigningKey;
       };
