@@ -13,6 +13,7 @@ in {
   # Core home-manager module imports
   imports = [
     ./git.nix
+    ./github.nix
     ./fish.nix
     ./starship.nix
     ./neovim.nix

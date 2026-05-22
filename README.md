@@ -34,6 +34,7 @@ This configuration has been modernized from a legacy, duplicated setup to a clea
 ├── home-configs/                   # 🏠 Home Manager modules
 │   ├── shared.nix                  # 🌍 Unified home-manager configuration
 │   ├── opnix.nix                   # 🔐 1Password secrets integration
+│   ├── github.nix                  # 🐙 GitHub CLI via 1Password shell plugin
 │   ├── git.nix                     # 📝 Git with SSH signing via 1Password
 │   ├── fish.nix                    # 🐟 Fish shell configuration
 │   ├── hammerspoon/                # 🔨 Stream Deck automation (macOS)
@@ -77,7 +78,7 @@ The modernized `setup.sh` includes several optimizations:
   - Current nixpkgs version (`nix eval nixpkgs#lib.version`)
   - Reference configurations from other hosts
 - **🐚 Shell Integration** - Switches to Nix-managed Fish/Bash shells
-- **🔑 1Password Integration** - Sets up SSH agent with 1Password
+- **🔑 1Password Integration** - Sets up SSH agent and GitHub CLI via 1Password
 
 ### Manual Setup (Advanced Users)
 
@@ -153,12 +154,14 @@ Create these items in your 1Password vault named "Nix Config":
 - Public Key field: Your SSH public key (e.g., `ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA...`)
 - Tags: nix, ssh, signing
 
-**GitHub Personal Access Token:**
+**GitHub Personal Access Token** (for `gh` via 1Password shell plugin, not opnix):
 
-- Item Type: Password/Login
+- Item Type: Secure Note
 - Title: "GitHub-PAT"
-- Password/Credential field: Your GitHub token
-- Tags: nix, github, automation
+- **Token** field (not "password"): Your GitHub classic PAT (`ghp_...`)
+- Tags: github, gh
+
+Create a classic PAT at [github.com/settings/tokens](https://github.com/settings/tokens) with scopes: `repo`, `read:org`, `gist`. Set an expiration date. Fine-grained PATs (`github_pat_...`) also work but need explicit repository permissions configured.
 
 #### 3. Test 1Password CLI Access
 
@@ -170,7 +173,7 @@ op signin
 
 # Test secret retrieval
 op read "op://Nix Config/GitHub Commit Signing Key/public key"
-op read "op://Nix Config/GitHub-PAT/password"
+op read "op://Nix Config/GitHub-PAT/Token"
 ```
 
 #### 4. System-Level opnix Setup
@@ -234,7 +237,6 @@ If secrets aren't working:
 6. **Fallback to environment variables:**
    ```fish
    set -gx NIX_SSH_SIGNING_KEY "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA..."
-   set -gx NIX_GITHUB_TOKEN "ghp_..."
    ```
 
 ## 🎯 Available Configurations
@@ -387,7 +389,6 @@ This configuration modernizes from a legacy setup with the following improvement
    ```
 
 2. **Xcode Command Line Tools installation hangs:**
-
    - Cancel the installation (`Ctrl+C`)
    - Try manual installation: `xcode-select --install`
    - Rerun setup script after tools are installed
@@ -463,7 +464,6 @@ Run the consolidated setup and verification script:
 This script will:
 
 - **Setup Phase:**
-
   - Backup your existing SSH config (with timestamp)
   - Add 1Password SSH agent configuration to `~/.ssh/config`
   - Preserve your existing host configurations
@@ -564,6 +564,120 @@ ssh -vT git@github.com
 ```fish
 # Rebuild Nix configuration to create agent.toml
 darwin-rebuild switch --flake ~/.nixpkgs#(hostname)
+```
+
+### GitHub CLI via 1Password
+
+The Nix configuration (`home-configs/github.nix`) installs `gh` and routes every invocation through the 1Password shell plugin. Git operations use SSH via the 1Password SSH agent; the PAT is only used for GitHub API calls (PRs, issues, etc.).
+
+#### What Nix manages automatically
+
+- `gh` package and config (`~/.config/gh/config.yml`, `hosts.yml`)
+- Fish/bash wrapper: `op plugin run -- gh` on every `gh` command
+- `OP_PLUGINS_SOURCED=1` so you don't need to source `plugins.sh`
+- Git credential helper disabled (SSH is used for git operations)
+
+#### One-time manual setup
+
+After rebuilding, run the verification script:
+
+```bash
+./scripts/1password-gh.sh
+```
+
+Then complete the interactive plugin setup:
+
+```fish
+op plugin init gh
+```
+
+When prompted:
+
+1. **Locate credentials** → Search in 1Password → GitHub-PAT (Nix Config)
+2. **Field mapping** → ensure the **Token** field is selected
+3. **Scope** → **Prompt me for each new terminal session** (recommended for security)
+
+Do **not** manually add `source ~/.config/op/plugins.sh` to your fish config — home-manager owns `config.fish` and already provides the wrapper.
+
+Remove any stale macOS keychain credentials from a previous `gh auth login`:
+
+```fish
+command gh auth logout --hostname github.com --user treffynnon
+exec fish
+gh auth status
+```
+
+A successful setup shows authentication via `GITHUB_TOKEN` or `GH_TOKEN`, **not** `(keyring)`.
+
+#### Verification
+
+```bash
+./scripts/1password-gh.sh verify   # Full automated checks
+gh auth status                     # Should NOT say (keyring)
+gh api user                        # Quick API test
+op read "op://Nix Config/GitHub-PAT/Token"  # Test 1Password access
+```
+
+#### Security hardening (recommended)
+
+This setup is designed to reduce credential exposure from supply-chain attacks (e.g. Shai-Hulud style malware invoking `gh` in your environment):
+
+| Setting | Recommendation | Why |
+| --- | --- | --- |
+| `op plugin init` scope | **Prompt me for each new terminal session** | Credential binding doesn't persist across terminals |
+| PAT type | Classic PAT with minimal scopes | Simpler scope model; set an expiration date |
+| PAT scopes | `repo`, `read:org`, `gist` only | Minimum needed for `gh` CLI |
+| Git protocol | SSH (configured in Nix) | Git push/pull uses SSH keys, not the PAT |
+| `gh auth login` | **Never use** | Stores OAuth tokens in macOS keychain, bypassing 1Password |
+| 1Password auto-lock | Short interval (e.g. 5 min) | Limits window if 1Password is unlocked |
+| After GitHub work | `op signout` | Ends the 1Password CLI session in that terminal |
+
+**What the shell plugin protects against:**
+
+- PAT is never stored in plaintext on disk or in macOS keychain
+- `op plugin run` injects the token only into the `gh` process environment
+- Biometric approval required to start a 1Password CLI session in each terminal tab
+
+**Known limits:**
+
+- 1Password CLI sessions last up to 10 minutes of inactivity (12 hours max) per terminal tab — subsequent `gh` calls in the same tab won't re-prompt until the session expires or 1Password locks
+- Malware running in the **same terminal tab** during an active op session could invoke `gh` without a new biometric prompt
+- Mitigate with aggressive 1Password auto-lock and `op signout` when done
+
+#### Troubleshooting GitHub CLI
+
+**`(keyring)` in `gh auth status`:**
+
+Old OAuth credentials in macOS keychain. Remove them:
+
+```fish
+command gh auth logout --hostname github.com --user treffynnon
+# or
+security delete-generic-password -s "gh:github.com"
+exec fish
+```
+
+**`The token in GITHUB_TOKEN is invalid`:**
+
+The PAT in 1Password is expired or revoked. Create a new classic PAT and update the **Token** field on GitHub-PAT:
+
+```fish
+op read "op://Nix Config/GitHub-PAT/Token" | cut -c1-12   # check prefix
+curl -s -H "Authorization: Bearer $(op read op://Nix Config/GitHub-PAT/Token)" https://api.github.com/user
+```
+
+**`gh` not using 1Password wrapper:**
+
+```fish
+type gh          # should say "function", not a path
+exec fish        # reload shell after rebuild
+```
+
+**Plugin not configured:**
+
+```fish
+op plugin init gh
+op plugin inspect gh
 ```
 
 **Restore SSH Config:**

@@ -333,6 +333,16 @@ else
   echo "You can run it manually later: ./scripts/1password-ssh.sh"
 fi
 
+# 1Password GitHub CLI Setup
+progress "1Password GitHub CLI Setup"
+if [ -f "$NIXPKGS_BASEPATH/scripts/1password-gh.sh" ]; then
+  echo "Running 1Password GitHub CLI verification..."
+  bash "$NIXPKGS_BASEPATH/scripts/1password-gh.sh" verify || true
+else
+  echo "⚠️  1Password GitHub CLI setup script not found, skipping..."
+  echo "You can run it manually later: ./scripts/1password-gh.sh"
+fi
+
 # Re-enable IPv6 on macOS now that we have modern curl from Nix
 # Tolerate missing interfaces (e.g. laptops without Ethernet) so set -e doesn't kill us
 if [ "$IS_DARWIN" == true ] && [ "$IPV6_DISABLED" == "true" ]; then
@@ -358,17 +368,19 @@ if [ "$IS_DARWIN" == true ]; then
 fi
 echo "  • Home Manager with user-level configuration"
 echo "  • 1Password SSH agent integration"
+echo "  • GitHub CLI via 1Password shell plugin"
 echo "  • Shell configuration (Fish/Bash)"
 echo
 echo -e "${YELLOW}🔄 Next Steps:${ESC}"
 echo "  1. Restart your terminal to ensure all changes take effect"
 echo "  2. Set up 1Password with your SSH keys and secrets"
-echo "  3. Configure any host-specific settings in: $nixConfig"
+echo "  3. Configure GitHub CLI: op plugin init gh (see README)"
+echo "  4. Configure any host-specific settings in: $nixConfig"
 if [ "$IS_DARWIN" == true ]; then
-  echo "  4. Install Hammerspoon from https://www.hammerspoon.org/"
-  echo "  5. Restart your machine for all system changes to take effect"
+  echo "  5. Install Hammerspoon from https://www.hammerspoon.org/"
+  echo "  6. Restart your machine for all system changes to take effect"
 else
-  echo "  4. Restart your machine for all system changes to take effect"
+  echo "  5. Restart your machine for all system changes to take effect"
 fi
 echo
 echo -e "${GREEN}For more information, see the README.md file.${ESC}"

@@ -7,10 +7,7 @@
   # Import our centralised configuration
   helpers = import ../lib/helpers.nix {inherit lib;};
   defaults = helpers.defaults;
-  secrets = import ../lib/secrets.nix {inherit lib pkgs;};
 
-  # Use the SSH signing key from 1Password directly
-  # Since op command is working, we can use the SSH key directly
   sshSigningKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAxVpvFsxIhH6LTKrAEVuTiZnqHEalzDlxcNCFcYf3T5";
   hasSigningKey = sshSigningKey != "";
 in {
@@ -109,10 +106,6 @@ in {
 
       pull = {
         rebase = true;
-      };
-
-      github = {
-        user = "treffynnon";
       };
 
       color = {

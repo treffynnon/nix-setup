@@ -196,15 +196,6 @@ in {
     in
       secretInfo.value;
 
-    # Get GitHub token with no fallback for security
-    getGithubToken = let
-      secretInfo = safeGetSecret "github_token" null;
-    in
-      if secretInfo.isFromEnv
-      then secretInfo.value
-      else null;
-
-    # Generic secret getter
     get = secretName: defaultValue: (safeGetSecret secretName defaultValue).value;
 
     # Check if secret is from environment (for validation)
