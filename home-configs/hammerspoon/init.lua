@@ -25,8 +25,8 @@ hs.loadSpoon("URLDispatcher"):start()
 hs.loadSpoon("ElgatoStreamDeck")
 
 spoon.AudioSwitcher:bindHotkeys({
-	speakers = {{"cmd", "alt"}, "s"},
-	headphones = {{"cmd", "alt"}, "h"},
+  speakers = {{"cmd", "alt"}, "s"},
+  headphones = {{"cmd", "alt"}, "h"},
 })
 
 -- A little window manager for pushing around windows with
@@ -128,12 +128,9 @@ spoon.ScreenPresets:setPresets({
 })
 spoon.ScreenPresets:start()
 
-
 spoon.URLDispatcher.default_handler = "org.mozilla.firefox"
 spoon.URLDispatcher.set_system_handler = true
-spoon.URLDispatcher.url_patterns = {
-	{ "https?://meet%.google%.com", "com.google.Chrome" },
-}
+spoon.URLDispatcher.url_patterns = {{"https?://meet%.google%.com", "com.google.Chrome"}}
 
 -- Load and start uhubctl library
 local uhubctl = require('uhubctl')

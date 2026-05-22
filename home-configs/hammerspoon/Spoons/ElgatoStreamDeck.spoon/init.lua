@@ -22,19 +22,17 @@ ElgatoStreamDeck.homepage = "https://github.com/Hammerspoon/Spoons"
 ElgatoStreamDeck.license = "Apache-2.0"
 
 -- Configuration
-ElgatoStreamDeck.deviceName = nil  -- Will auto-detect if nil
-ElgatoStreamDeck.devicePatterns = {  -- Patterns to match Stream Deck devices
-  "Stream Deck",
-  "Elgato",
-  "streamdeck"
+ElgatoStreamDeck.deviceName = nil -- Will auto-detect if nil
+ElgatoStreamDeck.devicePatterns = { -- Patterns to match Stream Deck devices
+  "Stream Deck", "Elgato", "streamdeck",
 }
-ElgatoStreamDeck.uhubctl = nil  -- Will be loaded via require
+ElgatoStreamDeck.uhubctl = nil -- Will be loaded via require
 ElgatoStreamDeck.sleepWatcher = nil
 ElgatoStreamDeck.isEnabled = false
 
 -- State tracking
 ElgatoStreamDeck.wasOnBeforeSleep = true
-ElgatoStreamDeck.currentPage = 1  -- For future multi-page support
+ElgatoStreamDeck.currentPage = 1 -- For future multi-page support
 
 function ElgatoStreamDeck:init()
   -- Load uhubctl library
@@ -50,12 +48,11 @@ end
 
 function ElgatoStreamDeck:start()
   -- Ensure init is called if not already done
-  if not self.uhubctl then
-    self:init()
-  end
+  if not self.uhubctl then self:init() end
 
   if not self.uhubctl then
-    print("ElgatoStreamDeck: uhubctl library not available. Call init() first or ensure uhubctl.lua exists.")
+    print(
+      "ElgatoStreamDeck: uhubctl library not available. Call init() first or ensure uhubctl.lua exists.")
     return self
   end
 
@@ -73,7 +70,8 @@ function ElgatoStreamDeck:start()
       self:findStreamDeckDevice()
 
       if not self.deviceName then
-        print("ElgatoStreamDeck: No Stream Deck device found. You can manually set spoon.ElgatoStreamDeck.deviceName")
+        print(
+          "ElgatoStreamDeck: No Stream Deck device found. You can manually set spoon.ElgatoStreamDeck.deviceName")
         return
       end
 
@@ -100,9 +98,7 @@ end
 
 -- Auto-detect Stream Deck device
 function ElgatoStreamDeck:findStreamDeckDevice()
-  if not self.uhubctl then
-    return
-  end
+  if not self.uhubctl then return end
 
   local deviceNames = self.uhubctl.getDeviceNames()
 
@@ -117,16 +113,12 @@ function ElgatoStreamDeck:findStreamDeckDevice()
   end
 
   print("ElgatoStreamDeck: No Stream Deck device auto-detected from available devices:")
-  for _, deviceName in ipairs(deviceNames) do
-    print("  - " .. deviceName)
-  end
+  for _, deviceName in ipairs(deviceNames) do print("  - " .. deviceName) end
 end
 
 -- Set up sleep/wake event watchers
 function ElgatoStreamDeck:setupSleepWatcher()
-  if self.sleepWatcher then
-    self.sleepWatcher:stop()
-  end
+  if self.sleepWatcher then self.sleepWatcher:stop() end
 
   self.sleepWatcher = hs.caffeinate.watcher.new(function(event)
     if event == hs.caffeinate.watcher.systemWillSleep then
@@ -142,7 +134,8 @@ end
 -- Handle system going to sleep
 function ElgatoStreamDeck:onSystemWillSleep()
   if not self.isEnabled or not self.deviceName then
-    print("ElgatoStreamDeck: Sleep event ignored - enabled:", self.isEnabled, "deviceName:", self.deviceName)
+    print("ElgatoStreamDeck: Sleep event ignored - enabled:", self.isEnabled, "deviceName:",
+          self.deviceName)
     return
   end
 
@@ -172,9 +165,7 @@ end
 
 -- Handle system waking from sleep
 function ElgatoStreamDeck:onSystemDidWake()
-  if not self.isEnabled or not self.deviceName then
-    return
-  end
+  if not self.isEnabled or not self.deviceName then return end
 
   print("ElgatoStreamDeck: System waking up, restoring Stream Deck state...")
 
@@ -221,9 +212,7 @@ function ElgatoStreamDeck:toggle()
 end
 
 function ElgatoStreamDeck:getState()
-  if not self.deviceName then
-    return nil
-  end
+  if not self.deviceName then return nil end
 
   return self.uhubctl.getDeviceState(self.deviceName)
 end
@@ -243,14 +232,10 @@ function ElgatoStreamDeck:navigateToPage(pageNumber)
   -- 3. Trigger specific button sequences
 end
 
-function ElgatoStreamDeck:getCurrentPage()
-  return self.currentPage
-end
+function ElgatoStreamDeck:getCurrentPage() return self.currentPage end
 
 function ElgatoStreamDeck:setPage(pageNumber)
-  if pageNumber and pageNumber > 0 then
-    self:navigateToPage(pageNumber)
-  end
+  if pageNumber and pageNumber > 0 then self:navigateToPage(pageNumber) end
 end
 
 -- Utility methods
@@ -266,7 +251,8 @@ function ElgatoStreamDeck:refreshDeviceList()
         if self.deviceName and not self.isEnabled then
           self:setupSleepWatcher()
           self.isEnabled = true
-          print("ElgatoStreamDeck: Started monitoring '" .. self.deviceName .. "' for sleep/wake events")
+          print("ElgatoStreamDeck: Started monitoring '" .. self.deviceName
+                  .. "' for sleep/wake events")
         end
       end)
     end
@@ -304,9 +290,7 @@ function ElgatoStreamDeck:setDeviceName(deviceName)
   return self
 end
 
-function ElgatoStreamDeck:getDeviceName()
-  return self.deviceName
-end
+function ElgatoStreamDeck:getDeviceName() return self.deviceName end
 
 -- Debug methods
 function ElgatoStreamDeck:checkDeviceState()

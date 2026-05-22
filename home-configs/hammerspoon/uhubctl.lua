@@ -9,14 +9,13 @@
 --   uhubctl.turnOnDevice("My USB Device")
 --   local isOn = uhubctl.getDeviceState("My USB Device")
 --
-
 local uhubctl = {}
 
 -- Configuration
-uhubctl.uhubctlPath = "uhubctl"  -- Will use PATH to find uhubctl
+uhubctl.uhubctlPath = "uhubctl" -- Will use PATH to find uhubctl
 uhubctl.stateFile = hs.configdir .. "/uhubctl_state.json"
-uhubctl.discoveredDevices = {}  -- Will store discovered USB devices
-uhubctl.deviceStates = {}  -- Will store current device states
+uhubctl.discoveredDevices = {} -- Will store discovered USB devices
+uhubctl.deviceStates = {} -- Will store current device states
 uhubctl.isDiscovering = false
 
 -- Initialise the library
@@ -47,10 +46,7 @@ end
 
 -- Save device states to file
 function uhubctl.saveState()
-  local data = {
-    deviceStates = uhubctl.deviceStates,
-    lastSaved = os.time()
-  }
+  local data = {deviceStates = uhubctl.deviceStates, lastSaved = os.time()}
 
   local file = io.open(uhubctl.stateFile, "w")
   if file then
@@ -64,9 +60,7 @@ end
 
 -- Discover USB devices using uhubctl and parse the output
 function uhubctl.discoverDevices()
-  if uhubctl.isDiscovering then
-    return
-  end
+  if uhubctl.isDiscovering then return end
 
   uhubctl.isDiscovering = true
   print("uhubctl: Discovering USB devices...")
@@ -96,9 +90,7 @@ function uhubctl.parseUhubctlOutput(output)
   for line in output:gmatch("[^\r\n]+") do
     -- Look for hub lines like "Current status for hub 1 [1a40:0101 USB 2.0 Hub, USB 2.00, 4 ports]"
     local hubMatch = line:match("Current status for hub (%d+)")
-    if hubMatch then
-      currentHub = hubMatch
-    end
+    if hubMatch then currentHub = hubMatch end
 
     -- Look for port lines like "  Port 1: 0100 power"
     local port, status = line:match("^%s*Port (%d+):%s*(%S+)")
@@ -118,7 +110,7 @@ function uhubctl.parseUhubctlOutput(output)
             name = deviceInfo,
             location = currentLocation,
             hub = currentHub,
-            powered = isPowered
+            powered = isPowered,
           }
 
           -- Initialise state if not exists
@@ -143,30 +135,25 @@ function uhubctl.listDiscoveredDevices()
   print("uhubctl: Discovered USB devices:")
   for name, device in pairs(uhubctl.discoveredDevices) do
     local state = uhubctl.deviceStates[name] and "ON" or "OFF"
-    print(string.format("- '%s': %s (hub: %s, location: %s)", name, state, device.hub, device.location))
+    print(string.format("- '%s': %s (hub: %s, location: %s)", name, state, device.hub,
+                        device.location))
   end
 end
 
 -- Find device by name (case-insensitive partial match)
 function uhubctl.findDevice(deviceName)
   -- First try exact match
-  if uhubctl.discoveredDevices[deviceName] then
-    return uhubctl.discoveredDevices[deviceName]
-  end
+  if uhubctl.discoveredDevices[deviceName] then return uhubctl.discoveredDevices[deviceName] end
 
   -- Then try case-insensitive exact match
   local lowerDeviceName = deviceName:lower()
   for name, device in pairs(uhubctl.discoveredDevices) do
-    if name:lower() == lowerDeviceName then
-      return device
-    end
+    if name:lower() == lowerDeviceName then return device end
   end
 
   -- Finally try partial match
   for name, device in pairs(uhubctl.discoveredDevices) do
-    if name:lower():find(lowerDeviceName, 1, true) then
-      return device
-    end
+    if name:lower():find(lowerDeviceName, 1, true) then return device end
   end
 
   return nil
@@ -189,8 +176,8 @@ function uhubctl.setDevicePower(deviceName, powerOn)
     table.insert(args, 2, device.hub)
   end
 
-  print(string.format("uhubctl: Turning %s device '%s' at location '%s'",
-                      action, device.name, device.location))
+  print(string.format("uhubctl: Turning %s device '%s' at location '%s'", action, device.name,
+                      device.location))
 
   local task = hs.task.new(uhubctl.uhubctlPath, function(exitCode, _stdOut, stdErr)
     if exitCode == 0 then
@@ -208,14 +195,10 @@ function uhubctl.setDevicePower(deviceName, powerOn)
 end
 
 -- Turn device on
-function uhubctl.turnOnDevice(deviceName)
-  return uhubctl.setDevicePower(deviceName, true)
-end
+function uhubctl.turnOnDevice(deviceName) return uhubctl.setDevicePower(deviceName, true) end
 
 -- Turn device off
-function uhubctl.turnOffDevice(deviceName)
-  return uhubctl.setDevicePower(deviceName, false)
-end
+function uhubctl.turnOffDevice(deviceName) return uhubctl.setDevicePower(deviceName, false) end
 
 -- Toggle device power
 function uhubctl.toggleDevice(deviceName)
@@ -234,23 +217,17 @@ end
 -- Get device state
 function uhubctl.getDeviceState(deviceName)
   local device = uhubctl.findDevice(deviceName)
-  if not device then
-    return nil
-  end
+  if not device then return nil end
   return uhubctl.deviceStates[device.name]
 end
 
 -- Refresh device discovery
-function uhubctl.refreshDevices()
-  return uhubctl.discoverDevices()
-end
+function uhubctl.refreshDevices() return uhubctl.discoverDevices() end
 
 -- Get list of all discovered device names
 function uhubctl.getDeviceNames()
   local names = {}
-  for name, _ in pairs(uhubctl.discoveredDevices) do
-    table.insert(names, name)
-  end
+  for name, _ in pairs(uhubctl.discoveredDevices) do table.insert(names, name) end
   return names
 end
 
