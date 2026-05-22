@@ -16,7 +16,7 @@
   # Set to the home-manager version when you first set up home-manager on pademelon
   # Based on current date (June 2025), using current stable version
   home-manager.users.simon.home.stateVersion = "24.05";
-  
+
   # Host-specific overrides
   # Fix GID mismatch for nixbld group (specific to pademelon)
   ids.gids.nixbld = 30000;

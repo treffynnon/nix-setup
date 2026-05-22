@@ -25,140 +25,141 @@
     opnix,
   }: let
     # Smart system detection for different architectures
-    supportedSystems = [ "aarch64-darwin" "x86_64-darwin" "x86_64-linux" "aarch64-linux" ];
-    
+    supportedSystems = ["aarch64-darwin" "x86_64-darwin" "x86_64-linux" "aarch64-linux"];
+
     # Get current system or default to aarch64-darwin for macOS
     currentSystem = builtins.currentSystem or "aarch64-darwin";
-    
+
     # Helper function to generate configurations for multiple systems
     forEachSystem = systems: f: nixpkgs.lib.genAttrs systems f;
-    
+
     # Import platform-specific configuration modules
     darwinConfiguration = import ./darwin-configuration.nix;
     nixosConfiguration = import ./nixos-configuration.nix;
     homeManagerConfiguration = import ./home-manager-configuration.nix;
-    
-  in {
-    # Darwin system configurations (macOS) - Auto-detect architecture
-    darwinConfigurations = {
-      # Default configuration - uses current system
-      default = darwin.lib.darwinSystem {
-        system = currentSystem;
-        specialArgs = { inherit home-manager opnix; };
-        modules = [
-          darwinConfiguration
-        ];
+  in
+    {
+      # Darwin system configurations (macOS) - Auto-detect architecture
+      darwinConfigurations = {
+        # Default configuration - uses current system
+        default = darwin.lib.darwinSystem {
+          system = currentSystem;
+          specialArgs = {inherit home-manager opnix;};
+          modules = [
+            darwinConfiguration
+          ];
+        };
+
+        # Host-specific configurations - auto-detect architecture
+        bilby = darwin.lib.darwinSystem {
+          system = currentSystem;
+          specialArgs = {inherit home-manager opnix;};
+          modules = [
+            darwinConfiguration
+            ./hosts/bilby/configuration.nix
+          ];
+        };
+
+        pademelon = darwin.lib.darwinSystem {
+          system = currentSystem;
+          specialArgs = {inherit home-manager opnix;};
+          modules = [
+            darwinConfiguration
+            ./hosts/pademelon/configuration.nix
+          ];
+        };
+
+        platypus = darwin.lib.darwinSystem {
+          system = currentSystem;
+          specialArgs = {inherit home-manager opnix;};
+          modules = [
+            darwinConfiguration
+            ./hosts/platypus/configuration.nix
+          ];
+        };
+
+        thylacine = darwin.lib.darwinSystem {
+          system = currentSystem;
+          specialArgs = {inherit home-manager opnix;};
+          modules = [
+            darwinConfiguration
+            ./hosts/thylacine/configuration.nix
+          ];
+        };
       };
 
-      # Host-specific configurations - auto-detect architecture
-      bilby = darwin.lib.darwinSystem {
-        system = currentSystem;
-        specialArgs = { inherit home-manager opnix; };
-        modules = [
-          darwinConfiguration
-          ./hosts/bilby/configuration.nix
-        ];
+      # NixOS system configurations (Linux) - Support multiple architectures
+      nixosConfigurations = {
+        # Default NixOS configuration - uses x86_64-linux as default for Linux
+        default = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = {inherit home-manager opnix;};
+          modules = [
+            nixosConfiguration
+          ];
+        };
+
+        # ARM64 NixOS configuration (for Raspberry Pi, etc.)
+        default-arm64 = nixpkgs.lib.nixosSystem {
+          system = "aarch64-linux";
+          specialArgs = {inherit home-manager opnix;};
+          modules = [
+            nixosConfiguration
+          ];
+        };
+
+        # Example host-specific NixOS configurations
+        nixos-vm = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = {inherit home-manager opnix;};
+          modules = [
+            nixosConfiguration
+            # Add host-specific config here if needed
+          ];
+        };
       };
 
-      pademelon = darwin.lib.darwinSystem {
-        system = currentSystem;
-        specialArgs = { inherit home-manager opnix; };
-        modules = [
-          darwinConfiguration
-          ./hosts/pademelon/configuration.nix
-        ];
-      };
+      # Home Manager configurations (for WSL, existing Linux distros, etc.)
+      homeConfigurations = {
+        # Default home-manager configuration (x86_64-linux)
+        "simon@default" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages."x86_64-linux";
+          extraSpecialArgs = {inherit opnix;};
+          modules = [
+            homeManagerConfiguration
+          ];
+        };
 
-      platypus = darwin.lib.darwinSystem {
-        system = currentSystem;
-        specialArgs = { inherit home-manager opnix; };
-        modules = [
-          darwinConfiguration
-          ./hosts/platypus/configuration.nix
-        ];
-      };
+        # ARM64 home-manager configuration
+        "simon@default-arm64" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages."aarch64-linux";
+          extraSpecialArgs = {inherit opnix;};
+          modules = [
+            homeManagerConfiguration
+          ];
+        };
 
-      thylacine = darwin.lib.darwinSystem {
-        system = currentSystem;
-        specialArgs = { inherit home-manager opnix; };
-        modules = [
-          darwinConfiguration
-          ./hosts/thylacine/configuration.nix
-        ];
-      };
-    };
+        # WSL configuration (x86_64-linux)
+        "simon@wsl" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages."x86_64-linux";
+          extraSpecialArgs = {inherit opnix;};
+          modules = [
+            homeManagerConfiguration
+            # WSL-specific overrides could go here
+          ];
+        };
 
-    # NixOS system configurations (Linux) - Support multiple architectures
-    nixosConfigurations = {
-      # Default NixOS configuration - uses x86_64-linux as default for Linux
-      default = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit home-manager opnix; };
-        modules = [
-          nixosConfiguration
-        ];
+        # Generic Linux configuration
+        "simon@linux" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages."x86_64-linux";
+          extraSpecialArgs = {inherit opnix;};
+          modules = [
+            homeManagerConfiguration
+          ];
+        };
       };
-
-      # ARM64 NixOS configuration (for Raspberry Pi, etc.)
-      default-arm64 = nixpkgs.lib.nixosSystem {
-        system = "aarch64-linux";
-        specialArgs = { inherit home-manager opnix; };
-        modules = [
-          nixosConfiguration
-        ];
-      };
-
-      # Example host-specific NixOS configurations
-      nixos-vm = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit home-manager opnix; };
-        modules = [
-          nixosConfiguration
-          # Add host-specific config here if needed
-        ];
-      };
-    };
-
-    # Home Manager configurations (for WSL, existing Linux distros, etc.)
-    homeConfigurations = {
-      # Default home-manager configuration (x86_64-linux)
-      "simon@default" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages."x86_64-linux";
-        extraSpecialArgs = { inherit opnix; };
-        modules = [
-          homeManagerConfiguration
-        ];
-      };
-
-      # ARM64 home-manager configuration  
-      "simon@default-arm64" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages."aarch64-linux";
-        extraSpecialArgs = { inherit opnix; };
-        modules = [
-          homeManagerConfiguration
-        ];
-      };
-
-      # WSL configuration (x86_64-linux)
-      "simon@wsl" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages."x86_64-linux";
-        extraSpecialArgs = { inherit opnix; };
-        modules = [
-          homeManagerConfiguration
-          # WSL-specific overrides could go here
-        ];
-      };
-
-      # Generic Linux configuration
-      "simon@linux" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages."x86_64-linux";
-        extraSpecialArgs = { inherit opnix; };
-        modules = [
-          homeManagerConfiguration
-        ];
-      };
-    };
-  } // flake-utils.lib.eachDefaultSystem
+    }
+    // flake-utils.lib.eachDefaultSystem
     (
       system: let
         overlays = [
@@ -200,7 +201,7 @@
           #!${pkgs.bash}/bin/bash
           HOSTNAME=$(hostname || echo "default")
           echo "Auto-detected hostname: $HOSTNAME"
-          
+
           # Check if host-specific configuration exists
           if [ -f "./hosts/$HOSTNAME/configuration.nix" ]; then
             echo "Found host-specific configuration for $HOSTNAME"
@@ -228,9 +229,9 @@
           #!${pkgs.bash}/bin/bash
           USER=$(whoami)
           HOSTNAME=$(hostname || echo "default")
-          
+
           echo "Rebuilding Home Manager configuration for $USER@$HOSTNAME..."
-          
+
           # Try specific user@hostname combinations first
           if home-manager switch --flake .#$USER@$HOSTNAME 2>/dev/null; then
             echo "Successfully applied $USER@$HOSTNAME configuration"
@@ -248,7 +249,7 @@
         # Universal rebuild script that detects platform
         universalRebuild = pkgs.writeScriptBin "rebuild" ''
           #!${pkgs.bash}/bin/bash
-          
+
           if [[ "$OSTYPE" == "darwin"* ]]; then
             echo "Detected macOS - using darwin-rebuild"
             darwin-rebuild-flake
@@ -270,7 +271,7 @@
           #!${pkgs.bash}/bin/bash
           HOSTNAME=$(hostname || echo "default")
           echo "Auto-rebuilding for hostname: $HOSTNAME"
-          
+
           if [[ "$OSTYPE" == "darwin"* ]]; then
             sudo darwin-rebuild switch --flake .#$HOSTNAME
           else

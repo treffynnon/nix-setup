@@ -1,5 +1,10 @@
-{pkgs, home-manager, lib, opnix, ...}: 
-let
+{
+  pkgs,
+  home-manager,
+  lib,
+  opnix,
+  ...
+}: let
   # Import our centralised configuration directly
   defaults = import ./lib/defaults.nix;
 in {
@@ -12,15 +17,15 @@ in {
   # NixOS/Linux-specific configuration using centralised defaults
   # Set reasonable default stateVersion for NixOS - should be overridden by host configs
   system.stateVersion = "24.05"; # Default fallback - set appropriate version in host configs
-  
+
   # Linux-specific user configuration using centralised defaults
   users.users.${defaults.user.username} = {
     isNormalUser = true;
     shell = pkgs.fish;
     home = "/home/${defaults.user.username}";
-    extraGroups = [ 
-      "wheel" 
-      "networkmanager" 
+    extraGroups = [
+      "wheel"
+      "networkmanager"
       "docker"
       "adbusers"
       "audio"
@@ -58,7 +63,7 @@ in {
 
   # Linux-specific packages
   environment.systemPackages = with pkgs; [
-    uhubctl  # USB hub control utility (useful on Linux too)
+    uhubctl # USB hub control utility (useful on Linux too)
     # Linux-specific utilities
     whois
     pciutils
@@ -89,10 +94,10 @@ in {
     users.${defaults.user.username} = {
       # Set default home.stateVersion - should be overridden by host configs
       home.stateVersion = "24.05"; # Default fallback - set appropriate version in host configs
-      
+
       # Import our unified home-manager configuration
       imports = [
-        opnix.homeManagerModules.default  # Required for programs.onepassword-secrets
+        opnix.homeManagerModules.default # Required for programs.onepassword-secrets
         ./home-configs/shared.nix
       ];
     };

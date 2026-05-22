@@ -19,10 +19,10 @@
   versions = {
     # DEPRECATED: These values have been moved to individual host configurations
     # Each host should specify its own stateVersion based on installation date
-    # 
+    #
     # To migrate: Add stateVersion to each host's configuration.nix:
     # - For nix-darwin: system.stateVersion = <version>;
-    # - For NixOS: system.stateVersion = "<version>";  
+    # - For NixOS: system.stateVersion = "<version>";
     # - For home-manager: home.stateVersion = "<version>";
     #
     # Historical reference values (remove after migration):

@@ -1,8 +1,10 @@
 # Secrets management using opnix (1Password integration)
 # This module provides secure secret handling via 1Password CLI
-{ lib, pkgs, ... }:
-
 {
+  lib,
+  pkgs,
+  ...
+}: {
   secretRefs = {
     sshSigningKey = "op://Nix Config/GitHub Commit Signing Key/public key";
   };
