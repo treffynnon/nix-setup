@@ -15,8 +15,21 @@ in {
     home-manager.darwinModules.home-manager
   ];
 
-  # Note: system.stateVersion is now set in individual host configurations
-  # See hosts/*/configuration.nix for per-host stateVersion values
+  # Determinate Nix owns Nix daemon/configuration on macOS. The Determinate
+  # module disables nix-darwin's built-in Nix management for us.
+  determinateNix = {
+    enable = true;
+    customSettings = {
+      experimental-features = ["nix-command" "flakes"];
+      substituters = defaults.nix.substituters;
+      trusted-public-keys = defaults.nix.trustedPublicKeys;
+    };
+  };
+  nix.gc.automatic = lib.mkForce false;
+
+  # Host configs can override this if they were first installed with an older
+  # nix-darwin state version.
+  system.stateVersion = lib.mkDefault 5;
 
   # Set primary user for system defaults using centralised config
   system.primaryUser = defaults.user.username;
@@ -206,6 +219,14 @@ in {
         ./home-configs/shared.nix
         ./home-configs/hammerspoon.nix # macOS-specific module
       ];
+
+      home = {
+        username = defaults.user.username;
+        homeDirectory = "/Users/${defaults.user.username}";
+        stateVersion = lib.mkDefault "24.05";
+      };
+
+      nix.package = pkgs.nix;
     };
   };
 }

@@ -7,6 +7,7 @@
       url = "github:LnL7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,6 +22,7 @@
     nixpkgs,
     flake-utils,
     darwin,
+    determinate,
     home-manager,
     opnix,
   }: let
@@ -46,6 +48,7 @@
           system = currentSystem;
           specialArgs = {inherit home-manager opnix;};
           modules = [
+            determinate.darwinModules.default
             darwinConfiguration
           ];
         };
@@ -55,8 +58,19 @@
           system = currentSystem;
           specialArgs = {inherit home-manager opnix;};
           modules = [
+            determinate.darwinModules.default
             darwinConfiguration
             ./hosts/bilby/configuration.nix
+          ];
+        };
+
+        gecko = darwin.lib.darwinSystem {
+          system = currentSystem;
+          specialArgs = {inherit home-manager opnix;};
+          modules = [
+            determinate.darwinModules.default
+            darwinConfiguration
+            ./hosts/gecko/configuration.nix
           ];
         };
 
@@ -64,6 +78,7 @@
           system = currentSystem;
           specialArgs = {inherit home-manager opnix;};
           modules = [
+            determinate.darwinModules.default
             darwinConfiguration
             ./hosts/pademelon/configuration.nix
           ];
@@ -73,6 +88,7 @@
           system = currentSystem;
           specialArgs = {inherit home-manager opnix;};
           modules = [
+            determinate.darwinModules.default
             darwinConfiguration
             ./hosts/platypus/configuration.nix
           ];
@@ -82,6 +98,7 @@
           system = currentSystem;
           specialArgs = {inherit home-manager opnix;};
           modules = [
+            determinate.darwinModules.default
             darwinConfiguration
             ./hosts/thylacine/configuration.nix
           ];

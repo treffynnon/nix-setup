@@ -5,10 +5,51 @@
 
 set -euo pipefail
 
+# ANSI properties/colours
+ESC='\033[0m'
+BLUE='\033[38;34m'
+BLUE_UL='\033[38;4;34m'
+GREEN='\033[38;32m'
+GREEN_UL='\033[38;4;32m'
+RED='\033[38;31m'
+RED_UL='\033[38;4;31m'
+YELLOW='\033[38;33m'
+YELLOW_UL='\033[38;4;33m'
+
+ensure_nix_profile_line() {
+  local profile_file="$HOME/.zprofile"
+  local nix_line="[ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ] && source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'"
+  if [ ! -f "$profile_file" ]; then
+    echo "$nix_line" > "$profile_file"
+    echo -e "${GREEN}Created $profile_file and added Nix profile sourcing line.${ESC}"
+    return
+  fi
+  if ! grep -Fxq "$nix_line" "$profile_file"; then
+    # Insert after Homebrew shellenv if present, else append
+    if grep -q 'eval "\$\(/opt/homebrew/bin/brew shellenv\)"' "$profile_file"; then
+      awk -v nline="$nix_line" '/eval "\$\(/opt\/homebrew\/bin\/brew shellenv\)"/ && !x {print; print nline; x=1; next} 1' "$profile_file" > "$profile_file.tmp" && mv "$profile_file.tmp" "$profile_file"
+      echo -e "${GREEN}Added Nix profile sourcing after Homebrew shellenv in $profile_file.${ESC}"
+    else
+      echo "$nix_line" >> "$profile_file"
+      echo -e "${GREEN}Appended Nix profile sourcing to $profile_file.${ESC}"
+    fi
+  fi
+}
+
 # Configuration validation
 validate_nix_config() {
-  echo "🔍 Validating Nix configuration..."
-  if ! nix flake check --no-build "$NIXPKGS_BASEPATH" &>/dev/null; then
+  local validation_attr
+
+  if [ "$IS_DARWIN" == true ]; then
+    validation_attr="darwinConfigurations.${COMPUTER_NAME}.system"
+  elif [ "$IS_NIXOS" == true ]; then
+    validation_attr="nixosConfigurations.${COMPUTER_NAME}.config.system.build.toplevel"
+  else
+    validation_attr="homeConfigurations.simon@linux.activationPackage"
+  fi
+
+  echo "🔍 Validating Nix configuration: $validation_attr"
+  if ! nix eval "$NIXPKGS_BASEPATH#$validation_attr" >/dev/null; then
     echo -e "${RED}❌ Nix configuration validation failed${ESC}"
     echo "Please fix configuration errors before running setup"
     return 1
@@ -24,8 +65,8 @@ cleanup_on_error() {
 
   # Re-enable IPv6 if we disabled it
   if [ "$IS_DARWIN" == true ] && [ "${IPV6_DISABLED:-false}" == "true" ]; then
-    sudo networksetup -setv6automatic Wi-Fi &>/dev/null || true
-    sudo networksetup -setv6automatic Ethernet &>/dev/null || true
+    sudo /usr/sbin/networksetup -setv6automatic Wi-Fi &>/dev/null || true
+    sudo /usr/sbin/networksetup -setv6automatic Ethernet &>/dev/null || true
   fi
 
   exit $exit_code
@@ -33,7 +74,7 @@ cleanup_on_error() {
 trap cleanup_on_error ERR
 
 # Progress tracking
-TOTAL_STEPS=7
+TOTAL_STEPS=9
 CURRENT_STEP=0
 
 progress() {
@@ -51,17 +92,6 @@ if [[ "$TERM" = *"kitty"* ]]; then
   TERM=xterm-256color
 fi
 
-# ANSI properties/colours
-ESC='\033[0m'
-BLUE='\033[38;34m'
-BLUE_UL='\033[38;4;34m'
-GREEN='\033[38;32m'
-GREEN_UL='\033[38;4;32m'
-RED='\033[38;31m'
-RED_UL='\033[38;4;31m'
-YELLOW='\033[38;33m'
-YELLOW_UL='\033[38;4;33m'
-
 # System detection
 IS_DARWIN=false
 IS_NIXOS=false
@@ -76,9 +106,19 @@ if [[ -f /etc/nixos/configuration.nix ]]; then
   IS_NIXOS=true
 fi
 
+# Source the Nix profile if it exists on the system to populate the PATH
+if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+  source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+fi
+ensure_nix_profile_line
+
 # Check for required commands
 NIX_EXISTS=$(command -v nix 2>/dev/null || echo "")
-DARWIN_REBUILD_EXISTS=$(command -v darwin-rebuild 2>/dev/null || echo "")
+if [ -x /run/current-system/sw/bin/darwin-rebuild ]; then
+  DARWIN_REBUILD_EXISTS="/run/current-system/sw/bin/darwin-rebuild"
+else
+  DARWIN_REBUILD_EXISTS=$(command -v darwin-rebuild 2>/dev/null || echo "")
+fi
 NIXOS_REBUILD_EXISTS=$(command -v nixos-rebuild 2>/dev/null || echo "")
 
 # Ensure script is not being run with root privileges
@@ -101,19 +141,16 @@ echo -e "Setting up flake-based configuration from: ${BLUE}$NIXPKGS_BASEPATH${ES
 echo
 
 progress "Validating configuration"
-# Validate configuration before starting setup
-if command -v nix &>/dev/null; then
-  validate_nix_config
-fi
+echo "Skipping validation until host configuration has been prepared."
 
 if [ "$IS_DARWIN" == true ]; then
   progress "macOS System Setup"
 
   # Install Xcode command line tools first
   echo "Installing Xcode command line tools..."
-  if ! xcode-select --print-path &>/dev/null; then
+  if ! /usr/bin/xcode-select --print-path &>/dev/null; then
     echo "Xcode command line tools not found. Installing..."
-    xcode-select --install
+    /usr/bin/xcode-select --install
     echo "Please wait for Xcode command line tools installation to complete,"
     echo "then press any key to continue..."
     read -n 1 -s
@@ -123,7 +160,7 @@ if [ "$IS_DARWIN" == true ]; then
 
   # Close any open System Preferences panes, to prevent them from overriding settings we're about to change
   echo "Closing any open System Preferences dialogues"
-  osascript -e 'tell application "System Preferences" to quit'
+  /usr/bin/osascript -e 'tell application "System Preferences" to quit'
 fi
 
 # Give the computer a name
@@ -193,37 +230,47 @@ else
   echo "✅ Host configuration already exists: $nixConfig"
 fi
 
+# Stage the configuration in git if we are in a git repository, as Nix flakes ignore untracked files
+if [ -d "$NIXPKGS_BASEPATH/.git" ] && command -v git &>/dev/null; then
+  echo "Staging host configuration in Git..."
+  git -C "$NIXPKGS_BASEPATH" add "$nixConfig" || true
+fi
+
+if command -v nix &>/dev/null; then
+  validate_nix_config
+fi
+
 if [ "$IS_DARWIN" == true ]; then
   echo "🍎 Configuring macOS system settings..."
 
   # Disable IPv6 temporarily (some corporate networks have issues)
   echo "Temporarily disabling IPv6 for network compatibility..."
-  sudo networksetup -setv6off Wi-Fi &>/dev/null && IPV6_DISABLED=true
-  sudo networksetup -setv6off Ethernet &>/dev/null || true
+  sudo /usr/sbin/networksetup -setv6off Wi-Fi &>/dev/null && IPV6_DISABLED=true
+  sudo /usr/sbin/networksetup -setv6off Ethernet &>/dev/null || true
 
   # Set computer name (as done via System Preferences → Sharing)
-  sudo scutil --set ComputerName "$COMPUTER_NAME"
-  sudo scutil --set HostName "$COMPUTER_NAME"
-  sudo scutil --set LocalHostName "$COMPUTER_NAME"
-  sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$COMPUTER_NAME"
-  dscacheutil -flushcache
+  sudo /usr/sbin/scutil --set ComputerName "$COMPUTER_NAME"
+  sudo /usr/sbin/scutil --set HostName "$COMPUTER_NAME"
+  sudo /usr/sbin/scutil --set LocalHostName "$COMPUTER_NAME"
+  sudo /usr/bin/defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$COMPUTER_NAME"
+  /usr/bin/dscacheutil -flushcache
 
   # macOS system preferences not handled by nix-darwin
   # (Most settings are now in darwin-configuration.nix)
 
   # Disable the sound effects on boot
-  sudo nvram SystemAudioVolume=" "
+  sudo /usr/sbin/nvram SystemAudioVolume=" "
 
   # Allow applications downloaded from anywhere (optional - may require System Settings confirmation)
   echo "Attempting to disable Gatekeeper (may require System Settings confirmation)..."
-  if ! sudo spctl --master-disable 2>/dev/null; then
+  if ! sudo /usr/sbin/spctl --master-disable 2>/dev/null; then
     echo "⚠️  Could not disable Gatekeeper automatically - you may need to disable it manually in System Settings > Privacy & Security"
   else
     echo "✅ Gatekeeper disabled successfully"
   fi
 
   # Disable Infrared Remote
-  sudo defaults write /Library/Preferences/com.apple.driver.AppleIRController DeviceEnabled -bool false
+  sudo /usr/bin/defaults write /Library/Preferences/com.apple.driver.AppleIRController DeviceEnabled -bool false
 else
   # Linux hostname setup
   sudo sed -i "s/$CURRENT_HOSTNAME/$COMPUTER_NAME/g" /etc/hostname
@@ -244,10 +291,18 @@ if [[ ! $NIX_EXISTS ]]; then
 
   NIX_EXISTS=$(command -v nix 2>/dev/null || echo "")
 
+
   # Ensure Nix has already been installed
   if [[ ! $NIX_EXISTS ]]; then
-    echo -e "${RED}Cannot find nix in the PATH${ESC}"
-    echo "This means that the nix init script has not been sourced properly"
+    echo -e "${YELLOW}Nix not found in PATH after install. Attempting to patch your shell profile...${ESC}"
+    # Detect shell and patch appropriate profile
+    if [ -n "$ZSH_VERSION" ] || { [ -n "$SHELL" ] && [[ "$SHELL" == *zsh ]]; }; then
+      PROFILE_FILE="$HOME/.zprofile"
+    else
+      PROFILE_FILE="$HOME/.profile"
+    fi
+    echo "[ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ] && source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'" >> "$PROFILE_FILE"
+    echo -e "${GREEN}Added Nix profile sourcing to $PROFILE_FILE. Please restart your terminal and re-run this script.${ESC}"
     exit 1
   fi
 
@@ -255,6 +310,8 @@ if [[ ! $NIX_EXISTS ]]; then
 else
   echo "✅ Nix already installed"
 fi
+
+validate_nix_config
 
 # Platform-specific setup and configuration
 progress "Platform-specific Configuration"
@@ -272,6 +329,12 @@ fi
 if [ ! -L /etc/zshrc ] && [ -f /etc/zshrc ]; then
   sudo mv /etc/zshrc /etc/zshrc.local
 fi
+if [ ! -L /etc/bashrc ] && [ -f /etc/bashrc ]; then
+  sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin
+fi
+if [ ! -L /etc/nix/nix.custom.conf ] && [ -f /etc/nix/nix.custom.conf ]; then
+  sudo mv /etc/nix/nix.custom.conf /etc/nix/nix.custom.conf.before-nix-darwin
+fi
 
 if [ "$IS_DARWIN" == true ]; then
   echo "🍎 Setting up nix-darwin..."
@@ -279,9 +342,13 @@ if [ "$IS_DARWIN" == true ]; then
   # Install nix-darwin if not present
   if [[ ! $DARWIN_REBUILD_EXISTS ]]; then
     echo "Installing nix-darwin..."
-    nix run nix-darwin -- switch --flake "$NIXPKGS_BASEPATH"
+    sudo -H "$(command -v nix || echo "nix")" run nix-darwin -- switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
 
-    DARWIN_REBUILD_EXISTS=$(command -v darwin-rebuild 2>/dev/null || echo "")
+    if [ -x /run/current-system/sw/bin/darwin-rebuild ]; then
+      DARWIN_REBUILD_EXISTS="/run/current-system/sw/bin/darwin-rebuild"
+    else
+      DARWIN_REBUILD_EXISTS=$(command -v darwin-rebuild 2>/dev/null || echo "")
+    fi
 
     if [[ ! $DARWIN_REBUILD_EXISTS ]]; then
       echo -e "${RED}Cannot find darwin-rebuild in the PATH${ESC}"
@@ -291,7 +358,7 @@ if [ "$IS_DARWIN" == true ]; then
   fi
 
   echo "Building and switching to Darwin configuration..."
-  sudo darwin-rebuild switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
+  sudo "$DARWIN_REBUILD_EXISTS" switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
   echo "✅ Darwin configuration applied successfully"
 
 elif [ "$IS_NIXOS" == true ]; then
@@ -305,6 +372,10 @@ else
   nix run home-manager/master -- switch --flake "$NIXPKGS_BASEPATH#simon@$COMPUTER_NAME"
   echo "✅ Home Manager configuration applied successfully"
 fi
+
+# Make tools from the just-activated system visible to the remaining setup
+# checks in this shell without requiring a terminal restart first.
+export PATH="/run/current-system/sw/bin:/etc/profiles/per-user/$USER/bin:$PATH"
 
 # Shell Setup
 progress "Shell Configuration"
@@ -347,8 +418,8 @@ fi
 # Tolerate missing interfaces (e.g. laptops without Ethernet) so set -e doesn't kill us
 if [ "$IS_DARWIN" == true ] && [ "$IPV6_DISABLED" == "true" ]; then
   echo "Re-enabling IPv6..."
-  sudo networksetup -setv6automatic Wi-Fi &>/dev/null || true
-  sudo networksetup -setv6automatic Ethernet &>/dev/null || true
+  sudo /usr/sbin/networksetup -setv6automatic Wi-Fi &>/dev/null || true
+  sudo /usr/sbin/networksetup -setv6automatic Ethernet &>/dev/null || true
 fi
 
 # Final validation

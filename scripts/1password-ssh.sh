@@ -124,7 +124,7 @@ function test_github_ssh() {
     # GitHub SSH returns exit code 1 even on successful auth, so we check the output message
     local github_output
     set +e  # Temporarily disable exit on error
-    github_output=$(timeout 10 ssh -T git@github.com 2>&1)
+    github_output=$(ssh -o ConnectTimeout=10 -T git@github.com 2>&1)
     local ssh_exit_code=$?
     set -e  # Re-enable exit on error
 
