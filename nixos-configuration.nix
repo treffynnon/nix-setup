@@ -35,8 +35,6 @@ in {
       "video"
       "wireshark"
     ];
-    # Initial password for new installs
-    initialPassword = "correct horse battery staple";
   };
 
   # Linux-specific default shell
@@ -91,14 +89,14 @@ in {
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;
+    extraSpecialArgs = {inherit opnix;};
     users.${defaults.user.username} = {
       # Set default home.stateVersion - should be overridden by host configs
       home.stateVersion = "24.05"; # Default fallback - set appropriate version in host configs
 
       # Import our unified home-manager configuration
       imports = [
-        opnix.homeManagerModules.default # Required for programs.onepassword-secrets
-        ./home-configs/shared.nix
+        ./home-configs/linux.nix
       ];
     };
   };

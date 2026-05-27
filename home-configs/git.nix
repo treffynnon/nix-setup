@@ -8,8 +8,7 @@
   helpers = import ../lib/helpers.nix {inherit lib;};
   inherit (helpers) defaults;
 
-  sshSigningKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAxVpvFsxIhH6LTKrAEVuTiZnqHEalzDlxcNCFcYf3T5";
-  hasSigningKey = sshSigningKey != "";
+  sshSigningKey = "~/.ssh-signing-key";
 in {
   # delta moved out of programs.git; now a top-level home-manager module
   programs.delta = {
@@ -55,8 +54,7 @@ in {
       user = {
         name = defaults.user.fullName;
         inherit (defaults.user) email;
-        # use the SSH key to sign commits instead of GPG (only if available)
-        signingkey = lib.mkIf hasSigningKey sshSigningKey;
+        signingkey = sshSigningKey;
       };
 
       alias = {
@@ -95,8 +93,7 @@ in {
       };
 
       commit = {
-        # automatically sign all the commits (only if key is available)
-        gpgsign = hasSigningKey;
+        gpgsign = true;
       };
 
       push = {

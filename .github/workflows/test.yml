@@ -1,9 +1,9 @@
-name: "Test"
+name: "Nix Configuration"
 on:
   pull_request:
   push:
 jobs:
-  check:
+  validate:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -14,20 +14,46 @@ jobs:
       - uses: cachix/install-nix-action@v25
         with:
           nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
       - uses: DeterminateSystems/magic-nix-cache-action@v3
 
-      - name: "Initial nix-shell run"
-        run: nix develop --command echo "Initial run to get all the dependencies pulled down"
+      - name: Flake check
+        run: nix flake check --all-systems --no-build --show-trace
+
+      - name: Darwin dry-runs
+        run: |
+          for host in default bilby gecko pademelon platypus thylacine; do
+            nix build --dry-run ".#darwinConfigurations.${host}.system"
+          done
+
+      - name: NixOS dry-runs
+        run: |
+          nix build --dry-run ".#nixosConfigurations.default.config.system.build.toplevel"
+          nix build --dry-run ".#nixosConfigurations.default-arm64.config.system.build.toplevel"
+          nix build --dry-run ".#nixosConfigurations.nixos-vm.config.system.build.toplevel"
+
+      - name: Home Manager and WSL dry-runs
+        run: |
+          nix build --dry-run '.#homeConfigurations."simon@default".activationPackage'
+          nix build --dry-run '.#homeConfigurations."simon@default-arm64".activationPackage'
+          nix build --dry-run '.#homeConfigurations."simon@linux".activationPackage'
+          nix build --dry-run '.#homeConfigurations."simon@wsl".activationPackage'
+
+      - name: Script syntax
+        run: bash -n scripts/*.sh
 
       - name: Check nix lint
-        # see the flake file for where the lint-nix command comes from
         run: nix develop --command lint-nix
-      - name: Run nixpkgs-fmt check
+
+      - name: Check dead Nix code
+        run: nix develop --command lint-deadnix
+
+      - name: Check Nix formatting
         run: nix develop --command ci-format-nix
 
       - name: Run luacheck
         run: nix develop --command lint-lua
-      - name: Run lua-format
-        run: nix develop --command format-lua
-      - name: Check for changed files - fails if there is a git diff
-        run: git diff --quiet
+
+      - name: Check Lua formatting
+        run: nix develop --command lua-format --check --config=./codestyle/lua-format-config.yml ./home-configs/hammerspoon

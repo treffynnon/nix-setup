@@ -1,18 +1,11 @@
 {
   pkgs,
   lib,
-  opnix,
   ...
 }: let
   # Import our centralised configuration directly
   defaults = import ./lib/defaults.nix;
 in {
-  # Import our unified home-manager configuration
-  imports = [
-    opnix.homeManagerModules.default # Required for programs.onepassword-secrets
-    ./home-configs/shared.nix
-  ];
-
   # Required for standalone home-manager
   home = {
     inherit (defaults.user) username;

@@ -211,13 +211,12 @@ in {
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;
+    extraSpecialArgs = {inherit opnix;};
     backupFileExtension = ".hm-bak";
     users.${defaults.user.username} = {
       # Import our unified home-manager configuration
       imports = [
-        opnix.homeManagerModules.default
-        ./home-configs/shared.nix
-        ./home-configs/hammerspoon.nix # macOS-specific module
+        ./home-configs/darwin.nix
       ];
 
       home = {

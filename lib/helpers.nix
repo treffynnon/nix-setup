@@ -72,16 +72,6 @@ in {
       // extraConfig;
   };
 
-  # Helper to create a standardised home-manager user configuration
-  mkHomeManagerUser = {
-    stateVersion ? defaults.versions.homeManagerStateVersion,
-    extraConfig ? {},
-  }:
-    {
-      home.stateVersion = stateVersion;
-    }
-    // extraConfig;
-
   # Helper to create standardised nix configuration
   mkNixConfig = {extraConfig ? {}}:
     {
@@ -169,20 +159,6 @@ in {
       then aarch64Packages
       else []
     );
-
-  # New: Version management automation
-  mkVersionManagement = {autoDetectVersions ? true}:
-    if autoDetectVersions
-    then {
-      inherit (defaults.versions) homeManagerStateVersion darwinStateVersion nixosStateVersion;
-
-      # Future: Add logic to detect latest stable versions automatically
-      _meta = {
-        autoDetected = true;
-        lastUpdated = "2024-06-18";
-      };
-    }
-    else defaults.versions;
 
   # New secrets management helpers
   secrets = {

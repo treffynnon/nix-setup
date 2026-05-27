@@ -30,19 +30,13 @@ in {
     ./vifm.nix
     ./webstorm.nix
     ./opnix.nix
-    ./1password-ssh.nix
     ./claude-code.nix
     ./jujutsu.nix
-    # Platform-specific modules will be imported by individual configs
-    # Uncomment these if needed:
-    # ./firefox.nix
-    # ./httpie.nix
   ];
 
   # Core home packages that work everywhere
   home.packages = with pkgs; [
     # Tools that work everywhere
-    uhubctl
     fzf
     bat
     direnv

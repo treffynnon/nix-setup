@@ -1,80 +1,14 @@
 #!/usr/bin/env bash
 
-# Modern Nix Configuration Setup Script
-# Sets up flake-based Nix configuration with 1Password integration
-
 set -euo pipefail
 
-# ANSI properties/colours
 ESC='\033[0m'
 BLUE='\033[38;34m'
-BLUE_UL='\033[38;4;34m'
 GREEN='\033[38;32m'
-GREEN_UL='\033[38;4;32m'
 RED='\033[38;31m'
-RED_UL='\033[38;4;31m'
 YELLOW='\033[38;33m'
-YELLOW_UL='\033[38;4;33m'
 
-ensure_nix_profile_line() {
-  local profile_file="$HOME/.zprofile"
-  local nix_line="[ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ] && source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'"
-  if [ ! -f "$profile_file" ]; then
-    echo "$nix_line" > "$profile_file"
-    echo -e "${GREEN}Created $profile_file and added Nix profile sourcing line.${ESC}"
-    return
-  fi
-  if ! grep -Fxq "$nix_line" "$profile_file"; then
-    # Insert after Homebrew shellenv if present, else append
-    if grep -q 'eval "\$\(/opt/homebrew/bin/brew shellenv\)"' "$profile_file"; then
-      awk -v nline="$nix_line" '/eval "\$\(/opt\/homebrew\/bin\/brew shellenv\)"/ && !x {print; print nline; x=1; next} 1' "$profile_file" > "$profile_file.tmp" && mv "$profile_file.tmp" "$profile_file"
-      echo -e "${GREEN}Added Nix profile sourcing after Homebrew shellenv in $profile_file.${ESC}"
-    else
-      echo "$nix_line" >> "$profile_file"
-      echo -e "${GREEN}Appended Nix profile sourcing to $profile_file.${ESC}"
-    fi
-  fi
-}
-
-# Configuration validation
-validate_nix_config() {
-  local validation_attr
-
-  if [ "$IS_DARWIN" == true ]; then
-    validation_attr="darwinConfigurations.${COMPUTER_NAME}.system"
-  elif [ "$IS_NIXOS" == true ]; then
-    validation_attr="nixosConfigurations.${COMPUTER_NAME}.config.system.build.toplevel"
-  else
-    validation_attr="homeConfigurations.simon@linux.activationPackage"
-  fi
-
-  echo "🔍 Validating Nix configuration: $validation_attr"
-  if ! nix eval "$NIXPKGS_BASEPATH#$validation_attr" >/dev/null; then
-    echo -e "${RED}❌ Nix configuration validation failed${ESC}"
-    echo "Please fix configuration errors before running setup"
-    return 1
-  fi
-  echo "✅ Nix configuration is valid"
-}
-
-# Error recovery function
-cleanup_on_error() {
-  local exit_code=$?
-  echo -e "${RED}❌ Setup failed with exit code $exit_code${ESC}"
-  echo "Performing cleanup..."
-
-  # Re-enable IPv6 if we disabled it
-  if [ "$IS_DARWIN" == true ] && [ "${IPV6_DISABLED:-false}" == "true" ]; then
-    sudo /usr/sbin/networksetup -setv6automatic Wi-Fi &>/dev/null || true
-    sudo /usr/sbin/networksetup -setv6automatic Ethernet &>/dev/null || true
-  fi
-
-  exit $exit_code
-}
-trap cleanup_on_error ERR
-
-# Progress tracking
-TOTAL_STEPS=9
+TOTAL_STEPS=5
 CURRENT_STEP=0
 
 progress() {
@@ -82,23 +16,19 @@ progress() {
   echo -e "${BLUE}[$CURRENT_STEP/$TOTAL_STEPS] $1${ESC}"
 }
 
-# Get the base path of the nixpkgs directory
+fail() {
+  echo -e "${RED}❌ $*${ESC}" >&2
+  exit 1
+}
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NIXPKGS_BASEPATH="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# kitty uses something like xterm-kitty, which nix does not recognise so this will allow
-# kitty masquerade as xterm-256color for the purposes of this setup script
-if [[ "$TERM" = *"kitty"* ]]; then
-  TERM=xterm-256color
-fi
-
-# System detection
 IS_DARWIN=false
 IS_NIXOS=false
-IPV6_DISABLED=false
-CURRENT_HOSTNAME=$(hostname)
+IS_WSL=false
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
+if [[ "${OSTYPE:-}" == darwin* ]]; then
   IS_DARWIN=true
 fi
 
@@ -106,352 +36,176 @@ if [[ -f /etc/nixos/configuration.nix ]]; then
   IS_NIXOS=true
 fi
 
-# Source the Nix profile if it exists on the system to populate the PATH
-if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
-  source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
-fi
-ensure_nix_profile_line
-
-# Check for required commands
-NIX_EXISTS=$(command -v nix 2>/dev/null || echo "")
-if [ -x /run/current-system/sw/bin/darwin-rebuild ]; then
-  DARWIN_REBUILD_EXISTS="/run/current-system/sw/bin/darwin-rebuild"
-else
-  DARWIN_REBUILD_EXISTS=$(command -v darwin-rebuild 2>/dev/null || echo "")
-fi
-NIXOS_REBUILD_EXISTS=$(command -v nixos-rebuild 2>/dev/null || echo "")
-
-# Ensure script is not being run with root privileges
-if [ $EUID -eq 0 ]; then
-  echo "Please don't run this script with root privileges!"
-  exit 1
+if [[ -r /proc/sys/kernel/osrelease ]] && grep -qi microsoft /proc/sys/kernel/osrelease; then
+  IS_WSL=true
 fi
 
-SUDO_ON=$(sudo -n command &>/dev/null; echo $?)
-if [ $SUDO_ON -gt 0 ]; then
-  echo "Some of the operations must be run as admin so please enter your admin password: "
-  sudo -v
-fi
+source_nix_profile() {
+  if [ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+    # shellcheck disable=SC1091
+    source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+  fi
+}
 
-# Keep-alive: update existing `sudo` time stamp until this script has finished
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+ensure_nix_profile_line() {
+  local profile_file="$HOME/.profile"
+  local nix_line="[ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ] && source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'"
 
-echo -e "${GREEN}🚀 Starting Modern Nix Configuration Setup${ESC}"
-echo -e "Setting up flake-based configuration from: ${BLUE}$NIXPKGS_BASEPATH${ESC}"
-echo
-
-progress "Validating configuration"
-echo "Skipping validation until host configuration has been prepared."
-
-if [ "$IS_DARWIN" == true ]; then
-  progress "macOS System Setup"
-
-  # Install Xcode command line tools first
-  echo "Installing Xcode command line tools..."
-  if ! /usr/bin/xcode-select --print-path &>/dev/null; then
-    echo "Xcode command line tools not found. Installing..."
-    /usr/bin/xcode-select --install
-    echo "Please wait for Xcode command line tools installation to complete,"
-    echo "then press any key to continue..."
-    read -n 1 -s
-  else
-    echo "✅ Xcode command line tools already installed"
+  if [ "$IS_DARWIN" == true ]; then
+    profile_file="$HOME/.zprofile"
+  elif [ -n "${ZSH_VERSION:-}" ] || [[ "${SHELL:-}" == *zsh ]]; then
+    profile_file="$HOME/.zprofile"
   fi
 
-  # Close any open System Preferences panes, to prevent them from overriding settings we're about to change
-  echo "Closing any open System Preferences dialogues"
-  /usr/bin/osascript -e 'tell application "System Preferences" to quit'
-fi
-
-# Give the computer a name
-progress "Setting up hostname and host configuration"
-read -p "Pick a name for this machine [$(hostname)]: " COMPUTER_NAME
-if [ -z "$COMPUTER_NAME" ]; then
-  COMPUTER_NAME=$(hostname)
-fi
-echo -e "Using ${GREEN}$COMPUTER_NAME${ESC} for this machine"
-
-# Create host-specific configuration if it doesn't exist
-nixConfig="$NIXPKGS_BASEPATH/hosts/$COMPUTER_NAME/configuration.nix"
-if [ ! -f "$nixConfig" ]; then
-  echo "Creating host-specific configuration: $nixConfig"
-  mkdir -p "$(dirname "$nixConfig")"
-
-  # Detect appropriate state versions
-  echo "🔍 Detecting appropriate state versions..."
-
-  # Platform-specific detection
-  if [ "$IS_NIXOS" == true ]; then
-    echo "   Platform: NixOS"
-    # For NixOS, try to detect current version
-    if command -v nixos-version &>/dev/null; then
-      DETECTED_VERSION=$(nixos-version 2>/dev/null | cut -d'.' -f1-2 2>/dev/null || echo "")
-      if [ -n "$DETECTED_VERSION" ]; then
-        SYSTEM_STATE_VERSION="\"$DETECTED_VERSION\""
-        echo "   Detected NixOS version: $DETECTED_VERSION"
-      else
-        SYSTEM_STATE_VERSION="\"24.05\""  # Current stable as fallback
-        echo "   Using current stable NixOS version: 24.05"
-      fi
-    else
-      SYSTEM_STATE_VERSION="\"24.05\""  # Current stable as fallback
-      echo "   Using current stable NixOS version: 24.05"
-    fi
-    HM_STATE_VERSION="24.05"
-  else
-    echo "   Platform: macOS (nix-darwin)"
-    # For nix-darwin, use current stable version
-    SYSTEM_STATE_VERSION="5"  # Current nix-darwin state version
-    HM_STATE_VERSION="24.05"  # Current Home Manager stable
-    echo "   Using current nix-darwin state version: 5"
+  if [ ! -f "$profile_file" ]; then
+    printf '%s\n' "$nix_line" > "$profile_file"
+    return
   fi
 
-  echo "✅ Final state versions:"
-  echo "   System state version: $SYSTEM_STATE_VERSION"
-  echo "   Home Manager state version: $HM_STATE_VERSION"
+  if ! grep -Fxq "$nix_line" "$profile_file"; then
+    printf '%s\n' "$nix_line" >> "$profile_file"
+  fi
+}
 
-  cat > "$nixConfig" << EOF
+ensure_sudo() {
+  if [ "$IS_DARWIN" != true ] && [ "$IS_NIXOS" != true ]; then
+    return
+  fi
+
+  if [ "$EUID" -eq 0 ]; then
+    fail "Please do not run this script as root."
+  fi
+
+  if ! sudo -n true 2>/dev/null; then
+    echo "Some operations must run as admin; please enter your password:"
+    sudo -v
+  fi
+
+  while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+}
+
+target_attr() {
+  if [ "$IS_DARWIN" == true ]; then
+    printf 'darwinConfigurations.%s.system' "$COMPUTER_NAME"
+  elif [ "$IS_NIXOS" == true ]; then
+    printf 'nixosConfigurations.default.config.system.build.toplevel'
+  elif [ "$IS_WSL" == true ]; then
+    printf 'homeConfigurations."simon@wsl".activationPackage'
+  else
+    printf 'homeConfigurations."simon@linux".activationPackage'
+  fi
+}
+
+validate_target() {
+  local attr
+  attr="$(target_attr)"
+  echo "🔍 Validating Nix target: $attr"
+  nix eval "$NIXPKGS_BASEPATH#$attr" >/dev/null
+  echo "✅ Nix target is valid"
+}
+
+create_darwin_host_if_missing() {
+  if [ "$IS_DARWIN" != true ]; then
+    return
+  fi
+
+  local nix_config="$NIXPKGS_BASEPATH/hosts/$COMPUTER_NAME/configuration.nix"
+  if [ -f "$nix_config" ]; then
+    echo "✅ Host configuration already exists: $nix_config"
+  else
+    echo "Creating host-specific configuration: $nix_config"
+    mkdir -p "$(dirname "$nix_config")"
+    cat > "$nix_config" <<EOF
 {
-  # Host-specific configuration for $COMPUTER_NAME
   networking.hostName = "$COMPUTER_NAME";
-
-  # Set the state version based on when you first installed this system
-  # NEVER change this unless you understand the migration implications
-  system.stateVersion = $SYSTEM_STATE_VERSION;  # Auto-detected
-
-  # Home Manager state version
-  home-manager.users.simon.home.stateVersion = "$HM_STATE_VERSION";
-
-  # Add any host-specific overrides here
+  system.stateVersion = 5;
+  home-manager.users.simon.home.stateVersion = "24.05";
 }
 EOF
-  echo "✅ Created host configuration with auto-detected state versions"
-else
-  echo "✅ Host configuration already exists: $nixConfig"
-fi
-
-# Stage the configuration in git if we are in a git repository, as Nix flakes ignore untracked files
-if [ -d "$NIXPKGS_BASEPATH/.git" ] && command -v git &>/dev/null; then
-  echo "Staging host configuration in Git..."
-  git -C "$NIXPKGS_BASEPATH" add "$nixConfig" || true
-fi
-
-if command -v nix &>/dev/null; then
-  validate_nix_config
-fi
-
-if [ "$IS_DARWIN" == true ]; then
-  echo "🍎 Configuring macOS system settings..."
-
-  # Disable IPv6 temporarily (some corporate networks have issues)
-  echo "Temporarily disabling IPv6 for network compatibility..."
-  sudo /usr/sbin/networksetup -setv6off Wi-Fi &>/dev/null && IPV6_DISABLED=true
-  sudo /usr/sbin/networksetup -setv6off Ethernet &>/dev/null || true
-
-  # Set computer name (as done via System Preferences → Sharing)
-  sudo /usr/sbin/scutil --set ComputerName "$COMPUTER_NAME"
-  sudo /usr/sbin/scutil --set HostName "$COMPUTER_NAME"
-  sudo /usr/sbin/scutil --set LocalHostName "$COMPUTER_NAME"
-  sudo /usr/bin/defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$COMPUTER_NAME"
-  /usr/bin/dscacheutil -flushcache
-
-  # macOS system preferences not handled by nix-darwin
-  # (Most settings are now in darwin-configuration.nix)
-
-  # Disable the sound effects on boot
-  sudo /usr/sbin/nvram SystemAudioVolume=" "
-
-  # Allow applications downloaded from anywhere (optional - may require System Settings confirmation)
-  echo "Attempting to disable Gatekeeper (may require System Settings confirmation)..."
-  if ! sudo /usr/sbin/spctl --master-disable 2>/dev/null; then
-    echo "⚠️  Could not disable Gatekeeper automatically - you may need to disable it manually in System Settings > Privacy & Security"
-  else
-    echo "✅ Gatekeeper disabled successfully"
   fi
 
-  # Disable Infrared Remote
-  sudo /usr/bin/defaults write /Library/Preferences/com.apple.driver.AppleIRController DeviceEnabled -bool false
-else
-  # Linux hostname setup
-  sudo sed -i "s/$CURRENT_HOSTNAME/$COMPUTER_NAME/g" /etc/hostname
-  sudo sed -i "s/$CURRENT_HOSTNAME/$COMPUTER_NAME/g" /etc/hosts
-  sudo hostname "$COMPUTER_NAME"
-fi
+  if [ -d "$NIXPKGS_BASEPATH/.git" ] && command -v git >/dev/null 2>&1; then
+    git -C "$NIXPKGS_BASEPATH" add "$nix_config" || true
+  fi
+}
 
-# Nix Installation with Flakes
-progress "Installing Nix with Flakes Support"
-if [[ ! $NIX_EXISTS ]]; then
-  echo "Installing Nix with the Determinate Systems installer (includes flakes)..."
-  curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-
-  # Source the nix profile
-  if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
-    source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+backup_determinate_custom_conf() {
+  if [ "$IS_DARWIN" != true ]; then
+    return
   fi
 
-  NIX_EXISTS=$(command -v nix 2>/dev/null || echo "")
-
-
-  # Ensure Nix has already been installed
-  if [[ ! $NIX_EXISTS ]]; then
-    echo -e "${YELLOW}Nix not found in PATH after install. Attempting to patch your shell profile...${ESC}"
-    # Detect shell and patch appropriate profile
-    if [ -n "$ZSH_VERSION" ] || { [ -n "$SHELL" ] && [[ "$SHELL" == *zsh ]]; }; then
-      PROFILE_FILE="$HOME/.zprofile"
-    else
-      PROFILE_FILE="$HOME/.profile"
-    fi
-    echo "[ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ] && source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'" >> "$PROFILE_FILE"
-    echo -e "${GREEN}Added Nix profile sourcing to $PROFILE_FILE. Please restart your terminal and re-run this script.${ESC}"
-    exit 1
+  if [ ! -L /etc/nix/nix.custom.conf ] && [ -f /etc/nix/nix.custom.conf ]; then
+    sudo mv /etc/nix/nix.custom.conf /etc/nix/nix.custom.conf.before-nix-darwin
   fi
+}
 
-  echo "✅ Nix installed successfully with flakes support"
-else
-  echo "✅ Nix already installed"
-fi
-
-validate_nix_config
-
-# Platform-specific setup and configuration
-progress "Platform-specific Configuration"
-
-# sets the host for the configuration to pick up
-export HOST="$COMPUTER_NAME"
-
-# Backup original system files if they exist
-if [ ! -L /etc/shells ] && [ -f /etc/shells ]; then
-  sudo mv /etc/shells /etc/shells.bak
-fi
-if [ ! -L /etc/zprofile ] && [ -f /etc/zprofile ]; then
-  sudo mv /etc/zprofile /etc/zprofile.local
-fi
-if [ ! -L /etc/zshrc ] && [ -f /etc/zshrc ]; then
-  sudo mv /etc/zshrc /etc/zshrc.local
-fi
-if [ ! -L /etc/bashrc ] && [ -f /etc/bashrc ]; then
-  sudo mv /etc/bashrc /etc/bashrc.before-nix-darwin
-fi
-if [ ! -L /etc/nix/nix.custom.conf ] && [ -f /etc/nix/nix.custom.conf ]; then
-  sudo mv /etc/nix/nix.custom.conf /etc/nix/nix.custom.conf.before-nix-darwin
-fi
-
-if [ "$IS_DARWIN" == true ]; then
-  echo "🍎 Setting up nix-darwin..."
-
-  # Install nix-darwin if not present
-  if [[ ! $DARWIN_REBUILD_EXISTS ]]; then
-    echo "Installing nix-darwin..."
-    sudo -H "$(command -v nix || echo "nix")" run nix-darwin -- switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
-
+switch_target() {
+  if [ "$IS_DARWIN" == true ]; then
+    backup_determinate_custom_conf
     if [ -x /run/current-system/sw/bin/darwin-rebuild ]; then
-      DARWIN_REBUILD_EXISTS="/run/current-system/sw/bin/darwin-rebuild"
+      sudo /run/current-system/sw/bin/darwin-rebuild switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
+    elif command -v darwin-rebuild >/dev/null 2>&1; then
+      sudo "$(command -v darwin-rebuild)" switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
     else
-      DARWIN_REBUILD_EXISTS=$(command -v darwin-rebuild 2>/dev/null || echo "")
+      sudo -H nix run nix-darwin -- switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
     fi
-
-    if [[ ! $DARWIN_REBUILD_EXISTS ]]; then
-      echo -e "${RED}Cannot find darwin-rebuild in the PATH${ESC}"
-      echo "nix-darwin installation may have failed"
-      exit 1
-    fi
+  elif [ "$IS_NIXOS" == true ]; then
+    sudo nixos-rebuild switch --flake "$NIXPKGS_BASEPATH#default"
+  elif [ "$IS_WSL" == true ]; then
+    nix run home-manager -- switch --flake "$NIXPKGS_BASEPATH#simon@wsl"
+  else
+    nix run home-manager -- switch --flake "$NIXPKGS_BASEPATH#simon@linux"
   fi
+}
 
-  echo "Building and switching to Darwin configuration..."
-  sudo "$DARWIN_REBUILD_EXISTS" switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
-  echo "✅ Darwin configuration applied successfully"
+echo -e "${GREEN}🚀 Starting Nix Configuration Bootstrap${ESC}"
+echo -e "Configuration path: ${BLUE}$NIXPKGS_BASEPATH${ESC}"
+echo
 
+source_nix_profile
+ensure_sudo
+
+progress "Preparing host target"
+if [ "$IS_DARWIN" == true ]; then
+  read -r -p "Pick a name for this machine [$(hostname)]: " COMPUTER_NAME
+  if [ -z "$COMPUTER_NAME" ]; then
+    COMPUTER_NAME="$(hostname)"
+  fi
+  create_darwin_host_if_missing
 elif [ "$IS_NIXOS" == true ]; then
-  echo "🐧 Setting up NixOS configuration..."
-  sudo nixos-rebuild switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
-  echo "✅ NixOS configuration applied successfully"
-
+  COMPUTER_NAME="default"
+elif [ "$IS_WSL" == true ]; then
+  COMPUTER_NAME="wsl"
 else
-  echo "🏠 Setting up Home Manager (standalone)..."
-  # For other Linux distributions
-  nix run home-manager/master -- switch --flake "$NIXPKGS_BASEPATH#simon@$COMPUTER_NAME"
-  echo "✅ Home Manager configuration applied successfully"
+  COMPUTER_NAME="linux"
 fi
+echo -e "Using target ${GREEN}$COMPUTER_NAME${ESC}"
 
-# Make tools from the just-activated system visible to the remaining setup
-# checks in this shell without requiring a terminal restart first.
-export PATH="/run/current-system/sw/bin:/etc/profiles/per-user/$USER/bin:$PATH"
-
-# Shell Setup
-progress "Shell Configuration"
-NIX_SUPPLIED_BASH="/run/current-system/sw/bin/bash"
-NIX_SUPPLIED_FISH="/run/current-system/sw/bin/fish"
-
-if [[ "$SHELL" != "/run"* && "$SHELL" != "/nix"* ]]; then
-  if [[ -x "$NIX_SUPPLIED_FISH" ]]; then
-    echo "Switching default shell to nix-supplied fish"
-    chsh -s "$NIX_SUPPLIED_FISH"
-    export SHELL="$NIX_SUPPLIED_FISH"
-  elif [[ -x "$NIX_SUPPLIED_BASH" ]]; then
-    echo "Switching default shell to newer nix-supplied bash"
-    chsh -s "$NIX_SUPPLIED_BASH"
-    export SHELL="$NIX_SUPPLIED_BASH"
-  fi
+progress "Installing or sourcing Nix"
+if ! command -v nix >/dev/null 2>&1; then
+  echo "Installing Nix with the Determinate Systems installer..."
+  curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+  source_nix_profile
+  ensure_nix_profile_line
 fi
+command -v nix >/dev/null 2>&1 || fail "Nix is still not available in PATH. Restart your shell and rerun setup."
+echo "✅ Nix is available"
 
-# 1Password SSH Agent Setup
-progress "1Password SSH Agent Setup"
-if [ -f "$NIXPKGS_BASEPATH/scripts/1password-ssh.sh" ]; then
-  echo "Running 1Password SSH agent setup..."
-  bash "$NIXPKGS_BASEPATH/scripts/1password-ssh.sh"
-else
-  echo "⚠️  1Password SSH setup script not found, skipping..."
-  echo "You can run it manually later: ./scripts/1password-ssh.sh"
-fi
+progress "Validating target"
+validate_target
 
-# 1Password GitHub CLI Setup
-progress "1Password GitHub CLI Setup"
-if [ -f "$NIXPKGS_BASEPATH/scripts/1password-gh.sh" ]; then
-  echo "Running 1Password GitHub CLI verification..."
-  bash "$NIXPKGS_BASEPATH/scripts/1password-gh.sh" verify || true
-else
-  echo "⚠️  1Password GitHub CLI setup script not found, skipping..."
-  echo "You can run it manually later: ./scripts/1password-gh.sh"
-fi
+progress "Switching configuration"
+switch_target
 
-# Re-enable IPv6 on macOS now that we have modern curl from Nix
-# Tolerate missing interfaces (e.g. laptops without Ethernet) so set -e doesn't kill us
-if [ "$IS_DARWIN" == true ] && [ "$IPV6_DISABLED" == "true" ]; then
-  echo "Re-enabling IPv6..."
-  sudo /usr/sbin/networksetup -setv6automatic Wi-Fi &>/dev/null || true
-  sudo /usr/sbin/networksetup -setv6automatic Ethernet &>/dev/null || true
-fi
-
-# Final validation
 progress "Final validation"
-echo "Performing final configuration validation..."
-validate_nix_config
+export PATH="/run/current-system/sw/bin:/etc/profiles/per-user/$USER/bin:$PATH"
+validate_target
 
 echo
-echo -e "${GREEN}🎉 Setup Complete!${ESC}"
+echo -e "${GREEN}🎉 Bootstrap complete${ESC}"
+echo "Verification commands:"
+echo "  nix run .#verify-1password-ssh"
+echo "  nix run .#verify-1password-gh"
+echo "  nix flake check --no-build --show-trace"
 echo
-echo -e "${BLUE}📝 What was configured:${ESC}"
-echo "  • Modern flake-based Nix configuration"
-echo "  • Host-specific configuration for $COMPUTER_NAME"
-if [ "$IS_DARWIN" == true ]; then
-  echo "  • nix-darwin with system-level configuration"
-  echo "  • macOS system preferences and security settings"
-fi
-echo "  • Home Manager with user-level configuration"
-echo "  • 1Password SSH agent integration"
-echo "  • GitHub CLI via 1Password shell plugin"
-echo "  • Shell configuration (Fish/Bash)"
-echo
-echo -e "${YELLOW}🔄 Next Steps:${ESC}"
-echo "  1. Restart your terminal to ensure all changes take effect"
-echo "  2. Set up 1Password with your SSH keys and secrets"
-echo "  3. Configure GitHub CLI: op plugin init gh (see README)"
-echo "  4. Configure any host-specific settings in: $nixConfig"
-if [ "$IS_DARWIN" == true ]; then
-  echo "  5. Install Hammerspoon from https://www.hammerspoon.org/"
-  echo "  6. Restart your machine for all system changes to take effect"
-else
-  echo "  5. Restart your machine for all system changes to take effect"
-fi
-echo
-echo -e "${GREEN}For more information, see the README.md file.${ESC}"
+echo -e "${YELLOW}Restart your terminal before starting normal work.${ESC}"

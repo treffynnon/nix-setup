@@ -26,153 +26,94 @@
     home-manager,
     opnix,
   }: let
-    # Smart system detection for different architectures
-    supportedSystems = ["aarch64-darwin" "x86_64-darwin" "x86_64-linux" "aarch64-linux"];
-
-    # Get current system or default to aarch64-darwin for macOS
     currentSystem = builtins.currentSystem or "aarch64-darwin";
-
-    # Helper function to generate configurations for multiple systems
-    forEachSystem = systems: f: nixpkgs.lib.genAttrs systems f;
-
-    # Import platform-specific configuration modules
     darwinConfiguration = import ./darwin-configuration.nix;
     nixosConfiguration = import ./nixos-configuration.nix;
     homeManagerConfiguration = import ./home-manager-configuration.nix;
+
+    mkDarwinHost = {
+      system ? currentSystem,
+      extraModules ? [],
+    }:
+      darwin.lib.darwinSystem {
+        inherit system;
+        specialArgs = {inherit home-manager opnix;};
+        modules =
+          [
+            determinate.darwinModules.default
+            darwinConfiguration
+          ]
+          ++ extraModules;
+      };
+
+    mkNixosHost = {
+      system,
+      extraModules ? [],
+    }:
+      nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = {inherit home-manager opnix;};
+        modules = [nixosConfiguration] ++ extraModules;
+      };
+
+    mkHome = {
+      system,
+      extraModules ? [],
+    }:
+      home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.${system};
+        extraSpecialArgs = {inherit opnix;};
+        modules = [homeManagerConfiguration] ++ extraModules;
+      };
   in
     {
-      # Darwin system configurations (macOS) - Auto-detect architecture
       darwinConfigurations = {
-        # Default configuration - uses current system
-        default = darwin.lib.darwinSystem {
-          system = currentSystem;
-          specialArgs = {inherit home-manager opnix;};
-          modules = [
-            determinate.darwinModules.default
-            darwinConfiguration
-          ];
+        default = mkDarwinHost {};
+        bilby = mkDarwinHost {
+          extraModules = [./hosts/bilby/configuration.nix];
         };
-
-        # Host-specific configurations - auto-detect architecture
-        bilby = darwin.lib.darwinSystem {
-          system = currentSystem;
-          specialArgs = {inherit home-manager opnix;};
-          modules = [
-            determinate.darwinModules.default
-            darwinConfiguration
-            ./hosts/bilby/configuration.nix
-          ];
+        gecko = mkDarwinHost {
+          extraModules = [./hosts/gecko/configuration.nix];
         };
-
-        gecko = darwin.lib.darwinSystem {
-          system = currentSystem;
-          specialArgs = {inherit home-manager opnix;};
-          modules = [
-            determinate.darwinModules.default
-            darwinConfiguration
-            ./hosts/gecko/configuration.nix
-          ];
+        pademelon = mkDarwinHost {
+          extraModules = [./hosts/pademelon/configuration.nix];
         };
-
-        pademelon = darwin.lib.darwinSystem {
-          system = currentSystem;
-          specialArgs = {inherit home-manager opnix;};
-          modules = [
-            determinate.darwinModules.default
-            darwinConfiguration
-            ./hosts/pademelon/configuration.nix
-          ];
+        platypus = mkDarwinHost {
+          extraModules = [./hosts/platypus/configuration.nix];
         };
-
-        platypus = darwin.lib.darwinSystem {
-          system = currentSystem;
-          specialArgs = {inherit home-manager opnix;};
-          modules = [
-            determinate.darwinModules.default
-            darwinConfiguration
-            ./hosts/platypus/configuration.nix
-          ];
-        };
-
-        thylacine = darwin.lib.darwinSystem {
-          system = currentSystem;
-          specialArgs = {inherit home-manager opnix;};
-          modules = [
-            determinate.darwinModules.default
-            darwinConfiguration
-            ./hosts/thylacine/configuration.nix
-          ];
+        thylacine = mkDarwinHost {
+          extraModules = [./hosts/thylacine/configuration.nix];
         };
       };
 
-      # NixOS system configurations (Linux) - Support multiple architectures
       nixosConfigurations = {
-        # Default NixOS configuration - uses x86_64-linux as default for Linux
-        default = nixpkgs.lib.nixosSystem {
+        default = mkNixosHost {
           system = "x86_64-linux";
-          specialArgs = {inherit home-manager opnix;};
-          modules = [
-            nixosConfiguration
-          ];
         };
-
-        # ARM64 NixOS configuration (for Raspberry Pi, etc.)
-        default-arm64 = nixpkgs.lib.nixosSystem {
+        default-arm64 = mkNixosHost {
           system = "aarch64-linux";
-          specialArgs = {inherit home-manager opnix;};
-          modules = [
-            nixosConfiguration
-          ];
         };
-
-        # Example host-specific NixOS configurations
-        nixos-vm = nixpkgs.lib.nixosSystem {
+        nixos-vm = mkNixosHost {
           system = "x86_64-linux";
-          specialArgs = {inherit home-manager opnix;};
-          modules = [
-            nixosConfiguration
-            # Add host-specific config here if needed
-          ];
         };
       };
 
-      # Home Manager configurations (for WSL, existing Linux distros, etc.)
       homeConfigurations = {
-        # Default home-manager configuration (x86_64-linux)
-        "simon@default" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages."x86_64-linux";
-          extraSpecialArgs = {inherit opnix;};
-          modules = [
-            homeManagerConfiguration
-          ];
+        "simon@default" = mkHome {
+          system = "x86_64-linux";
+          extraModules = [./home-configs/linux.nix];
         };
-
-        # ARM64 home-manager configuration
-        "simon@default-arm64" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages."aarch64-linux";
-          extraSpecialArgs = {inherit opnix;};
-          modules = [
-            homeManagerConfiguration
-          ];
+        "simon@default-arm64" = mkHome {
+          system = "aarch64-linux";
+          extraModules = [./home-configs/linux.nix];
         };
-
-        # WSL configuration (x86_64-linux)
-        "simon@wsl" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages."x86_64-linux";
-          extraSpecialArgs = {inherit opnix;};
-          modules = [
-            homeManagerConfiguration
-            # WSL-specific overrides could go here
-          ];
+        "simon@wsl" = mkHome {
+          system = "x86_64-linux";
+          extraModules = [./home-configs/wsl.nix];
         };
-
-        # Generic Linux configuration
-        "simon@linux" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages."x86_64-linux";
-          extraSpecialArgs = {inherit opnix;};
-          modules = [
-            homeManagerConfiguration
-          ];
+        "simon@linux" = mkHome {
+          system = "x86_64-linux";
+          extraModules = [./home-configs/linux.nix];
         };
       };
     }
@@ -211,6 +152,18 @@
         ciFormatNix = pkgs.writeScriptBin "ci-format-nix" ''
           #!${pkgs.bash}/bin/bash
           ${pkgs.alejandra}/bin/alejandra --check --exclude .direnv .
+        '';
+        lintDeadNix = pkgs.writeScriptBin "lint-deadnix" ''
+          #!${pkgs.bash}/bin/bash
+          ${pkgs.deadnix}/bin/deadnix --fail --exclude .direnv .
+        '';
+        verifyOnePasswordSsh = pkgs.writeScriptBin "verify-1password-ssh" ''
+          #!${pkgs.bash}/bin/bash
+          exec ./scripts/1password-ssh.sh verify
+        '';
+        verifyOnePasswordGh = pkgs.writeScriptBin "verify-1password-gh" ''
+          #!${pkgs.bash}/bin/bash
+          exec ./scripts/1password-gh.sh verify
         '';
 
         # Darwin rebuild script with auto-detection
@@ -317,10 +270,15 @@
           echo "Done."
           echo " "
 
-          echo "Linting nix files"
-          lint-nix
-          echo "Done."
-          echo " "
+            echo "Linting nix files"
+            lint-nix
+            echo "Done."
+            echo " "
+
+            echo "Checking for dead nix code"
+            lint-deadnix
+            echo "Done."
+            echo " "
 
           echo "Formatting Hammerspoon lua code"
           format-lua
@@ -338,6 +296,7 @@
           bashInteractive
           alejandra # nix fomatter
           statix # nix linter
+          deadnix
           (lua.withPackages (ps: with ps; [busted luafilesystem luacheck]))
           luaformatter
           uhubctl # USB hub control utility
@@ -345,6 +304,7 @@
           lintLua
           formatLua
           lintNix
+          lintDeadNix
           formatNix
           ciFormatNix
           darwinRebuild
@@ -354,9 +314,19 @@
           autoRebuild
           rebuildHost
           runAllLintersAndFormatters
+          verifyOnePasswordSsh
+          verifyOnePasswordGh
         ];
       in
         with pkgs; {
+          apps.verify-1password-ssh = {
+            type = "app";
+            program = "${verifyOnePasswordSsh}/bin/verify-1password-ssh";
+          };
+          apps.verify-1password-gh = {
+            type = "app";
+            program = "${verifyOnePasswordGh}/bin/verify-1password-gh";
+          };
           devShells.default = mkShell {
             name = "nix-setup";
             inherit buildInputs nativeBuildInputs;
