@@ -1,13 +1,5 @@
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}: let
-  # Import our centralised configuration
-  helpers = import ../lib/helpers.nix {inherit lib;};
-  inherit (helpers) defaults;
-
+{pkgs, ...}: let
+  defaults = import ../lib/defaults.nix;
   sshSigningKey = "~/.ssh-signing-key";
 in {
   # delta moved out of programs.git; now a top-level home-manager module
@@ -89,7 +81,10 @@ in {
       };
 
       "gpg \"ssh\"" = {
-        program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+        program =
+          if pkgs.stdenv.isDarwin
+          then "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+          else "/opt/1Password/op-ssh-sign";
       };
 
       commit = {

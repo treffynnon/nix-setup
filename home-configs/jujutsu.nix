@@ -1,11 +1,13 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  defaults = import ../lib/defaults.nix;
+in {
   programs.jujutsu = {
     enable = true;
 
     settings = {
       user = {
-        name = "Simon Holywell";
-        email = "simon@holywell.au";
+        name = defaults.user.fullName;
+        inherit (defaults.user) email;
       };
 
       ui = {

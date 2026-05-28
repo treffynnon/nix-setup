@@ -1,12 +1,4 @@
-# Shared home-manager configuration
-# This eliminates the massive duplication of home-manager imports across
-# darwin-configuration.nix, nixos-configuration.nix, and home-manager-configuration.nix
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}: let
+{...}: let
   defaults = import ../lib/defaults.nix;
 in {
   imports = [
@@ -32,7 +24,6 @@ in {
 
   nix.settings.experimental-features = defaults.nix.experimentalFeatures;
 
-  # Note: nixpkgs.config and nixpkgs.overlays are intentionally NOT set here
-  # When using home-manager.useGlobalPkgs = true, the home-manager configuration
-  # inherits nixpkgs configuration from the system configuration automatically
+  # nixpkgs.config and overlays are NOT set here — home-manager.useGlobalPkgs = true
+  # inherits them from the system configuration
 }
