@@ -88,7 +88,7 @@ target_attr() {
   if [ "$IS_DARWIN" == true ]; then
     printf 'darwinConfigurations.%s.system' "$COMPUTER_NAME"
   elif [ "$IS_NIXOS" == true ]; then
-    printf 'nixosConfigurations.default.config.system.build.toplevel'
+    printf 'nixosConfigurations.%s.config.system.build.toplevel' "$COMPUTER_NAME"
   elif [ "$IS_WSL" == true ]; then
     printf 'homeConfigurations."simon@wsl".activationPackage'
   else
@@ -109,7 +109,7 @@ create_darwin_host_if_missing() {
     return
   fi
 
-  local nix_config="$NIXPKGS_BASEPATH/hosts/$COMPUTER_NAME/configuration.nix"
+  local nix_config="$NIXPKGS_BASEPATH/hosts/$COMPUTER_NAME/darwin.nix"
   if [ -f "$nix_config" ]; then
     echo "✅ Host configuration already exists: $nix_config"
   else
@@ -120,6 +120,30 @@ create_darwin_host_if_missing() {
   networking.hostName = "$COMPUTER_NAME";
   system.stateVersion = 5;
   home-manager.users.simon.home.stateVersion = "24.05";
+}
+EOF
+  fi
+
+  if [ -d "$NIXPKGS_BASEPATH/.git" ] && command -v git >/dev/null 2>&1; then
+    git -C "$NIXPKGS_BASEPATH" add "$nix_config" || true
+  fi
+}
+
+create_nixos_host_if_missing() {
+  if [ "$IS_NIXOS" != true ]; then
+    return
+  fi
+
+  local nix_config="$NIXPKGS_BASEPATH/hosts/$COMPUTER_NAME/nixos.nix"
+  if [ -f "$nix_config" ]; then
+    echo "✅ Host configuration already exists: $nix_config"
+  else
+    echo "Creating host-specific configuration: $nix_config"
+    mkdir -p "$(dirname "$nix_config")"
+    cat > "$nix_config" <<EOF
+{
+  networking.hostName = "$COMPUTER_NAME";
+  system.stateVersion = "24.05";
 }
 EOF
   fi
@@ -150,7 +174,7 @@ switch_target() {
       sudo -H nix run nix-darwin -- switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
     fi
   elif [ "$IS_NIXOS" == true ]; then
-    sudo nixos-rebuild switch --flake "$NIXPKGS_BASEPATH#default"
+    sudo nixos-rebuild switch --flake "$NIXPKGS_BASEPATH#$COMPUTER_NAME"
   elif [ "$IS_WSL" == true ]; then
     nix run home-manager -- switch --flake "$NIXPKGS_BASEPATH#simon@wsl"
   else
@@ -173,7 +197,11 @@ if [ "$IS_DARWIN" == true ]; then
   fi
   create_darwin_host_if_missing
 elif [ "$IS_NIXOS" == true ]; then
-  COMPUTER_NAME="default"
+  read -r -p "Pick a name for this machine [$(hostname)]: " COMPUTER_NAME
+  if [ -z "$COMPUTER_NAME" ]; then
+    COMPUTER_NAME="$(hostname)"
+  fi
+  create_nixos_host_if_missing
 elif [ "$IS_WSL" == true ]; then
   COMPUTER_NAME="wsl"
 else
