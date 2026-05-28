@@ -17,6 +17,8 @@ in {
   # NixOS/Linux-specific configuration using centralised defaults
   system.stateVersion = lib.mkDefault "24.05";
 
+  nix.gc.dates = "weekly";
+
   # Linux-specific user configuration using centralised defaults
   users.users.${defaults.user.username} = {
     isNormalUser = true;
