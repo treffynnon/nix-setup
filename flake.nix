@@ -26,13 +26,27 @@
     home-manager,
     opnix,
   }: let
-    currentSystem = builtins.currentSystem or "aarch64-darwin";
+    hostsDir = ./hosts;
+    hostNames = builtins.attrNames (builtins.readDir hostsDir);
+    darwinHostNames = builtins.filter
+      (name: builtins.pathExists (hostsDir + "/${name}/darwin.nix"))
+      hostNames;
+    nixosHostNames = builtins.filter
+      (name: builtins.pathExists (hostsDir + "/${name}/nixos.nix"))
+      hostNames;
+    getHostSystem = name: let
+      metaFile = hostsDir + "/${name}/meta.nix";
+    in
+      if builtins.pathExists metaFile
+      then (import metaFile).system or "x86_64-linux"
+      else "x86_64-linux";
+
     darwinConfiguration = import ./darwin-configuration.nix;
     nixosConfiguration = import ./nixos-configuration.nix;
     homeManagerConfiguration = import ./home-manager-configuration.nix;
 
     mkDarwinHost = {
-      system ? currentSystem,
+      system ? "aarch64-darwin",
       extraModules ? [],
     }:
       darwin.lib.darwinSystem {
@@ -67,46 +81,28 @@
       };
   in
     {
-      darwinConfigurations = {
-        default = mkDarwinHost {};
-        bilby = mkDarwinHost {
-          extraModules = [./hosts/bilby/configuration.nix];
-        };
-        gecko = mkDarwinHost {
-          extraModules = [./hosts/gecko/configuration.nix];
-        };
-        pademelon = mkDarwinHost {
-          extraModules = [./hosts/pademelon/configuration.nix];
-        };
-        platypus = mkDarwinHost {
-          extraModules = [./hosts/platypus/configuration.nix];
-        };
-        thylacine = mkDarwinHost {
-          extraModules = [./hosts/thylacine/configuration.nix];
-        };
-      };
+      darwinConfigurations = builtins.listToAttrs (
+        map (name: {
+          inherit name;
+          value = mkDarwinHost {
+            extraModules = [(hostsDir + "/${name}/darwin.nix")];
+          };
+        })
+        darwinHostNames
+      );
 
-      nixosConfigurations = {
-        default = mkNixosHost {
-          system = "x86_64-linux";
-        };
-        default-arm64 = mkNixosHost {
-          system = "aarch64-linux";
-        };
-        nixos-vm = mkNixosHost {
-          system = "x86_64-linux";
-        };
-      };
+      nixosConfigurations = builtins.listToAttrs (
+        map (name: {
+          inherit name;
+          value = mkNixosHost {
+            system = getHostSystem name;
+            extraModules = [(hostsDir + "/${name}/nixos.nix")];
+          };
+        })
+        nixosHostNames
+      );
 
       homeConfigurations = {
-        "simon@default" = mkHome {
-          system = "x86_64-linux";
-          extraModules = [./home-configs/linux.nix];
-        };
-        "simon@default-arm64" = mkHome {
-          system = "aarch64-linux";
-          extraModules = [./home-configs/linux.nix];
-        };
         "simon@wsl" = mkHome {
           system = "x86_64-linux";
           extraModules = [./home-configs/wsl.nix];
@@ -120,18 +116,8 @@
     // flake-utils.lib.eachDefaultSystem
     (
       system: let
-        overlays = [
-          # (import rust-overlay)
-        ];
+        pkgs = import nixpkgs {inherit system;};
 
-        pkgs = import nixpkgs {
-          inherit system overlays;
-        };
-
-        # needed at compile time
-        nativeBuildInputs = with pkgs; [];
-
-        # sets up scripts that can easily be called on the command line
         lintLua = pkgs.writeScriptBin "lint-lua" ''
           #!${pkgs.bash}/bin/bash
           luacheck --config ./codestyle/.luacheckrc.lua "./home-configs/hammerspoon"
@@ -166,60 +152,47 @@
           exec ./scripts/1password-gh.sh verify
         '';
 
-        # Darwin rebuild script with auto-detection
         darwinRebuild = pkgs.writeScriptBin "darwin-rebuild-flake" ''
           #!${pkgs.bash}/bin/bash
-          HOSTNAME=$(hostname || echo "default")
+          HOSTNAME=$(hostname)
           echo "Auto-detected hostname: $HOSTNAME"
-
-          # Check if host-specific configuration exists
-          if [ -f "./hosts/$HOSTNAME/configuration.nix" ]; then
-            echo "Found host-specific configuration for $HOSTNAME"
+          if [ -f "./hosts/$HOSTNAME/darwin.nix" ]; then
             echo "Rebuilding Darwin configuration for $HOSTNAME..."
-            sudo darwin-rebuild switch --flake .#$HOSTNAME
+            sudo darwin-rebuild switch --flake ".#$HOSTNAME"
           else
-            echo "No host-specific configuration found for $HOSTNAME"
-            echo "Available hosts: bilby, pademelon, platypus, thylacine"
-            echo "Falling back to default configuration..."
-            sudo darwin-rebuild switch --flake .#default
-          fi
-        '';
-
-        # NixOS rebuild script
-        nixosRebuild = pkgs.writeScriptBin "nixos-rebuild-flake" ''
-          #!${pkgs.bash}/bin/bash
-          HOSTNAME=$(hostname || echo "default")
-          echo "Auto-detected hostname: $HOSTNAME"
-          echo "Rebuilding NixOS configuration..."
-          sudo nixos-rebuild switch --flake .#$HOSTNAME || sudo nixos-rebuild switch --flake .#default
-        '';
-
-        # Home Manager rebuild script
-        homeManagerRebuild = pkgs.writeScriptBin "home-manager-rebuild-flake" ''
-          #!${pkgs.bash}/bin/bash
-          USER=$(whoami)
-          HOSTNAME=$(hostname || echo "default")
-
-          echo "Rebuilding Home Manager configuration for $USER@$HOSTNAME..."
-
-          # Try specific user@hostname combinations first
-          if home-manager switch --flake .#$USER@$HOSTNAME 2>/dev/null; then
-            echo "Successfully applied $USER@$HOSTNAME configuration"
-          elif home-manager switch --flake .#$USER@linux 2>/dev/null; then
-            echo "Successfully applied $USER@linux configuration"
-          elif home-manager switch --flake .#$USER@default 2>/dev/null; then
-            echo "Successfully applied $USER@default configuration"
-          else
-            echo "Failed to find suitable Home Manager configuration"
-            echo "Available configurations: simon@default, simon@wsl, simon@linux"
+            available=$(for d in ./hosts/*/darwin.nix; do basename "$(dirname "$d")"; done | tr '\n' ' ')
+            echo "No darwin.nix found for $HOSTNAME."
+            echo "Available hosts: $available"
             exit 1
           fi
         '';
 
-        # Universal rebuild script that detects platform
+        nixosRebuild = pkgs.writeScriptBin "nixos-rebuild-flake" ''
+          #!${pkgs.bash}/bin/bash
+          HOSTNAME=$(hostname)
+          echo "Auto-detected hostname: $HOSTNAME"
+          echo "Rebuilding NixOS configuration..."
+          sudo nixos-rebuild switch --flake ".#$HOSTNAME"
+        '';
+
+        homeManagerRebuild = pkgs.writeScriptBin "home-manager-rebuild-flake" ''
+          #!${pkgs.bash}/bin/bash
+          USER=$(whoami)
+          HOSTNAME=$(hostname)
+          echo "Rebuilding Home Manager configuration for $USER@$HOSTNAME..."
+          if home-manager switch --flake ".#$USER@$HOSTNAME" 2>/dev/null; then
+            echo "Successfully applied $USER@$HOSTNAME configuration"
+          elif home-manager switch --flake ".#$USER@linux" 2>/dev/null; then
+            echo "Successfully applied $USER@linux configuration"
+          else
+            echo "Failed to find suitable Home Manager configuration"
+            echo "Available configurations: simon@linux, simon@wsl"
+            exit 1
+          fi
+        '';
+
         universalRebuild = pkgs.writeScriptBin "rebuild" ''
           #!${pkgs.bash}/bin/bash
-
           if [[ "$OSTYPE" == "darwin"* ]]; then
             echo "Detected macOS - using darwin-rebuild"
             darwin-rebuild-flake
@@ -231,36 +204,8 @@
             home-manager-rebuild-flake
           else
             echo "No suitable rebuild command found"
-            echo "Install nix-darwin, NixOS, or home-manager first"
             exit 1
           fi
-        '';
-
-        # Auto-rebuild script (uses current hostname)
-        autoRebuild = pkgs.writeScriptBin "auto-rebuild" ''
-          #!${pkgs.bash}/bin/bash
-          HOSTNAME=$(hostname || echo "default")
-          echo "Auto-rebuilding for hostname: $HOSTNAME"
-
-          if [[ "$OSTYPE" == "darwin"* ]]; then
-            sudo darwin-rebuild switch --flake .#$HOSTNAME
-          else
-            echo "Auto-rebuild currently only supports macOS"
-            echo "Use 'rebuild' for cross-platform rebuilding"
-            exit 1
-          fi
-        '';
-
-        # Host-specific rebuild scripts
-        rebuildHost = pkgs.writeScriptBin "rebuild-host" ''
-          #!${pkgs.bash}/bin/bash
-          if [ -z "$1" ]; then
-            echo "Usage: rebuild-host <hostname>"
-            echo "Available hosts: bilby, pademelon, platypus, thylacine"
-            exit 1
-          fi
-          echo "Rebuilding Darwin configuration for $1..."
-          sudo darwin-rebuild switch --flake .#$1
         '';
 
         runAllLintersAndFormatters = pkgs.writeScriptBin "format" ''
@@ -291,15 +236,14 @@
           echo " "
         '';
 
-        # needed at run time
         buildInputs = with pkgs; [
           bashInteractive
-          alejandra # nix fomatter
-          statix # nix linter
+          alejandra
+          statix
           deadnix
           (lua.withPackages (ps: with ps; [busted luafilesystem luacheck]))
           luaformatter
-          uhubctl # USB hub control utility
+          uhubctl
 
           lintLua
           formatLua
@@ -311,8 +255,6 @@
           nixosRebuild
           homeManagerRebuild
           universalRebuild
-          autoRebuild
-          rebuildHost
           runAllLintersAndFormatters
           verifyOnePasswordSsh
           verifyOnePasswordGh
@@ -329,7 +271,7 @@
           };
           devShells.default = mkShell {
             name = "nix-setup";
-            inherit buildInputs nativeBuildInputs;
+            inherit buildInputs;
           };
         }
     );
