@@ -21,24 +21,22 @@ in {
     enable = true;
     customSettings = {
       experimental-features = ["nix-command" "flakes"];
-      substituters = defaults.nix.substituters;
+      inherit (defaults.nix) substituters;
       trusted-public-keys = defaults.nix.trustedPublicKeys;
     };
   };
   nix.gc.automatic = lib.mkForce false;
-
-  # Host configs can override this if they were first installed with an older
-  # nix-darwin state version.
-  system.stateVersion = lib.mkDefault 5;
-
-  # Set primary user for system defaults using centralised config
-  system.primaryUser = defaults.user.username;
 
   # Note: ids.gids.nixbld is now set in individual host configurations
   # See hosts/*/darwin.nix for per-host GID overrides
 
   # macOS system defaults
   system = {
+    # Host configs can override this if they were first installed with an older
+    # nix-darwin state version.
+    stateVersion = lib.mkDefault 5;
+    primaryUser = defaults.user.username;
+
     keyboard = {
       # Whether to enable keyboard mappings.
       enableKeyMapping = true;
@@ -220,7 +218,7 @@ in {
       ];
 
       home = {
-        username = defaults.user.username;
+        inherit (defaults.user) username;
         homeDirectory = "/Users/${defaults.user.username}";
         stateVersion = lib.mkDefault "24.05";
       };

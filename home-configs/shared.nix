@@ -1,4 +1,4 @@
-{...}: let
+_: let
   defaults = import ../lib/defaults.nix;
 in {
   imports = [
