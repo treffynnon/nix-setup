@@ -22,20 +22,15 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@v13
       - name: Script syntax
         run: bash -n scripts/*.sh
-
-      - name: Check nix lint
+      - name: Nix lint
         run: nix develop --command lint-nix
-
-      - name: Check dead Nix code
+      - name: Dead Nix code
         run: nix develop --command lint-deadnix
-
-      - name: Check Nix formatting
+      - name: Nix formatting
         run: nix develop --command ci-format-nix
-
-      - name: Run luacheck
+      - name: Lua lint
         run: nix develop --command lint-lua
-
-      - name: Check Lua formatting
+      - name: Lua formatting
         run: nix develop --command lua-format --check --config=./codestyle/lua-format-config.yml ./home-configs/hammerspoon
 
   eval:
@@ -51,32 +46,25 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
       - uses: DeterminateSystems/magic-nix-cache-action@v13
+
       - name: Flake check
         run: nix flake check --no-build --show-trace --all-systems
 
-      - name: Dry-runs
+      - name: Darwin dry-runs
         run: |
-          pids=()
-          fail=0
-
           for host_dir in hosts/*/darwin.nix; do
             host=$(basename "$(dirname "$host_dir")")
-            nix build --dry-run ".#darwinConfigurations.${host}.system" &
-            pids+=($!)
+            nix build --dry-run ".#darwinConfigurations.${host}.system"
           done
 
+      - name: NixOS dry-runs
+        run: |
           for host_dir in hosts/*/nixos.nix; do
             host=$(basename "$(dirname "$host_dir")")
-            nix build --dry-run ".#nixosConfigurations.${host}.config.system.build.toplevel" &
-            pids+=($!)
+            nix build --dry-run ".#nixosConfigurations.${host}.config.system.build.toplevel"
           done
 
-          nix build --dry-run '.#homeConfigurations."simon@linux".activationPackage' &
-          pids+=($!)
-          nix build --dry-run '.#homeConfigurations."simon@wsl".activationPackage' &
-          pids+=($!)
-
-          for pid in "${pids[@]}"; do
-            wait "$pid" || fail=1
-          done
-          exit $fail
+      - name: Home Manager dry-runs
+        run: |
+          nix build --dry-run '.#homeConfigurations."simon@linux".activationPackage'
+          nix build --dry-run '.#homeConfigurations."simon@wsl".activationPackage'
