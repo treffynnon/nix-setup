@@ -1,1 +1,1 @@
-{ networking.hostName = "platypus"; }
+{networking.hostName = "platypus";}

@@ -28,10 +28,12 @@
   }: let
     hostsDir = ./hosts;
     hostNames = builtins.attrNames (builtins.readDir hostsDir);
-    darwinHostNames = builtins.filter
+    darwinHostNames =
+      builtins.filter
       (name: builtins.pathExists (hostsDir + "/${name}/darwin.nix"))
       hostNames;
-    nixosHostNames = builtins.filter
+    nixosHostNames =
+      builtins.filter
       (name: builtins.pathExists (hostsDir + "/${name}/nixos.nix"))
       hostNames;
     getHostSystem = name: let
