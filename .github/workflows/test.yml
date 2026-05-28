@@ -16,7 +16,7 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
           extra_nix_config: |
             experimental-features = nix-command flakes
-      - uses: DeterminateSystems/magic-nix-cache-action@v0.1.6
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Flake check
         run: nix flake check --all-systems --no-build --show-trace
