@@ -1,1 +1,1 @@
-{}
+{ boot.isContainer = true; }
