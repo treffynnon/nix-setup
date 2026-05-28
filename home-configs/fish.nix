@@ -29,8 +29,7 @@ in
           set fish_user_paths $fish_user_paths
         '';
 
-      plugins = [
-      ];
+      plugins = [];
     };
 
     # https://discourse.nixos.org/t/bootstrapping-new-system/3455/9

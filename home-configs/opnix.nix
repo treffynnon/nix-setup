@@ -1,11 +1,6 @@
 # 1Password secrets management with opnix
 # This module handles all opnix-related configuration for home-manager
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}: {
+{...}: {
   # Configure 1Password secrets management with opnix
   # Note: new opnix API takes `secrets` as an attrset keyed by camelCase name
   # instead of a list. Key names must match /^[a-z][a-zA-Z0-9]*$/.

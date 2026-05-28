@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}: let
+{pkgs, ...}: let
   # Import our centralised configuration directly
   defaults = import ./lib/defaults.nix;
 in {

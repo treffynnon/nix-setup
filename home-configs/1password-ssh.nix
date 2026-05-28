@@ -1,9 +1,4 @@
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}: {
+{...}: {
   # Only manage 1Password SSH agent integration, not the full SSH config
   # This keeps your private SSH host configurations out of version control
 

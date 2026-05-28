@@ -1,11 +1,6 @@
 # System-level opnix configuration for nix-darwin
 # This module handles system-level requirements for opnix integration
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}: let
+{...}: let
   # Import our centralised configuration
   defaults = import ../lib/defaults.nix;
 in {

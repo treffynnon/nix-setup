@@ -15,8 +15,7 @@ in {
   ];
 
   # NixOS/Linux-specific configuration using centralised defaults
-  # Set reasonable default stateVersion for NixOS - should be overridden by host configs
-  system.stateVersion = "24.05"; # Default fallback - set appropriate version in host configs
+  system.stateVersion = lib.mkDefault "24.05";
 
   # Linux-specific user configuration using centralised defaults
   users.users.${defaults.user.username} = {
@@ -73,26 +72,13 @@ in {
     zsh.enable = true;
   };
 
-  # Basic NixOS boot configuration (minimal example)
-  boot.loader.grub = {
-    enable = true;
-    device = "/dev/sda"; # or "nodev" for UEFI
-  };
-
-  # Basic filesystem configuration (minimal example)
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "ext4";
-  };
-
   # Home Manager configuration using shared configuration
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;
     extraSpecialArgs = {inherit opnix;};
     users.${defaults.user.username} = {
-      # Set default home.stateVersion - should be overridden by host configs
-      home.stateVersion = "24.05"; # Default fallback - set appropriate version in host configs
+      home.stateVersion = lib.mkDefault "24.05";
 
       # Import our unified home-manager configuration
       imports = [

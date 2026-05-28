@@ -35,7 +35,7 @@ in {
   system.primaryUser = defaults.user.username;
 
   # Note: ids.gids.nixbld is now set in individual host configurations
-  # See hosts/*/configuration.nix for per-host GID overrides
+  # See hosts/*/darwin.nix for per-host GID overrides
 
   # macOS system defaults
   system = {
