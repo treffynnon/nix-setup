@@ -1,5 +1,6 @@
 /result
 .luacheckcache
+.claude/
 
 # Sensitive files - never commit these
 /github.pat

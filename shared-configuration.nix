@@ -50,54 +50,31 @@
         );
   };
 
-  # Core system packages that work on all platforms
-  environment.systemPackages = with pkgs; [
-    # Core utilities
-    gnupg
-    pass
-    curl
-    wget
-    dnsutils
-    nmap
-    inetutils
-
-    # Secrets management
-    _1password-cli
-
-    # File and text processing
-    less
-    delta
-    jq # JSON processor
-    yq # YAML/JSON processor
-    imagemagick
-    ripgrep
-    unzip
-    zip
-    gzip
-    zstd
-
-    # System tools
-    fd
-    file
-    pv
-    htop
-    which
-    eza
-
-    # Git tools
-    git-lfs
-    git-crypt
-
-    # Nix tools
-    any-nix-shell
-
-    # Development tools
-    cmus
-
-    # Git tools (previously under pkgs.gitAndTools, now top-level)
-    gitFull
-    git-fame
-  ];
+  environment.systemPackages =
+    (import ./lib/cli-packages.nix pkgs)
+    ++ (with pkgs; [
+      gnupg
+      pass
+      curl
+      wget
+      dnsutils
+      nmap
+      inetutils
+      delta
+      imagemagick
+      gzip
+      zstd
+      file
+      pv
+      htop
+      which
+      git-lfs
+      git-crypt
+      any-nix-shell
+      cmus
+      gitFull
+      git-fame
+    ]);
 
   # Shared fonts (works on both platforms)
   fonts = {

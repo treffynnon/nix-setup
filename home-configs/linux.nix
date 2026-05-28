@@ -8,7 +8,5 @@
     ./shared.nix
   ];
 
-  home.packages = with pkgs; [
-    _1password-cli
-  ];
+  home.packages = import ../lib/cli-packages.nix pkgs;
 }

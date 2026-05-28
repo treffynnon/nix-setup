@@ -20,20 +20,7 @@
     ./jujutsu.nix
   ];
 
-  home.packages = with pkgs; [
-    _1password-cli
-    bat
-    direnv
-    eza
-    fd
-    fzf
-    jq
-    less
-    ripgrep
-    unzip
-    yq
-    zip
-  ];
+  home.packages = import ../lib/cli-packages.nix pkgs;
 
   programs.ssh = {
     enable = true;
