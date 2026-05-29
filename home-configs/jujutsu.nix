@@ -16,6 +16,12 @@ in {
         paginate = "auto";
       };
 
+      signing = {
+        sign-all = true;
+        backend = "ssh";
+        key = "~/${defaults.paths.sshSigningKey}";
+      };
+
       experimental-advance-branches = {
         enabled-branches = ["glob:*"];
         disabled-branches = ["master" "main"];

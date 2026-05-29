@@ -11,6 +11,7 @@
 
   paths = {
     screenshotLocation = "~/Screenshots";
+    sshSigningKey = ".ssh-signing-key";
   };
 
   nix = {

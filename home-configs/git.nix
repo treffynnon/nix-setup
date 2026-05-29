@@ -1,6 +1,6 @@
 {pkgs, ...}: let
   defaults = import ../lib/defaults.nix;
-  sshSigningKey = "~/.ssh-signing-key";
+  sshSigningKey = "~/${defaults.paths.sshSigningKey}";
 in {
   # delta moved out of programs.git; now a top-level home-manager module
   programs.delta = {
