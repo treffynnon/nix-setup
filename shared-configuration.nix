@@ -8,7 +8,7 @@ in {
       keep-derivations = true
     '';
     settings = {
-      substituters = defaults.nix.substituters;
+      inherit (defaults.nix) substituters;
       trusted-public-keys = defaults.nix.trustedPublicKeys;
       experimental-features = defaults.nix.experimentalFeatures;
     };
