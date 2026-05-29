@@ -5,19 +5,7 @@
 }: {
   imports = [
     opnix.homeManagerModules.default
-    ./git.nix
-    ./github.nix
-    ./fish.nix
-    ./starship.nix
-    ./neovim.nix
-    ./bat.nix
-    ./fzf.nix
-    ./direnv.nix
-    ./bash.nix
-    ./environment.nix
-    ./helix.nix
-    ./opnix.nix
-    ./jujutsu.nix
+    ./shared.nix
   ];
 
   home.packages = import ../lib/cli-packages.nix pkgs;

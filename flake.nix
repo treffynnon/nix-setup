@@ -42,6 +42,12 @@
       if builtins.pathExists metaFile
       then (import metaFile).system or "x86_64-linux"
       else "x86_64-linux";
+    getDarwinHostSystem = name: let
+      metaFile = hostsDir + "/${name}/meta.nix";
+    in
+      if builtins.pathExists metaFile
+      then (import metaFile).system or "aarch64-darwin"
+      else "aarch64-darwin";
 
     darwinConfiguration = import ./darwin-configuration.nix;
     nixosConfiguration = import ./nixos-configuration.nix;
@@ -87,6 +93,7 @@
         map (name: {
           inherit name;
           value = mkDarwinHost {
+            system = getDarwinHostSystem name;
             extraModules = [(hostsDir + "/${name}/darwin.nix")];
           };
         })
@@ -186,6 +193,8 @@
             echo "Successfully applied $USER@$HOSTNAME configuration"
           elif home-manager switch --flake ".#$USER@linux" 2>/dev/null; then
             echo "Successfully applied $USER@linux configuration"
+          elif home-manager switch --flake ".#$USER@wsl" 2>/dev/null; then
+            echo "Successfully applied $USER@wsl configuration"
           else
             echo "Failed to find suitable Home Manager configuration"
             echo "Available configurations: simon@linux, simon@wsl"
