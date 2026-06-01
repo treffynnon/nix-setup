@@ -14,6 +14,24 @@
     sshSigningKey = ".ssh-signing-key";
   };
 
+  onePassword = {
+    platforms = {
+      darwin = {
+        sshAgentSocket =
+          "Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
+        opSshSign = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
+      };
+      linux = {
+        sshAgentSocket = ".1password/agent.sock";
+        opSshSign = "/opt/1Password/op-ssh-sign";
+      };
+      wsl = {
+        sshAgentSocket = ".ssh/agent.sock";
+        opSshSign = "/mnt/c/Program Files/1Password/op-ssh-sign.exe";
+      };
+    };
+  };
+
   nix = {
     substituters = [
       "https://cache.nixos.org/"

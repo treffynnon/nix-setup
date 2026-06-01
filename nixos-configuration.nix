@@ -79,6 +79,8 @@ in {
     useUserPackages = true;
     useGlobalPkgs = true;
     extraSpecialArgs = {inherit opnix;};
+    backupFileExtension = ".hm-bak";
+    overwriteBackup = true;
     users.${defaults.user.username} = {
       home.stateVersion = lib.mkDefault "24.05";
 

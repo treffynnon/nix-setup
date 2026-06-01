@@ -18,6 +18,7 @@ in {
     ./pgcli.nix
     ./vifm.nix
     ./opnix.nix
+    ./1password-ssh.nix
     ./claude-code.nix
     ./jujutsu.nix
   ];

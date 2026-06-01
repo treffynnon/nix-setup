@@ -1,5 +1,6 @@
-{pkgs, ...}: let
+{config, pkgs, ...}: let
   defaults = import ../lib/defaults.nix;
+  opCfg = defaults.onePassword.platforms.${config._1password.platform};
   sshSigningKey = "~/${defaults.paths.sshSigningKey}";
 in {
   # delta moved out of programs.git; now a top-level home-manager module
@@ -81,10 +82,7 @@ in {
       };
 
       "gpg \"ssh\"" = {
-        program =
-          if pkgs.stdenv.isDarwin
-          then "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
-          else "/opt/1Password/op-ssh-sign";
+        program = opCfg.opSshSign;
       };
 
       commit = {

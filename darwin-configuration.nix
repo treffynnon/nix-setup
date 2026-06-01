@@ -211,6 +211,7 @@ in {
     useGlobalPkgs = true;
     extraSpecialArgs = {inherit opnix;};
     backupFileExtension = ".hm-bak";
+    overwriteBackup = true;
     users.${defaults.user.username} = {
       # Import our unified home-manager configuration
       imports = [
