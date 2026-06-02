@@ -1,4 +1,8 @@
-{config, pkgs, ...}: let
+{
+  config,
+  pkgs,
+  ...
+}: let
   defaults = import ../lib/defaults.nix;
   opCfg = defaults.onePassword.platforms.${config._1password.platform};
   sshSigningKey = "~/${defaults.paths.sshSigningKey}";

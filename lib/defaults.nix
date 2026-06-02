@@ -17,8 +17,7 @@
   onePassword = {
     platforms = {
       darwin = {
-        sshAgentSocket =
-          "Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
+        sshAgentSocket = "Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock";
         opSshSign = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign";
       };
       linux = {

@@ -19,8 +19,7 @@ in {
   };
 
   config = {
-    home.sessionVariables.SSH_AUTH_SOCK =
-      "${config.home.homeDirectory}/${platformCfg.sshAgentSocket}";
+    home.sessionVariables.SSH_AUTH_SOCK = "${config.home.homeDirectory}/${platformCfg.sshAgentSocket}";
 
     home.file.".ssh/config" = {
       force = true;
