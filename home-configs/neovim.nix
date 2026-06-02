@@ -1,9 +1,14 @@
 {pkgs, ...}: {
   programs.neovim = {
     enable = true;
+    defaultEditor = true;
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
+
+    # adopt new home-manager defaults (previously implicitly true pre-26.05)
+    withRuby = false;
+    withPython3 = false;
 
     plugins = with pkgs.vimPlugins; [
       {

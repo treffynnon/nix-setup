@@ -1,4 +1,4 @@
-{pkgs, ...}: rec {
+{pkgs, ...}: {
   envAliases = {
     icat = "${pkgs.kitty}/bin/kitty +kitten icat";
     d = "${pkgs.kitty}/bin/kitty +kitten diff";

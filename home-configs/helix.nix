@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   programs.helix = {
     enable = true;
-    defaultEditor = true;
+    defaultEditor = false;
 
     settings = {
       theme = "base16_terminal";

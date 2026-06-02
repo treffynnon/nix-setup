@@ -11,7 +11,7 @@
       macos_custom_beam_cursor = true;
       shell = "${pkgs.fish}/bin/fish --login --interactive";
     };
-    theme = "Parasio Dark";
+    themeFile = "Parasio_Dark";
     shellIntegration = {
       enableBashIntegration = true;
       enableFishIntegration = true;
@@ -19,7 +19,8 @@
     };
   };
 
-  programs.git.extraConfig = {
+  # extraConfig was renamed to settings in newer home-manager
+  programs.git.settings = {
     diff.tool = "kitty";
     diff.guitool = "kitty.gui";
     difftool.prompt = false;

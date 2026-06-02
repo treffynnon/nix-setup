@@ -43,7 +43,7 @@ in {
       prompt = "${color0A}";
     };
 
-    defaultCommand = "${pkgs.fzf}/bin/fd --type f";
-    fileWidgetCommand = "${pkgs.fzf}/bin/fd --type f \$dir";
+    defaultCommand = "${pkgs.fd}/bin/fd --type f";
+    fileWidgetCommand = "${pkgs.fd}/bin/fd --type f \$dir";
   };
 }
