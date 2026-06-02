@@ -5,7 +5,7 @@
   ...
 }: let
   defaults = import ../lib/defaults.nix;
-  platform = config._1password.platform;
+  inherit (config._1password) platform;
   platformCfg = defaults.onePassword.platforms.${platform};
   agentSocket = "~/${platformCfg.sshAgentSocket}";
 in {
@@ -19,43 +19,49 @@ in {
   };
 
   config = {
-    home.sessionVariables.SSH_AUTH_SOCK = "${config.home.homeDirectory}/${platformCfg.sshAgentSocket}";
+    home = {
+      sessionVariables = {
+        SSH_AUTH_SOCK = "${config.home.homeDirectory}/${platformCfg.sshAgentSocket}";
+      };
 
-    home.file.".ssh/config" = {
-      force = true;
-      text = ''
-        Include ~/.ssh/config.d/*
-      '';
-    };
+      file = {
+        ".ssh/config" = {
+          force = true;
+          text = ''
+            Include ~/.ssh/config.d/*
+          '';
+        };
 
-    home.file.".ssh/config.d/10-1password-agent" = {
-      text = ''
-        Host *
-          IdentityAgent "${agentSocket}"
-      '';
-    };
+        ".ssh/config.d/10-1password-agent" = {
+          text = ''
+            Host *
+              IdentityAgent "${agentSocket}"
+          '';
+        };
 
-    home.file.".ssh/config.d/.keep" = {
-      text = "";
-    };
+        ".ssh/config.d/.keep" = {
+          text = "";
+        };
 
-    home.file.".config/1password/ssh/agent.toml" = {
-      text = ''
-        [[ssh-keys]]
-        vault = "Private"
+        ".config/1password/ssh/agent.toml" = {
+          text = ''
+            [[ssh-keys]]
+            vault = "Private"
 
-        [[ssh-keys]]
-        vault = "Employee"
+            [[ssh-keys]]
+            vault = "Employee"
 
-        [[ssh-keys]]
-        vault = "Nix Config"
-      '';
+            [[ssh-keys]]
+            vault = "Nix Config"
+          '';
 
-      target = ".config/1password/ssh/agent.toml";
-    };
+          target = ".config/1password/ssh/agent.toml";
+        };
 
-    home.file.".config/1password/ssh/.keep" = {
-      text = "";
+        ".config/1password/ssh/.keep" = {
+          text = "";
+        };
+      };
     };
   };
 }
