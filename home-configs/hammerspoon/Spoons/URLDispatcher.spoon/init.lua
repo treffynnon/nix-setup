@@ -183,7 +183,8 @@ end
 
 function obj.getSenderAppName(senderPid)
   if senderPid == -1 then return "" end
-  return hs.application.applicationForPID(senderPid):name()
+  local app = hs.application.applicationForPID(senderPid)
+  return app and app:name() or ""
 end
 
 function obj:maybeDecodeSlackUrl(url)
