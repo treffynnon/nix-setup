@@ -3,5 +3,6 @@
     opnix.homeManagerModules.default
     ./shared.nix
     ./hammerspoon.nix
+    ./anki.nix
   ];
 }
