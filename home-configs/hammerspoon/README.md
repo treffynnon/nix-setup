@@ -11,7 +11,6 @@ hammerspoon/
 ├── README.md                   # This documentation
 └── Spoons/                     # Hammerspoon extensions
     ├── AudioSwitcher.spoon/    # Audio output device switching
-    ├── BehringerUCA222.spoon/  # Behringer audio interface management
     ├── ControlEscape.spoon/    # Caps Lock → Escape/Control functionality
     ├── ElgatoStreamDeck.spoon/ # Stream Deck USB power management
     ├── MiroWindowsManager.spoon/ # Advanced window management
@@ -45,10 +44,9 @@ hammerspoon/
 
 ### Audio Management
 
-- **AudioSwitcher**: Quick switching between speakers and headphones
-  - `Cmd+Alt+S`: Switch to speakers
-  - `Cmd+Alt+H`: Switch to headphones
-- **BehringerUCA222**: Specific management for Behringer audio interfaces
+- **AudioSwitcher**: Switch playback output by destination
+  - `Cmd+Alt+S`: Speakers (`EDIFIER R1280DB`, then `MacBook Pro Speakers`)
+  - `Cmd+Alt+H`: Headphones (`US-2x2`, then `External Headphones`)
 
 ### System Enhancements
 
@@ -70,8 +68,8 @@ The window management uses a "hyper" key combination (`Ctrl+Alt+Cmd`) plus direc
 
 ### Audio Switching
 
-- **Cmd+Alt+S**: Switch to speakers
-- **Cmd+Alt+H**: Switch to headphones
+- **Cmd+Alt+S**: Speakers destination
+- **Cmd+Alt+H**: Headphones destination
 
 ### Control Enhancement
 
@@ -120,15 +118,10 @@ The ElgatoStreamDeck Spoon provides sophisticated USB power management:
 
 ### AudioSwitcher Features
 
-- Quick keyboard shortcuts for common audio devices
-- Seamless switching without interrupting playback
-- Support for multiple output device types
-
-### BehringerUCA222 Integration
-
-- Specific handling for Behringer USB audio interfaces
-- Automatic device detection and configuration
-- Optimized settings for audio production workflows
+- Destinations, not single devices: headphones try `US-2x2` then `External Headphones`; speakers try `EDIFIER R1280DB` then `MacBook Pro Speakers`
+- Alert on success with the device that won
+- Alert on failure naming the playback output that is still in use
+- Output only; input devices are left alone
 
 ## 🖥️ Multi-Monitor Support
 
