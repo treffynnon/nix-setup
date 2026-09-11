@@ -16,8 +16,6 @@ hs.loadSpoon("MouseBackButton"):start()
 -- Tap control for `escape` and hold for `control`
 hs.loadSpoon("ControlEscape"):start()
 
-hs.loadSpoon("BehringerUCA222"):start()
-
 hs.loadSpoon("AudioSwitcher")
 
 hs.loadSpoon("URLDispatcher"):start()
