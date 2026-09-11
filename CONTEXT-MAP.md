@@ -2,4 +2,4 @@
 
 ## Contexts
 
-- [Hammerspoon audio](./home-configs/hammerspoon/CONTEXT.md) — keyboard-driven choice of where Mac audio plays
+- [Hammerspoon audio](./home-configs/hammerspoon/CONTEXT.md) — destinations for where this Mac’s audio plays, plus Meet setup
