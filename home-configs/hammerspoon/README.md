@@ -10,9 +10,11 @@ hammerspoon/
 ├── uhubctl.lua                 # USB power management library
 ├── README.md                   # This documentation
 └── Spoons/                     # Hammerspoon extensions
-    ├── AudioSwitcher.spoon/    # Audio output device switching
+    ├── AudioSwitcher.spoon/    # Audio output and input device switching
     ├── ControlEscape.spoon/    # Caps Lock → Escape/Control functionality
     ├── ElgatoStreamDeck.spoon/ # Stream Deck USB power management
+    ├── KeyLightNeo.spoon/      # Elgato Key Light Neo power control
+    ├── MeetSetup.spoon/        # Audio and lighting for Google Meet links
     ├── MiroWindowsManager.spoon/ # Advanced window management
     ├── MouseBackButton.spoon/  # Mouse back button handling
     ├── OpenApplication.spoon/  # Application launcher utilities
@@ -47,6 +49,8 @@ hammerspoon/
 - **AudioSwitcher**: Switch playback output by destination
   - `Cmd+Alt+S`: Speakers (`EDIFIER R1280DB`, then `MacBook Pro Speakers`)
   - `Cmd+Alt+H`: Headphones (`US-2x2`, then `External Headphones`)
+- **MeetSetup**: Prepare audio and lighting when a Google Meet link is opened
+- **KeyLightNeo**: Turn an Elgato Key Light Neo on or off over USB
 
 ### System Enhancements
 
@@ -70,6 +74,7 @@ The window management uses a "hyper" key combination (`Ctrl+Alt+Cmd`) plus direc
 
 - **Cmd+Alt+S**: Speakers destination
 - **Cmd+Alt+H**: Headphones destination
+- **Cmd+Alt+X**: Revert to the state from before the meeting
 
 ### Control Enhancement
 
@@ -121,7 +126,30 @@ The ElgatoStreamDeck Spoon provides sophisticated USB power management:
 - Destinations, not single devices: headphones try `US-2x2` then `External Headphones`; speakers try `EDIFIER R1280DB` then `MacBook Pro Speakers`
 - Alert on success with the device that won
 - Alert on failure naming the playback output that is still in use
-- Output only; input devices are left alone
+- The destination hotkeys set the output only; input devices are left alone
+
+### Meet Setup
+
+Opening a Google Meet link through the system URL handler prepares the desk
+before Chrome opens the meeting:
+
+- Playback: `US-2x2`, then `External Headphones`, then `EDIFIER R1280DB`, then `MacBook Pro Speakers`
+- Capture: `Yeti Stereo Microphone`, then `MacBook Pro Microphone`
+- Elgato Key Light Neo: powered on, brightness and colour temperature untouched
+
+The Key Light Neo only serves the Elgato HTTP API in Wi-Fi mode, which needs a
+mains supply of at least 3A. Plugged into a Mac or a dock it has no IP address
+and speaks HID over USB instead, so `KeyLightNeo` shells out to the `elgato-usb`
+helper built in `home-configs/hammerspoon.nix`. The light is only controllable
+while it is plugged into this machine.
+
+Each part is applied on its own, and a single alert reports all three. The
+state from before the meeting is snapshotted on the first Meet link and is not
+overwritten by later ones. `Cmd+Alt+X` restores it and clears the snapshot;
+nothing is restored automatically when a meeting ends.
+
+Meet links clicked inside an already open browser do not reach Hammerspoon, so
+they do not trigger any of this.
 
 ## 🖥️ Multi-Monitor Support
 
